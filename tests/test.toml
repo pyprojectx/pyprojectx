@@ -1,0 +1,30 @@
+[foo]
+
+[tool.pyprojectx]
+tool1 = "tool1 pip"
+tool-2 = 'tool2 pip'
+
+tool3 = '''
+a
+b
+c'''
+
+tool4 = """
+d
+e
+"""
+
+'tool5' = "tool5 pip"
+"tool6" = "tool6 pip"
+
+[tool.pyprojectx.alias]
+run = 'tool1 start'
+test = 'tool-2 run test'
+sub_tool = 'tool1 : sub_tool default_arg'
+sub-tool-2-alias = 'tool-2 : sub-tool-2 default:arg'
+
+combined-alias = './px run && ./px test ./px shell-command'
+
+shell-command = "ls -al"
+
+[bar]

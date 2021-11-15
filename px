@@ -1,0 +1,133 @@
+#!/usr/bin/env python3
+
+##################################################################################
+# Pyprojectx                                                                     #
+# https://github.com/houbie/pyprojectx                                           #
+#                                                                                #
+# Copyright (c) 2021 Ivo Houbrechts                                              #
+#                                                                                #
+# Licensed under the MIT license                                                 #
+##################################################################################
+import hashlib
+import os
+import re
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+from venv import EnvBuilder
+
+VERSION = "2.0.1"
+
+PYPROJECT = Path(__file__).with_name("pyproject.toml")
+VENVS_DIR = Path(os.environ.get("PYPROJECTX_VENVS_DIR", Path.home().joinpath(".pyprojectx")), "venvs")
+UPGRADE_ARG = "--px-upgrade"
+CLEAR_ARG = "--px-clear"
+CLEAR_ALL_ARG = "--px-clear-all"
+HELP = f"usage: px [{UPGRADE_ARG}] [{CLEAR_ARG}] [{CLEAR_ALL_ARG}] <command> [<arg1>] ... [<argN>]"
+BIN_DIR = "Scripts" if os.name == "nt" else "bin"
+SHELL = "!"
+
+
+def toml_section(toml, section):
+    if not toml.exists():
+        raise Warning(f"{toml} not found")
+    with open(toml, "r") as file:
+        text = file.read()
+        match = re.search(fr"\[\s*{section}\s*]\s*([^\[]+)", text, re.MULTILINE)
+        if match:
+            return match.group(1)
+    return ""
+
+
+def toml_aliases(toml):
+    section = toml_section(toml, "tool.pyprojectx.alias")
+    matches = re.findall(r'[\'"]?([\w|-]+)[\'"]?\s*=\s*(\'{3}|"{3}|["\']{1})([^\'"][\s\S]+?)\2', section, re.MULTILINE)
+    return {match[0]: match[2] for match in matches}
+
+
+def toml_pyprojectx_value(toml, key):
+    section = toml_section(toml, "tool.pyprojectx")
+    match = re.search(
+        fr'[\'"]?{re.escape(key)}[\'"]?\s*=\s*(\'{{3}}|"{{3}}|["\']{{1}})([^\'"][\s\S]+?)\1',
+        section,
+        re.MULTILINE,
+    )
+    if match:
+        return " ".join(match.group(2).split())
+    return None
+
+
+def ensure_tool(tool, cache_dir, upgrade=False, clear=False):
+    pip_args = toml_pyprojectx_value(PYPROJECT, tool)
+    if not pip_args:
+        raise Warning(f"{tool} was not found under [tool.pyprojectx] in pyproject.toml")
+    md5 = hashlib.md5()
+    md5.update(pip_args.strip().encode())
+    install_dir = Path(
+        cache_dir, f"{tool.lower()}-{md5.hexdigest()}-{sys.version_info.major}.{sys.version_info.minor}"
+    ).absolute()
+    if install_dir.joinpath(BIN_DIR).is_dir() and not clear and not upgrade:
+        return install_dir
+    sys.stderr.write(f"creating virtual environment for {tool} in {install_dir} ...\n")
+    EnvBuilder(clear=clear, with_pip=True).create(install_dir)
+    subprocess.run(
+        f"{install_dir.joinpath(BIN_DIR, 'python')} -m pip install --upgrade pip",
+        shell=True,
+        stdout=sys.stderr,
+        check=True,
+    )
+    pip = install_dir.joinpath(BIN_DIR, "pip3")
+    sys.stderr.write(f"installing with pip: {pip_args} ...\n")
+    shell_cmd = f"{pip} install "
+    shell_cmd += pip_args
+    if upgrade:
+        shell_cmd += " --upgrade "
+    subprocess.run(shell_cmd, shell=True, stdout=sys.stderr, check=True)
+    return install_dir
+
+
+def parse_args(argv, toml, aliases=None):
+    if CLEAR_ALL_ARG in argv:
+        print(f"Clearing Python pyprojectx cache in {VENVS_DIR}...", file=sys.stderr)
+        shutil.rmtree(VENVS_DIR, ignore_errors=True)
+        argv.remove(CLEAR_ALL_ARG)
+
+    if len(argv) < 2:
+        raise Warning(HELP)
+
+    clear = upgrade = False
+    if CLEAR_ARG in argv:
+        clear = True
+        argv.remove(CLEAR_ARG)
+
+    if UPGRADE_ARG in argv:
+        upgrade = True
+        argv.remove(UPGRADE_ARG)
+
+    cmd, args = argv[1], argv[2:]
+    tool = full_cmd = None
+    if aliases:
+        alias = aliases.get(cmd)
+        if alias:
+            if re.match(r"^[\w|-]+\s*:\s*", alias):
+                tool, alias = re.split(r"\s*:\s*", alias, maxsplit=1)
+            cmd = alias.split()[0]
+            full_cmd = " ".join([alias] + args).replace("./px", argv[0])
+    if not full_cmd:
+        full_cmd = " ".join(argv[1:])
+
+    if not tool and toml_pyprojectx_value(toml, cmd):
+        tool = cmd
+    return tool, full_cmd, upgrade, clear
+
+
+if __name__ == "__main__":
+    try:
+        _tool, _cmd, _upgrade, _clear = parse_args(sys.argv, PYPROJECT, toml_aliases(PYPROJECT))
+        if _tool:
+            _tool_dir = ensure_tool(_tool, VENVS_DIR, upgrade=_upgrade, clear=_clear)
+            _cmd = str(Path(_tool_dir, BIN_DIR)) + "/" + _cmd
+        subprocess.run(_cmd, shell=True, check=True)
+    except Warning as w:
+        sys.exit(w)
