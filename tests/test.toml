@@ -1,30 +1,21 @@
-[foo]
-
 [tool.pyprojectx]
-tool1 = "tool1 pip"
-tool-2 = 'tool2 pip'
+tool-1 = ["req1", "req2"]
+tool-2 = 'tool2 requirement'
 
-tool3 = '''
-a
-b
-c'''
-
-tool4 = """
-d
-e
+tool-3 = """
+req1
+req2
+req3
 """
 
-'tool5' = "tool5 pip"
-"tool6" = "tool6 pip"
-
 [tool.pyprojectx.alias]
-run = 'tool1 start'
-test = 'tool-2 run test'
-sub_tool = 'tool1 : sub_tool default_arg'
-sub-tool-2-alias = 'tool-2 : sub-tool-2 default:arg'
+alias-1 = 'tool-1 arg'
+alias-2 = 'tool-2 arg1 arg2'
+alias-3 = '@tool-1:command arg'
+alias-4 = '@tool-2 : command --default @arg:x'
 
-combined-alias = './px run && ./px test ./px shell-command'
+combined-alias = './pw alias-1 && ./pw alias-2 ./pw shell-command'
 
 shell-command = "ls -al"
 
-[bar]
+backward-compatible-tool-ref = 'tool-1: command arg'

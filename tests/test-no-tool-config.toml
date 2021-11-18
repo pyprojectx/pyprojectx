@@ -1,0 +1,3 @@
+[tool.pyprojectx.alias]
+run = 'run command'
+wrong-tool-alias = '@wrong-tool : some command'
