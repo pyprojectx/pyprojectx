@@ -151,3 +151,27 @@ To clean up everything that was installed via pyprojectx, just delete the _.pypr
 * move most logic to a library that can be published to PyPi
 * px script for Windows
 * init script that copies the pw scripts and initializes pyproject.toml
+
+
+## Development
+* Clone the project and cd into the project dir:
+```shell
+git clone git@github.com:houbie/pyprojectx.git
+cd pyprojectx
+```
+
+* The pyprojectx project can use itself while developing by exporting 2 environment variables:
+  * Re-installing changes can be forced by removing the installed version in _.pyprojectx/versions/development_.
+```shell
+# cd into the cloned pyprojectx dir
+export PYPROJECTX_DEVELOPMENT=true
+export PYPROJECTX_HOME=$PWD/.pyprojectx
+```
+
+
+* Now you can run unit tests, build the project, etc.
+```shell
+./pw install
+./pw test
+./pw build
+```

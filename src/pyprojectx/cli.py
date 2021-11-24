@@ -1,120 +1,117 @@
-import argparse
 import os
 import subprocess
 import sys
 from pathlib import Path
 from typing import Iterable, List, Optional, Union
 
+import pyprojectx.pw as pw
 from pyprojectx.config import Config
 from pyprojectx.env import IsolatedVirtualEnv
+from pyprojectx.log import logger, set_verbosity
 
 
-def main():
-    options = _parse_args()
-    cmd = options.cmd[0]
-    px_home = Path(options.px_home or os.environ.get("PYPROJECTX_HOME", Path.home().joinpath(".pyprojectx")))
-    config = Config(Path(options.config))
+def main() -> None:
+    _run(sys.argv)
+
+
+def _run(argv: List[str]) -> None:
+    options = _get_options(argv[1:])
+    set_verbosity(options.verbosity)
+    cmd = options.cmd
+    config = Config(options.toml_path)
+    venvs_dir = options.install_path.joinpath("venvs")
     tool, alias_cmd = config.get_alias(cmd)
     if alias_cmd:
         _run_alias(
             tool,
             alias_cmd,
-            options.cmd_args,
+            argv,
             requirements=config.get_tool_requirements(tool),
-            px_home=px_home,
-            px_wrapper=options.px_wrapper,
-            force_install=options.force_install,
+            venvs_dir=venvs_dir,
+            options=options,
         )
     elif config.is_tool(cmd):
         _run_in_tool_venv(
             cmd,
             [cmd, *options.cmd_args],
             requirements=config.get_tool_requirements(cmd),
-            px_home=px_home,
-            force_install=options.force_install,
+            venvs_dir=venvs_dir,
+            options=options,
         )
     else:
-        print(f"'{cmd}' is not configured as pyprojectx tool or alias in {options.config}", file=sys.stderr)
+        print(
+            f"{pw.RED}'{cmd}' is not configured as pyprojectx tool or alias in {options.toml_path}{pw.NO_COLOR}",
+            file=sys.stderr,
+        )
         raise SystemExit(1)
 
 
 def _run_alias(
     tool: Optional[str],
     alias_cmd: str,
-    cmd_args: List[str],
+    argv: List[str],
     requirements: Iterable[str],
-    px_home: Path,
-    px_wrapper: str = "./pw",
-    force_install=False,
-):
-    full_cmd = " ".join([alias_cmd.replace("./pw", px_wrapper)] + cmd_args)
+    venvs_dir: Path,
+    options,
+) -> None:
+    logger.debug("Running alias command, tool: %s, command: %s, arguments: %s", tool, alias_cmd, options.cmd_args)
+    full_cmd = " ".join([_resolve_alias_references(alias_cmd, options.cmd, argv)] + options.cmd_args)
     if tool:
         _run_in_tool_venv(
             tool,
             full_cmd,
             requirements=requirements,
-            px_home=px_home,
-            force_install=force_install,
+            venvs_dir=venvs_dir,
+            options=options,
         )
     else:
-        subprocess.run(full_cmd, shell=True, check=True)
+        try:
+            subprocess.run(full_cmd, shell=True, check=True)
+        except subprocess.CalledProcessError as e:
+            raise SystemExit(e.returncode) from e
 
 
 def _run_in_tool_venv(
     tool: str,
     full_cmd: Union[str, List[str]],
     requirements: Iterable[str],
-    px_home: Path,
-    force_install=False,
-):
-    venv = IsolatedVirtualEnv(px_home.joinpath("venvs"), tool, requirements)
-    if not venv.is_installed or force_install:
-        venv.install()
-    venv.run(full_cmd)
+    venvs_dir: Path,
+    options,
+) -> None:
+    logger.debug("Running tool command in virtual environment, tool: %s, full command: %s", tool, full_cmd)
+    venv = IsolatedVirtualEnv(venvs_dir, tool, requirements)
+    if not venv.is_installed or options.force_install:
+        try:
+            venv.install(quiet=options.quiet)
+        except subprocess.CalledProcessError as e:
+            print(
+                f"{pw.RED}PYPROJECTX ERROR: installation of '{tool}' failed with exit code {e.returncode}{pw.NO_COLOR}",
+                file=sys.stderr,
+            )
+            raise SystemExit(e.returncode) from e
+
+    try:
+        venv.run(full_cmd)
+    except subprocess.CalledProcessError as e:
+        raise SystemExit(e.returncode) from e
 
 
-def _parse_args():
-    parser = argparse.ArgumentParser(
-        description="Execute commands or aliases defined in the [tool.pyprojectx] section of pyproject.toml",
-    )
-    parser.add_argument("--version", action="version", version="TODO")  # TODO
-    parser.add_argument(
-        "--config",
-        "-c",
-        metavar="config.toml",
-        action="store",
-        default="pyproject.toml",
-        help="the toml config file (default: ./pyproject.toml)",
-    )
-    parser.add_argument(
-        "--px-home",
-        metavar="pyprojectx-home-dir",
-        action="store",
-        help="the directory where virtual environments are created and cached "
-        + "(default: PYPROJECTX_HOME environment value if set, else {user-home}/.pyprojectx)",
-    )
-    parser.add_argument(
-        "--px-wrapper", metavar="pw-script", action="store", default="./pw", help="the pyprojectx wrapper script"
-    )
-    parser.add_argument(
-        "--force-install",
-        "-f",
-        action="store_true",
-        help="force clean installation of the virtual environment used to run the command, if any",
-    )
-    parser.add_argument(
-        "--verbose",
-        "-v",
-        action="count",
-        help="show debug output",
-    )
-    parser.add_argument(
-        "--quiet",
-        "-q",
-        action="store_true",
-        help="show debug output",
-    )
-    parser.add_argument("cmd", nargs=1, help="the command or alias to execute")
-    parser.add_argument("cmd_args", nargs=argparse.REMAINDER, help="the arguments for the command or alias")
+def _resolve_alias_references(alias_cmd: str, cmd: str, argv: List[str]) -> str:
+    cmd_index = argv.index(cmd)
+    replacement = " ".join(argv[:cmd_index]) + " "
+    return alias_cmd.replace("pw@", replacement)
 
-    return parser.parse_args()
+
+def _get_options(args):
+    options = pw.arg_parser().parse_args(args)
+    options.cmd = options.cmd[0]
+    options.toml_path = Path(options.toml) if options.toml else Path(pw.PYPROJECT_TOML)
+    options.install_path = Path(
+        options.install_dir or os.environ.get(pw.PYPROJECTX_INSTALL_DIR_ENV_VAR, options.toml_path.parent)
+    )
+
+    options.verbosity = options.verbosity or 0
+    if options.quiet:
+        options.verbosity = 0
+    logger.debug("Parsed cli arguments: %s", options)
+    return options

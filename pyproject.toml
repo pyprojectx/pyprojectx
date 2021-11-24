@@ -3,6 +3,7 @@ name = "pyprojectx"
 version = "0.1.0"
 description = "Execute scripts from pyproject.toml, installing tools on-the-fly"
 authors = ["Houbie <ivo@houbrechts-it.be>"]
+include = ["pw", "pw.bat", "px"]
 
 [tool.poetry.scripts]
 pyprojectx = "pyprojectx.cli:main"
@@ -36,18 +37,20 @@ disable = [
     "missing-docstring",
     "unspecified-encoding"
 ]
-[tool.pyprojectx]
+
+[tool.wraptor]
 poetry = "poetry==1.1.11"
 black = "black==21.7b0"
 isort = "isort==5.9.3"
 pre-commit = "pre-commit"
 
-[tool.pyprojectx.alias]
+[tool.wraptor.alias]
 install = "poetry install"
 clean-install = "rm -r .venv || true && rm -r .pytest_cache || true && ./pw poetry install && ./pw pre-commit install"
 test = "poetry run pytest"
-check-pylint = "poetry run pylint pw src tests"
+check-pylint = "poetry run pylint src tests"
 black = "black pw src tests"
 isort = "isort pw src tests"
 check = "./pw test && ./pw check-pylint"
-build = "./pw isort && ./pw black && ./pw install && ./pw check"
+build = "./pw isort && ./pw black && ./pw install && ./pw check && ./pw poetry build"
+publish = "poetry publish --username __token__"

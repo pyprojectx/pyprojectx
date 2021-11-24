@@ -8,13 +8,13 @@ req2
 req3
 """
 
-[tool.pyprojectx.alias]
+[tool.pyprojectx.aliases]
 alias-1 = 'tool-1 arg'
 alias-2 = 'tool-2 arg1 arg2'
 alias-3 = '@tool-1:command arg'
 alias-4 = '@tool-2 : command --default @arg:x'
 
-combined-alias = './pw alias-1 && ./pw alias-2 ./pw shell-command'
+combined-alias = 'pw@alias-1 && pw@alias-2 pw@shell-command'
 
 shell-command = "ls -al"
 
