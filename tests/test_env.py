@@ -1,12 +1,13 @@
 import subprocess
 import sys
-from pathlib import Path
 
 import pytest
 from packaging.version import Version
 
 from pyprojectx.env import IsolatedVirtualEnv
 from pyprojectx.log import set_verbosity
+
+# pylint: disable=no-member
 
 
 def test_isolated_env_path(tmp_dir):

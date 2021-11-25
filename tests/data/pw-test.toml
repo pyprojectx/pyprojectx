@@ -4,6 +4,6 @@ failing-install = "pycowsay==123.456.789.0"
 
 [tool.pyprojectx.aliases]
 say-hi = "pycowsay hi"
-say-hello = "pycowsay hello"
+say-hello = "@pycowsay: pycowsay hello"
 combine-pw-scripts = "pw@say-hi && pw@say-hello"
 failing-shell = "go-foo-bar"

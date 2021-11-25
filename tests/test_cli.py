@@ -1,4 +1,3 @@
-# pylint: disable=protected-access
 import os.path
 import subprocess
 from pathlib import Path
@@ -7,6 +6,8 @@ from unittest.mock import ANY
 import pytest
 
 from pyprojectx.cli import _get_options, _run
+
+# pylint: disable=protected-access, no-member
 
 
 def test_parse_args():

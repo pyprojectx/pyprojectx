@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 from venv import EnvBuilder
 
-VERSION = "0.2.0"
+VERSION = "0.9.0"
 
 PYPROJECTX_INSTALL_DIR_ENV_VAR = "PYPROJECTX_INSTALL_DIR"
 PYPROJECTX_PACKAGE_ENV_VAR = "PYPROJECTX_PACKAGE"
@@ -25,7 +25,7 @@ DEFAULT_INSTALL_DIR = ".pyprojectx"
 CYAN = "\033[96m"
 BLUE = "\033[94m"
 RED = "\033[91m"
-NO_COLOR = "\033[0m"
+RESET = "\033[0m"
 
 
 def run(args):
@@ -119,7 +119,7 @@ def ensure_pyprojectx(options):
 
     if not pyprojectx_script.is_file():
         if not options.quiet:
-            print(f"{CYAN}creating pyprojectx venv in {BLUE}{venv_dir}{NO_COLOR}", file=sys.stderr)
+            print(f"{CYAN}creating pyprojectx venv in {BLUE}{venv_dir}{RESET}", file=sys.stderr)
         env_builder.create(venv_dir)
         subprocess.run(
             pip_cmd + ["--upgrade", "pip"],
@@ -129,7 +129,7 @@ def ensure_pyprojectx(options):
 
         if not options.quiet:
             print(
-                f"{CYAN}installing pyprojectx {BLUE}{options.version}: {options.pyprojectx_package} {NO_COLOR}",
+                f"{CYAN}installing pyprojectx {BLUE}{options.version}: {options.pyprojectx_package} {RESET}",
                 file=sys.stderr,
             )
         subprocess.run(pip_cmd + [options.pyprojectx_package], stdout=out, check=True)

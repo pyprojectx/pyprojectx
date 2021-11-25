@@ -4,10 +4,10 @@ import sys
 from pathlib import Path
 from typing import Iterable, List, Optional, Union
 
-import pyprojectx.pw as pw
 from pyprojectx.config import Config
 from pyprojectx.env import IsolatedVirtualEnv
 from pyprojectx.log import logger, set_verbosity
+from pyprojectx.wrapper import pw
 
 
 def main() -> None:
@@ -19,7 +19,6 @@ def _run(argv: List[str]) -> None:
     set_verbosity(options.verbosity)
     cmd = options.cmd
     config = Config(options.toml_path)
-    venvs_dir = options.install_path.joinpath("venvs")
     tool, alias_cmd = config.get_alias(cmd)
     if alias_cmd:
         _run_alias(
@@ -27,7 +26,6 @@ def _run(argv: List[str]) -> None:
             alias_cmd,
             argv,
             requirements=config.get_tool_requirements(tool),
-            venvs_dir=venvs_dir,
             options=options,
         )
     elif config.is_tool(cmd):
@@ -35,12 +33,11 @@ def _run(argv: List[str]) -> None:
             cmd,
             [cmd, *options.cmd_args],
             requirements=config.get_tool_requirements(cmd),
-            venvs_dir=venvs_dir,
             options=options,
         )
     else:
         print(
-            f"{pw.RED}'{cmd}' is not configured as pyprojectx tool or alias in {options.toml_path}{pw.NO_COLOR}",
+            f"{pw.RED}'{cmd}' is not configured as pyprojectx tool or alias in {options.toml_path}{pw.RESET}",
             file=sys.stderr,
         )
         raise SystemExit(1)
@@ -51,7 +48,6 @@ def _run_alias(
     alias_cmd: str,
     argv: List[str],
     requirements: Iterable[str],
-    venvs_dir: Path,
     options,
 ) -> None:
     logger.debug("Running alias command, tool: %s, command: %s, arguments: %s", tool, alias_cmd, options.cmd_args)
@@ -61,7 +57,6 @@ def _run_alias(
             tool,
             full_cmd,
             requirements=requirements,
-            venvs_dir=venvs_dir,
             options=options,
         )
     else:
@@ -75,17 +70,16 @@ def _run_in_tool_venv(
     tool: str,
     full_cmd: Union[str, List[str]],
     requirements: Iterable[str],
-    venvs_dir: Path,
     options,
 ) -> None:
     logger.debug("Running tool command in virtual environment, tool: %s, full command: %s", tool, full_cmd)
-    venv = IsolatedVirtualEnv(venvs_dir, tool, requirements)
+    venv = IsolatedVirtualEnv(options.venvs_dir, tool, requirements)
     if not venv.is_installed or options.force_install:
         try:
             venv.install(quiet=options.quiet)
         except subprocess.CalledProcessError as e:
             print(
-                f"{pw.RED}PYPROJECTX ERROR: installation of '{tool}' failed with exit code {e.returncode}{pw.NO_COLOR}",
+                f"{pw.RED}PYPROJECTX ERROR: installation of '{tool}' failed with exit code {e.returncode}{pw.RESET}",
                 file=sys.stderr,
             )
             raise SystemExit(e.returncode) from e
@@ -109,7 +103,7 @@ def _get_options(args):
     options.install_path = Path(
         options.install_dir or os.environ.get(pw.PYPROJECTX_INSTALL_DIR_ENV_VAR, options.toml_path.parent)
     )
-
+    options.venvs_dir = options.install_path.joinpath("venvs")
     options.verbosity = options.verbosity or 0
     if options.quiet:
         options.verbosity = 0

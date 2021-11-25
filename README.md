@@ -6,6 +6,8 @@ Getting started with a Python project should be a one-liner:
 git clone https://github.com/houbie/pyprojectx.git && cd pyprojectx && ./pw build
 ```
 
+![Cast](./docs/poetry-build-cast.svg)
+
 Pyprojectx provides a CLI wrapper for automatic installation of Python tools:
 * Make it be a breeze for others to get started with your project or tutorial
 * Get reproducible builds by always using the correct versions of your build tools
@@ -15,15 +17,24 @@ Pyprojectx brings `npm run` to Python with:
 * less keystrokes
 * isolated dependencies: tools are not required to be development dependencies
 
-
 ## Installation
-No tools to install (besides Python 3) 😍
-
-![Cast](./docs/poetry-build-cast.svg)
-
 Copy the *nix and widows commands, _pw_ and _pw.bat_, to your project's root directory and add them under version control.
 
-_python3_ (or _python_ on Windows) >= 3.6 and _pip3_ must be available on your path.
+### osx / linux
+```shell
+curl -s https://raw.githubusercontent.com/houbie/pyprojectx/main/px -o pw && curl -s https://raw.githubusercontent.com/houbie/pyprojectx/main/px.bat -o pw.bat && chmod a+x pw
+```
+
+### windows
+```shell
+curl -s https://raw.githubusercontent.com/houbie/pyprojectx/main/px -o pw && curl -s https://raw.githubusercontent.com/houbie/pyprojectx/main/px.bat -o pw.bat
+```
+**NOTE** On windows you need to explicitly mark the osx/linux script as executable before adding it to version control.
+When using git:
+```shell
+git add pw pw.bat
+git update-index --chmod=+x pw
+```
 
 ## Configuration
 Add the _tool.pyprojectx_ section inside _pyproject.toml_ in your project's root directory.
@@ -48,9 +59,9 @@ flake8-isort
 flake8-pytest-style"""
 ```
 
-The _tool.pyprojectx.alias_ section can contain optional commandline aliases in the form
+The _tool.pyprojectx.aliases_ section can contain optional commandline aliases in the form
 
-`alias = [tool_key:] command`
+`alias = [@tool_key:] command`
 
 
 Example:
@@ -62,14 +73,13 @@ test = "poetry run pytest"
 pylint = "poetry run pylint"
 
 # tell pw that the bandit binary is installed as part of flake8
-bandit = "flake8: bandit my_package tests -r"
+bandit = "@flake8: bandit my_package tests -r"
 
 # simple shell commands (watch out for variable substitutions and string literals containing whitespace or special characters )
 clean = "rm -f .coverage && rm -rf .pytest_cache"
 
-# when combining multiple pyprojectx aliases, prefix them with ./pw
-# this works on *nix and windows and in sub folders because ./pw will be replaced with the correct script path
-check = "./pw pylint && ./pw test"
+# when running an alias from within another alias, prefix it with `pw@`
+check = "pw@pylint && pw@test"
 ```
 
 Aliases can be invoked as is or with extra arguments:
@@ -81,7 +91,6 @@ Aliases can be invoked as is or with extra arguments:
 ./pw run my-script
 ```
 
-
 ## Isolation
 Each tool gets installed in an isolated virtual environment.
 
@@ -90,7 +99,7 @@ These are all located in the user's platform-specific home directory under _.pyp
 This location can be modified by setting the `PYPROJECTX_HOME` environment variable (f.e. on your CI/CD server).
 
 # Usage
-Add `path\to\pw` in front of the usual command line.
+Instead of calling the commandline of a tool directly, prefix it with `path\to\pw`.
 
 Examples:
 ```shell
@@ -106,11 +115,7 @@ cd src
 ..\pw black *.py
 ```
 
-_pw_ specific options:
-```shell
-# clear and re-install the virtual environment for a tool
-./px --force-install poetry
-```
+Check _pw_ specific options with `pw --help`
 
 ## Bonus
 If you want to avoid typing `./pw` (or `../pw` when in a subdirectory), you can copy the _rp_ (_run pyprojectx_) script to a
@@ -125,7 +130,7 @@ px test sometest.py
 ```
 
 ## Uninstall / cleaning up
-To clean up everything that was installed via pyprojectx, just delete the _.pyprojectx_ directory in your home directory.
+Delete the _.pyprojectx_ directory in your project's root.
 
 ## Why yet another tool when we already have pipx etc.?
 * As Python noob I had hard times setting up a project and building existing projects
@@ -144,34 +149,27 @@ To clean up everything that was installed via pyprojectx, just delete the _.pypr
 
 ## Examples
 * This project (using Poetry)
-* [Pyprojectx examples](https://github.com/houbie/wrapped-pi)
-* [Facebook's PathPicker fork](https://github.com/houbie/PathPicker) (using Poetry)
+* Projects that still use the **python-wraptor** scripts and need to be migrated to **pyprojectx**
+  * [Pyprojectx examples](https://github.com/houbie/wrapped-pi)
+  * [Facebook's PathPicker fork](https://github.com/houbie/PathPicker) (using Poetry)
 
 ## TODO
-* move most logic to a library that can be published to PyPi
 * px script for Windows
 * init script that copies the pw scripts and initializes pyproject.toml
 
-
 ## Development
-* Clone the project and cd into the project dir:
+* Build/test:
 ```shell
 git clone git@github.com:houbie/pyprojectx.git
 cd pyprojectx
-```
-
-* The pyprojectx project can use itself while developing by exporting 2 environment variables:
-  * Re-installing changes can be forced by removing the installed version in _.pyprojectx/versions/development_.
-```shell
-# cd into the cloned pyprojectx dir
-export PYPROJECTX_DEVELOPMENT=true
-export PYPROJECTX_HOME=$PWD/.pyprojectx
-```
-
-
-* Now you can run unit tests, build the project, etc.
-```shell
-./pw install
-./pw test
 ./pw build
+```
+
+* Set the path to pyprojectx in the _PYPROJECTX_PACKAGE_ environment variable
+ to use your local pyprojectx copy in another project.
+```shell
+# *nix
+export PYPROJECTX_PACKAGE=path/to/pyprojectx
+# windows
+set PYPROJECTX_PACKAGE=path/to/pyprojectx
 ```
