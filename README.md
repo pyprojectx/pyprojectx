@@ -22,12 +22,12 @@ Copy the *nix and widows commands, _pw_ and _pw.bat_, to your project's root dir
 
 ### osx / linux
 ```shell
-curl -s https://raw.githubusercontent.com/houbie/pyprojectx/main/px -o pw && curl -s https://raw.githubusercontent.com/houbie/pyprojectx/main/px.bat -o pw.bat && chmod a+x pw
+curl -s https://raw.githubusercontent.com/houbie/pyprojectx/0.9.0/src/pyprojectx/wrapper/pw.py -o pw && curl -s https://raw.githubusercontent.com/houbie/pyprojectx/0.9.0/src/pyprojectx/wrapper/pw.bat -o pw.bat && chmod a+x pw
 ```
 
 ### windows
 ```shell
-curl -s https://raw.githubusercontent.com/houbie/pyprojectx/main/px -o pw && curl -s https://raw.githubusercontent.com/houbie/pyprojectx/main/px.bat -o pw.bat
+curl -s https://raw.githubusercontent.com/houbie/pyprojectx/0.9.0/src/pyprojectx/wrapper/pw.py -o pw && curl -s https://raw.githubusercontent.com/houbie/pyprojectx/0.9.0/src/pyprojectx/wrapper/pw.bat -o pw.bat
 ```
 **NOTE** On windows you need to explicitly mark the osx/linux script as executable before adding it to version control.
 When using git:

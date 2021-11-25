@@ -1,155 +1,140 @@
 #!/usr/bin/env python3
 
 ##################################################################################
-#                                                        ___._                   #
-#                                                      .'  <0>'-.._              #
-#                                                     /  /.--.____")             #
-#                                                    |   \   __.-'~              #
-#                                                    |  :  -'/                   #
-#                                                   /:.  :.-'                    #
-#   __________                                     | : '. |                      #
-#   '--.____  '--------.______       _.----.-----./      :/                      #
-#           '--.__            `'----/       '-.      __ :/                       #
-#                 '-.___           :           \   .'  )/                        #
-#                       '---._           _.-'   ] /  _/                          #
-#                            '-._      _/     _/ / _/                            #
-#                                \_ .-'____.-'__< |  \___                        #
-#                                  <_______.\    \_\_---.7                       #
-#                                 |   /'=r_.-'     _\\ =/                        #
-#                             .--'   /            ._/'>                          #
-#                           .'   _.-'                                            #
-#                          / .--'                                                #
-#                         /,/                                                    #
-#                         |/`)                                                   #
-#                         'c=,                                                   #
-#                                                                                #
-# Python Wraptor                                                                 #
-# https://github.com/houbie/python-wraptor                                       #
+# Pyprojectx                                                                     #
+# https://github.com/houbie/pyprojectx                                           #
 #                                                                                #
 # Copyright (c) 2021 Ivo Houbrechts                                              #
 #                                                                                #
 # Licensed under the MIT license                                                 #
 ##################################################################################
-import hashlib
+import argparse
 import os
-import re
-import shutil
 import subprocess
 import sys
 from pathlib import Path
 from venv import EnvBuilder
 
-VERSION = "2.0.1"
+VERSION = "0.9.0"
 
-PYPROJECT = Path(__file__).with_name("pyproject.toml")
-VENVS_DIR = Path(os.environ.get("PYTHON_WRAPTOR_VENVS_DIR", Path.home().joinpath(".python-wraptor")), "venvs")
-UPGRADE_ARG = "--pw-upgrade"
-CLEAR_ARG = "--pw-clear"
-CLEAR_ALL_ARG = "--pw-clear-all"
-HELP = f"usage: pw [{UPGRADE_ARG}] [{CLEAR_ARG}] [{CLEAR_ALL_ARG}] <command> [<arg1>] ... [<argN>]"
-BIN_DIR = "Scripts" if os.name == "nt" else "bin"
-SHELL = "!"
+PYPROJECTX_INSTALL_DIR_ENV_VAR = "PYPROJECTX_INSTALL_DIR"
+PYPROJECTX_PACKAGE_ENV_VAR = "PYPROJECTX_PACKAGE"
+PYPROJECT_TOML = "pyproject.toml"
+DEFAULT_INSTALL_DIR = ".pyprojectx"
 
-
-def toml_section(toml, section):
-    if not toml.exists():
-        raise Warning(f"{toml} not found")
-    with open(toml, "r") as file:
-        text = file.read()
-        match = re.search(fr"\[\s*{section}\s*]\s*([^\[]+)", text, re.MULTILINE)
-        if match:
-            return match.group(1)
-    return ""
+CYAN = "\033[96m"
+BLUE = "\033[94m"
+RED = "\033[91m"
+RESET = "\033[0m"
 
 
-def toml_aliases(toml):
-    section = toml_section(toml, "tool.wraptor.alias")
-    matches = re.findall(r'[\'"]?([\w|-]+)[\'"]?\s*=\s*(\'{3}|"{3}|["\']{1})([^\'"][\s\S]+?)\2', section, re.MULTILINE)
-    return {match[0]: match[2] for match in matches}
+def run(args):
+    try:
+        options = get_options(args)
+        pyprojectx_script = ensure_pyprojectx(options)
+        explicit_options = []
+        if not options.toml:
+            explicit_options += ["--toml", str(options.toml_path)]
+        if not options.install_dir:
+            explicit_options += ["--install-dir", str(options.install_path)]
+
+        subprocess.run([pyprojectx_script, *explicit_options, *args], check=True)
+    except subprocess.CalledProcessError as e:
+        raise SystemExit(e.returncode) from e
 
 
-def toml_wraptor_value(toml, key):
-    section = toml_section(toml, "tool.wraptor")
-    match = re.search(
-        fr'[\'"]?{re.escape(key)}[\'"]?\s*=\s*(\'{{3}}|"{{3}}|["\']{{1}})([^\'"][\s\S]+?)\1',
-        section,
-        re.MULTILINE,
+def get_options(args):
+    options = arg_parser().parse_args(args)
+    options.install_path = Path(
+        options.install_dir
+        or os.environ.get(PYPROJECTX_INSTALL_DIR_ENV_VAR, Path(__file__).with_name(DEFAULT_INSTALL_DIR))
     )
-    if match:
-        return " ".join(match.group(2).split())
-    return None
+    options.toml_path = Path(options.toml) if options.toml else Path(__file__).with_name(PYPROJECT_TOML)
+
+    if os.environ.get(PYPROJECTX_PACKAGE_ENV_VAR):
+        options.version = "development"
+        options.pyprojectx_package = os.environ.get(PYPROJECTX_PACKAGE_ENV_VAR)
+    else:
+        options.version = VERSION
+        options.pyprojectx_package = f"pyprojectx~={VERSION}"
+    return options
 
 
-def ensure_tool(tool, cache_dir, upgrade=False, clear=False):
-    pip_args = toml_wraptor_value(PYPROJECT, tool)
-    if not pip_args:
-        raise Warning(f"{tool} was not found under [tool.wraptor] in pyproject.toml")
-    md5 = hashlib.md5()
-    md5.update(pip_args.strip().encode())
-    install_dir = Path(
-        cache_dir, f"{tool.lower()}-{md5.hexdigest()}-{sys.version_info.major}.{sys.version_info.minor}"
-    ).absolute()
-    if install_dir.joinpath(BIN_DIR).is_dir() and not clear and not upgrade:
-        return install_dir
-    sys.stderr.write(f"creating virtual environment for {tool} in {install_dir} ...\n")
-    EnvBuilder(clear=clear, with_pip=True).create(install_dir)
-    subprocess.run(
-        f"{install_dir.joinpath(BIN_DIR, 'python')} -m pip install --upgrade pip",
-        shell=True,
-        stdout=sys.stderr,
-        check=True,
+def arg_parser():
+    parser = argparse.ArgumentParser(
+        description="Execute commands or aliases defined in the [tool.pyprojectx] section of pyproject.toml.",
     )
-    pip = install_dir.joinpath(BIN_DIR, "pip3")
-    sys.stderr.write(f"installing with pip: {pip_args} ...\n")
-    shell_cmd = f"{pip} install "
-    shell_cmd += pip_args
-    if upgrade:
-        shell_cmd += " --upgrade "
-    subprocess.run(shell_cmd, shell=True, stdout=sys.stderr, check=True)
-    return install_dir
+    parser.add_argument("--version", action="version", version=VERSION)
+    parser.add_argument(
+        "--toml",
+        "-t",
+        action="store",
+        help="he toml config file. Defaults to 'pyproject.toml' in the same directory as the pw script",
+    )
+    parser.add_argument(
+        "--install-dir",
+        action="store",
+        help=f"the directory where all tools (including pyprojectx) are installed; defaults to the"
+        f"{PYPROJECTX_INSTALL_DIR_ENV_VAR} environment value if set, else '.pyprojectx'"
+        f" in the same directory as the pw script",
+    )
+    parser.add_argument(
+        "--force-install",
+        "-f",
+        action="store_true",
+        help="force clean installation of the virtual environment used to run the command, if any",
+    )
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        action="count",
+        dest="verbosity",
+        help="give more output; option is additive and can be used up to 2 times",
+    )
+    parser.add_argument(
+        "--quiet",
+        "-q",
+        action="store_true",
+        help="give no output",
+    )
+    parser.add_argument("cmd", nargs=1, help="The command or alias to execute.")
+    parser.add_argument("cmd_args", nargs=argparse.REMAINDER, help="The arguments for the command or alias.")
+    return parser
 
 
-def parse_args(argv, toml, aliases=None):
-    if CLEAR_ALL_ARG in argv:
-        print(f"Clearing Python Wraptor cache in {VENVS_DIR}...", file=sys.stderr)
-        shutil.rmtree(VENVS_DIR, ignore_errors=True)
-        argv.remove(CLEAR_ALL_ARG)
+def ensure_pyprojectx(options):
+    env_builder = EnvBuilder(with_pip=True)
+    venv_dir = options.install_path.joinpath(
+        "pyprojectx", f"{options.version}-py{sys.version_info.major}.{sys.version_info.minor}"
+    )
+    env_context = env_builder.ensure_directories(venv_dir)
+    pyprojectx_script = Path(env_context.bin_path, "pyprojectx")
+    pip_cmd = [env_context.env_exe, "-m", "pip", "install"]
 
-    if len(argv) < 2:
-        raise Warning(HELP)
+    if options.quiet:
+        out = subprocess.DEVNULL
+        pip_cmd.append("--quiet")
+    else:
+        out = sys.stderr
 
-    clear = upgrade = False
-    if CLEAR_ARG in argv:
-        clear = True
-        argv.remove(CLEAR_ARG)
+    if not pyprojectx_script.is_file():
+        if not options.quiet:
+            print(f"{CYAN}creating pyprojectx venv in {BLUE}{venv_dir}{RESET}", file=sys.stderr)
+        env_builder.create(venv_dir)
+        subprocess.run(
+            pip_cmd + ["--upgrade", "pip"],
+            stdout=out,
+            check=True,
+        )
 
-    if UPGRADE_ARG in argv:
-        upgrade = True
-        argv.remove(UPGRADE_ARG)
-
-    cmd, args = argv[1], argv[2:]
-    tool = full_cmd = None
-    if aliases:
-        alias = aliases.get(cmd)
-        if alias:
-            if re.match(r"^[\w|-]+\s*:\s*", alias):
-                tool, alias = re.split(r"\s*:\s*", alias, maxsplit=1)
-            cmd = alias.split()[0]
-            full_cmd = " ".join([alias] + args).replace("./pw", argv[0])
-    if not full_cmd:
-        full_cmd = " ".join(argv[1:])
-
-    if not tool and toml_wraptor_value(toml, cmd):
-        tool = cmd
-    return tool, full_cmd, upgrade, clear
+        if not options.quiet:
+            print(
+                f"{CYAN}installing pyprojectx {BLUE}{options.version}: {options.pyprojectx_package} {RESET}",
+                file=sys.stderr,
+            )
+        subprocess.run(pip_cmd + [options.pyprojectx_package], stdout=out, check=True)
+    return pyprojectx_script
 
 
 if __name__ == "__main__":
-    try:
-        _tool, _cmd, _upgrade, _clear = parse_args(sys.argv, PYPROJECT, toml_aliases(PYPROJECT))
-        if _tool:
-            _tool_dir = ensure_tool(_tool, VENVS_DIR, upgrade=_upgrade, clear=_clear)
-            _cmd = str(Path(_tool_dir, BIN_DIR)) + "/" + _cmd
-        subprocess.run(_cmd, shell=True, check=True)
-    except Warning as w:
-        sys.exit(w)
+    run(sys.argv[1:])
