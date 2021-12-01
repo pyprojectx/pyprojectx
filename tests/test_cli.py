@@ -1,5 +1,6 @@
 import os.path
 import subprocess
+import sys
 from pathlib import Path
 from unittest.mock import ANY
 
@@ -8,6 +9,8 @@ import pytest
 from pyprojectx.cli import _get_options, _run
 
 # pylint: disable=protected-access, no-member
+
+PY_VER = f"py{sys.version_info.major}.{sys.version_info.minor}"
 
 
 def test_parse_args():
@@ -34,7 +37,7 @@ def test_run_tool(tmp_dir, mocker):
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "tool-1"])
 
     pip_install_args = subprocess.run.mock_calls[0].args[0]
-    assert f"{tmp_dir}/venvs/tool-1-db298015454af73633c6be4b86b3f2e8-py3.9/bin/python" in str(pip_install_args[0])
+    assert f"{tmp_dir}/venvs/tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}/bin/python" in str(pip_install_args[0])
     assert pip_install_args[1:-1] == ["-Im", "pip", "install", "--use-pep517", "--no-warn-script-location", "-r"]
     assert "build-reqs-" in pip_install_args[-1]
 
@@ -42,7 +45,7 @@ def test_run_tool(tmp_dir, mocker):
     run_kwargs = subprocess.run.mock_calls[1].kwargs
     assert run_args == ["tool-1"]
     assert (
-        f"{tmp_dir}/venvs/tool-1-db298015454af73633c6be4b86b3f2e8-py3.9/bin{os.path.pathsep}"
+        f"{tmp_dir}/venvs/tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}/bin{os.path.pathsep}"
         in run_kwargs["env"]["PATH"]
     )
     assert run_kwargs["shell"] is False
@@ -81,7 +84,7 @@ def test_run_tool_alias(tmp_dir, mocker):
 
     subprocess.run.assert_called_with("tool-1 arg", shell=True, check=True, env=ANY)
     assert (
-        f"{tmp_dir}/venvs/tool-1-db298015454af73633c6be4b86b3f2e8-py3.9/bin{os.path.pathsep}"
+        f"{tmp_dir}/venvs/tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}/bin{os.path.pathsep}"
         in subprocess.run.call_args.kwargs["env"]["PATH"]
     )
 
@@ -103,7 +106,7 @@ def test_run_explicit_tool_alias_with_arg(tmp_dir, mocker):
 
     subprocess.run.assert_called_with("command arg alias-arg", shell=True, check=True, env=ANY)
     assert (
-        f"{tmp_dir}/venvs/tool-1-db298015454af73633c6be4b86b3f2e8-py3.9/bin{os.path.pathsep}"
+        f"{tmp_dir}/venvs/tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}/bin{os.path.pathsep}"
         in subprocess.run.call_args.kwargs["env"]["PATH"]
     )
 
