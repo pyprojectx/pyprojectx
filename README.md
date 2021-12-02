@@ -20,6 +20,8 @@ Pyprojectx brings `npm run` to Python with:
 ## Installation
 Copy the *nix and widows commands, _pw_ and _pw.bat_, to your project's root directory and add them under version control.
 
+Python  >= 3.7 needs to be available on your PATH.
+
 ### osx / linux
 ```shell
 curl -s https://raw.githubusercontent.com/houbie/pyprojectx/0.9.0/src/pyprojectx/wrapper/pw.py -o pw && curl -s https://raw.githubusercontent.com/houbie/pyprojectx/0.9.0/src/pyprojectx/wrapper/pw.bat -o pw.bat && chmod a+x pw
