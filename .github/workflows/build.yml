@@ -22,7 +22,7 @@ jobs:
             PW: ./pw
           - os: Windows
             image: windows-latest
-            PW: pw
+            PW: pw.bat
 
     steps:
       - uses: actions/checkout@v2
