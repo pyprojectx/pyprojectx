@@ -11,7 +11,7 @@ from pyprojectx.wrapper import pw
 
 # pylint: disable=redefined-outer-name
 
-PW_CMD = "pw" if sys.platform == "win32" else "./pw"
+PW_CMD = ".\\pw" if sys.platform == "win32" else "./pw"
 
 
 @pytest.fixture
