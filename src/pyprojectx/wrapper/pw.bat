@@ -1,6 +1,5 @@
 @echo off
 echo ==========
-echo %CD%
-echo %0\..\pw %*
+echo %~dp0\pw %*
 echo ==========
-python %0\..\pw %*
+python %~dp0\pw %*
