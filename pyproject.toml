@@ -23,7 +23,6 @@ virtualenv = "^20.10.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
-# idealy pylint should not be in here, but it is required by the Pycharm/Intellij plugin
 pytest-mock = "^3.6.1"
 
 [build-system]
