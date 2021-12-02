@@ -31,6 +31,7 @@ def tmp_project(tmp_dir):
 def test_logs_and_stdout_with_quiet(tmp_project):
     project_dir, env = tmp_project
     cmd = f"{PW_CMD} -q pycowsay 'Hello px!'"
+    assert Path(PW_CMD).is_file()
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
 
     assert (
@@ -54,7 +55,7 @@ def test_logs_and_stdout_when_alias_invoked_from_sub_directory_with_verbose(tmp_
     project_dir, env = tmp_project
     cwd = project_dir.joinpath("subdir")
     os.mkdir(cwd)
-    cmd = "../pw -vv combine-pw-scripts"
+    cmd = f"..{os.sep}{PW_CMD} -vv combine-pw-scripts"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=True)
 
     assert "< hi >" in proc_result.stdout.decode("utf-8")

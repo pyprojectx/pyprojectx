@@ -113,7 +113,7 @@ def test_run_explicit_tool_alias_with_arg(tmp_dir, mocker):
 
     subprocess.run.assert_called_with("command arg alias-arg", shell=True, check=True, env=ANY)
     assert (
-        f"{tmp_dir}{os.sep}venvs{os.sep}"
+        f"{tmp_dir.name}{os.sep}venvs{os.sep}"
         f"tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.path.pathsep}"
         in _get_call_kwargs(subprocess.run.mock_calls[1])["env"]["PATH"]
     )
