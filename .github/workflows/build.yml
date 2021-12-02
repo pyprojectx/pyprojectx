@@ -31,10 +31,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Linux Build and test
-        if: ${{ matrix.os == Ubuntu }}
+        if: ${{ matrix.os == 'Ubuntu' }}
         run: ./pw build
 
       - name: Windows Build and test
-        if: ${{ matrix.os == Windows }}
+        if: ${{ matrix.os == 'Windows' }}
         shell: cmd
         run: pw.bat build
