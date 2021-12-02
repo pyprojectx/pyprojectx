@@ -38,7 +38,7 @@ def run(args):
         if not options.install_dir:
             explicit_options += ["--install-dir", str(options.install_path)]
 
-        subprocess.run([pyprojectx_script, *explicit_options, *args], check=True)
+        subprocess.run([str(pyprojectx_script), *explicit_options, *args], check=True)
     except subprocess.CalledProcessError as e:
         raise SystemExit(e.returncode) from e
 
