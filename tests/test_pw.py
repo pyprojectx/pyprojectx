@@ -11,6 +11,8 @@ from pyprojectx.wrapper import pw
 
 # pylint: disable=redefined-outer-name
 
+PW_CMD = "pw.bat" if sys.platform == "win32" else "./pw"
+
 
 @pytest.fixture
 def tmp_project(tmp_dir):
@@ -28,8 +30,7 @@ def tmp_project(tmp_dir):
 
 def test_logs_and_stdout_with_quiet(tmp_project):
     project_dir, env = tmp_project
-    pw_cmd = "pw" if sys.platform == "win32" else "./pw"
-    cmd = f"{pw_cmd} -q pycowsay 'Hello px!'"
+    cmd = f"{PW_CMD} -q pycowsay 'Hello px!'"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
 
     assert (
@@ -70,24 +71,23 @@ def test_logs_and_stdout_when_alias_invoked_from_sub_directory_with_verbose(tmp_
 
 def test_output_with_errors(tmp_project):
     project_dir, env = tmp_project
-    pw_cmd = "pw" if sys.platform == "win32" else "./pw"
-    cmd = f"{pw_cmd} -q failing-install"
+    cmd = f"{PW_CMD} -q failing-install"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
 
-    assert proc_result.returncode == 1
+    assert proc_result.returncode
     assert proc_result.stdout.decode("utf-8") == ""
     assert "PYPROJECTX ERROR: installation of 'failing-install' failed with exit code" in proc_result.stderr.decode(
         "utf-8"
     )
 
-    cmd = f"{pw_cmd} -q failing-shell"
+    cmd = f"{PW_CMD} -q failing-shell"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
 
     assert proc_result.returncode
     assert proc_result.stdout.decode("utf-8") == ""
     assert "go-foo-bar" in proc_result.stderr.decode("utf-8")
 
-    cmd = f"{pw_cmd} -q foo-bar"
+    cmd = f"{PW_CMD} -q foo-bar"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
 
     assert proc_result.returncode

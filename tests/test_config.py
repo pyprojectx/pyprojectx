@@ -49,7 +49,7 @@ def test_alias_config():
 
 
 def test_invalid_toml():
-    with pytest.raises(Warning, match=r".+tests/data/invalid.toml: Illegal character '\\n' \(at line 2, column 15\)"):
+    with pytest.raises(Warning, match=r".+invalid.toml: Illegal character"):
         Config(Path(__file__).with_name("data").joinpath("invalid.toml"))
 
 
