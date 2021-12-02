@@ -11,6 +11,7 @@ from pyprojectx.cli import _get_options, _run
 # pylint: disable=protected-access, no-member
 
 PY_VER = f"py{sys.version_info.major}.{sys.version_info.minor}"
+SCRIPTS_DIR = "Scripts" if sys.platform == "win32" else "bin"
 
 
 def test_parse_args():
@@ -39,8 +40,8 @@ def test_run_tool(tmp_dir, mocker):
     pip_install_args = _get_call_args(subprocess.run.mock_calls[0])
     first_arg = str(pip_install_args[0])
     assert (
-        f"{tmp_dir.name}{os.sep}venvs{os.sep}tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}bin{os.sep}python"
-        in first_arg
+        f"{tmp_dir.name}{os.sep}venvs{os.sep}"
+        f"tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.sep}python" in first_arg
     )
     assert pip_install_args[1:-1] == ["-Im", "pip", "install", "--use-pep517", "--no-warn-script-location", "-r"]
     assert "build-reqs-" in pip_install_args[-1]
@@ -49,7 +50,10 @@ def test_run_tool(tmp_dir, mocker):
     run_kwargs = _get_call_kwargs(subprocess.run.mock_calls[1])
     assert run_args == ["tool-1"]
     path_env = run_kwargs["env"]["PATH"]
-    assert f"{tmp_dir.name}{os.sep}venvs{os.sep}tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}bin" in path_env
+    assert (
+        f"{tmp_dir.name}{os.sep}venvs{os.sep}tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}"
+        in path_env
+    )
     assert run_kwargs["shell"] is False
     assert run_kwargs["check"] is True
 
@@ -88,7 +92,7 @@ def test_run_tool_alias(tmp_dir, mocker):
     path_env = _get_call_kwargs(subprocess.run.mock_calls[1])["env"]["PATH"]
     assert (
         f"{tmp_dir.name}{os.sep}venvs{os.sep}"
-        f"tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}bin{os.path.pathsep}" in path_env
+        f"tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.path.pathsep}" in path_env
     )
 
 
@@ -109,7 +113,8 @@ def test_run_explicit_tool_alias_with_arg(tmp_dir, mocker):
 
     subprocess.run.assert_called_with("command arg alias-arg", shell=True, check=True, env=ANY)
     assert (
-        f"{tmp_dir}{os.sep}venvs{os.sep}tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}bin{os.path.pathsep}"
+        f"{tmp_dir}{os.sep}venvs{os.sep}"
+        f"tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.path.pathsep}"
         in _get_call_kwargs(subprocess.run.mock_calls[1])["env"]["PATH"]
     )
 
