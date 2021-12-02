@@ -50,7 +50,7 @@ def test_isolation(tmp_dir):
     env.install()
     with pytest.raises(subprocess.CalledProcessError):
         debug = "import sys; import os; print(os.linesep.join(sys.path));"
-        subprocess.check_call([env.executable, "-c", f"{debug} import pyprojectx.env"])
+        subprocess.check_call([str(env.executable), "-c", f"{debug} import pyprojectx.env"])
 
 
 def test_isolated_env_install_arguments(mocker, tmp_dir):
@@ -79,7 +79,7 @@ def test_default_pip_is_never_too_old(tmp_dir):
     env = IsolatedVirtualEnv(tmp_dir, "env-name", [])
     env.install()
     version = subprocess.check_output(
-        [env.executable, "-c", "import pip; print(pip.__version__)"], universal_newlines=True
+        [str(env.executable), "-c", "import pip; print(pip.__version__)"], universal_newlines=True
     ).strip()
     assert Version(version) >= Version("19.1")
 
