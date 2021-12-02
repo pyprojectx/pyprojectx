@@ -36,13 +36,13 @@ def test_run_tool(tmp_dir, mocker):
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "tool-1"])
 
-    pip_install_args = subprocess.run.mock_calls[0].args[0]
+    pip_install_args = _get_call_args(subprocess.run.mock_calls[0])
     assert f"{tmp_dir}/venvs/tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}/bin/python" in str(pip_install_args[0])
     assert pip_install_args[1:-1] == ["-Im", "pip", "install", "--use-pep517", "--no-warn-script-location", "-r"]
     assert "build-reqs-" in pip_install_args[-1]
 
-    run_args = subprocess.run.mock_calls[1].args[0]
-    run_kwargs = subprocess.run.mock_calls[1].kwargs
+    run_args = _get_call_args(subprocess.run.mock_calls[1])
+    run_kwargs = _get_call_kwargs(subprocess.run.mock_calls[1])
     assert run_args == ["tool-1"]
     assert (
         f"{tmp_dir}/venvs/tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}/bin{os.path.pathsep}"
@@ -85,7 +85,7 @@ def test_run_tool_alias(tmp_dir, mocker):
     subprocess.run.assert_called_with("tool-1 arg", shell=True, check=True, env=ANY)
     assert (
         f"{tmp_dir}/venvs/tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}/bin{os.path.pathsep}"
-        in subprocess.run.call_args.kwargs["env"]["PATH"]
+        in _get_call_kwargs(subprocess.run.mock_calls[1])["env"]["PATH"]
     )
 
 
@@ -107,7 +107,7 @@ def test_run_explicit_tool_alias_with_arg(tmp_dir, mocker):
     subprocess.run.assert_called_with("command arg alias-arg", shell=True, check=True, env=ANY)
     assert (
         f"{tmp_dir}/venvs/tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}/bin{os.path.pathsep}"
-        in subprocess.run.call_args.kwargs["env"]["PATH"]
+        in _get_call_kwargs(subprocess.run.mock_calls[1])["env"]["PATH"]
     )
 
 
@@ -146,3 +146,15 @@ def test_shell_command_alias(tmp_dir, mocker):
         shell=True,
         check=True,
     )
+
+
+def _get_call_args(mock_call):
+    if sys.version_info.major == 3 and sys.version_info.minor == 7:
+        return mock_call[1][0]
+    return mock_call.args[0]
+
+
+def _get_call_kwargs(mock_call):
+    if sys.version_info.major == 3 and sys.version_info.minor == 7:
+        return mock_call[2]
+    return mock_call.kwargs
