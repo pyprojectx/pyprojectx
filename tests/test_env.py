@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 
@@ -20,8 +21,9 @@ def test_isolated_env_path(tmp_dir):
         ],
     )
     assert (
-        str(env.path)
-        == f"{tmp_dir}/env-name-57b6e92d262b77ef47fda82ab9b9c617-py{sys.version_info.major}.{sys.version_info.minor}"
+        f"{tmp_dir.name}{os.sep}"
+        f"env-name-57b6e92d262b77ef47fda82ab9b9c617-py{sys.version_info.major}.{sys.version_info.minor}"
+        in str(env.path)
     )
 
 
@@ -114,4 +116,4 @@ def test_run(tmp_dir, capfd):
     path = "%PATH%" if sys.platform == "win32" else "$PATH"
     env.run(f"echo {path}")
     captured = capfd.readouterr()
-    assert str(env.scripts_path) in captured.out
+    assert str(env.scripts_path.name) in captured.out
