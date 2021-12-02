@@ -96,7 +96,7 @@ class IsolatedVirtualEnv:
             req_file.write(os.linesep.join(self._requirements))
         try:
             cmd = [
-                self._executable,
+                str(self._executable),
                 "-Im",
                 "pip",
                 "install",

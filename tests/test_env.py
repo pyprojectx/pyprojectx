@@ -65,7 +65,7 @@ def test_isolated_env_install_arguments(mocker, tmp_dir):
     subprocess.run.assert_called()
     args = subprocess.run.call_args[0][0][:-1]
     assert args == [
-        env.executable,
+        str(env.executable),
         "-Im",
         "pip",
         "install",
