@@ -11,8 +11,7 @@ from pyprojectx.wrapper import pw
 
 # pylint: disable=redefined-outer-name
 
-PW_CMD = "pw.bat" if sys.platform == "win32" else "./pw"
-PW_NO_BAT = "pw" if sys.platform == "win32" else "./pw"
+PW_CMD = "pw" if sys.platform == "win32" else "./pw"
 
 
 @pytest.fixture
@@ -33,28 +32,6 @@ def test_logs_and_stdout_with_quiet(tmp_project):
     project_dir, env = tmp_project
     cmd = f"{PW_CMD} -q pycowsay 'Hello px!'"
     assert Path(PW_CMD).is_file()
-    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
-
-    assert (
-        proc_result.stdout.decode("utf-8")
-        == """
-  ---------
-< Hello px! >
-  ---------
-   \\   ^__^
-    \\  (oo)\\_______
-       (__)\\       )\\/\\
-           ||----w |
-           ||     ||
-
-"""
-    )
-    assert proc_result.stderr.decode("utf-8") == ""
-
-
-def test_without_bat(tmp_project):
-    project_dir, env = tmp_project
-    cmd = f"{PW_NO_BAT} -q pycowsay 'Hello px!'"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
 
     assert (

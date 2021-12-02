@@ -1,6 +1,2 @@
-if exist %~dp0\pw (
-    echo ==== file exists ====
-) else (
-    echo ==== file doesn't exist ====
-)
+@echo off
 python %~dp0\pw %*
