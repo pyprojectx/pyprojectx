@@ -37,4 +37,4 @@ jobs:
       - name: Windows Build and test
         if: ${{ matrix.os == 'Windows' }}
         shell: cmd
-        run: pw.bat build
+        run: pw build
