@@ -19,16 +19,22 @@ jobs:
         include:
           - os: Ubuntu
             image: ubuntu-latest
-            PW: ./pw
           - os: Windows
             image: windows-latest
-            PW: pw.bat
 
     steps:
       - uses: actions/checkout@v2
+
       - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Build and test
-        run: ${{matrix.PW}} build
+
+      - name: Linux Build and test
+        if: ${{ matrix.os == Ubuntu }}
+        run: ./pw build
+
+      - name: Windows Build and test
+        if: ${{ matrix.os == Windows }}
+        shell: cmd
+        run: pw.bat build
