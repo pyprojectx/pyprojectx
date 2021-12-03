@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyprojectx"
-version = "0.9.2"
+version = "0.9.3"
 description = "Execute scripts from pyproject.toml, installing tools on-the-fly"
 license = "MIT"
 authors = ["Houbie <ivo@houbrechts-it.be>"]
@@ -60,16 +60,16 @@ pre-commit = "pre-commit"
 [tool.pyprojectx.aliases]
 install = "poetry install"
 clean = "rm -rf .venv  && rm -rf .pytest_cache && rm -rf dist"
-clean-all = "pw@clean && rm -rf .pyprojectx"
+clean-all = "pw@ clean && rm -rf .pyprojectx"
 black = "black src tests"
 isort = "isort src tests"
 test = "poetry run pytest"
 check-pylint = "pylint src tests"
 check-black = "black src tests --check"
-check = "pw@check-black && pw@check-pylint && pw@test"
-build = "pw@install && pw@check && pw@poetry build"
+check = "pw@ check-black && pw@ check-pylint && pw@ test"
+build = "pw@ install && pw@ check && pw@ poetry build"
 publish = "poetry publish --username __token__"
 
 [tool.pyprojectx.os.win.aliases]
 clean = "rmdir /s/q .venv & rmdir /s/q .pytest_cache & rmdir /s/q dist"
-clean-all = "pw@clean & rmdir /s/q .pyprojectx"
+clean-all = "pw@ clean & rmdir /s/q .pyprojectx"

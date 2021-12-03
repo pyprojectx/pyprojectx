@@ -100,7 +100,7 @@ def test_output_with_errors(tmp_project):
     assert "'foo-bar' is not configured as pyprojectx tool or alias in" in proc_result.stderr.decode("utf-8")
 
 
-@pytest.mark.skipif(sys.platform.startswith("win"))
+@pytest.mark.skipif(sys.platform.startswith("win"), reason="linux only")
 def test_linux_px_invoked_from_sub_directory_with_verbose(tmp_project):
     project_dir, env = tmp_project
     cwd = project_dir.joinpath("subdir")
