@@ -54,7 +54,7 @@ def test_isolation(tmp_dir):
 
 
 def test_isolated_env_install_arguments(mocker, tmp_dir):
-    mocker.patch("subprocess.run")
+    run_mock = mocker.patch("subprocess.run")
     env = IsolatedVirtualEnv(
         tmp_dir,
         "env-name",
@@ -62,8 +62,8 @@ def test_isolated_env_install_arguments(mocker, tmp_dir):
     )
     env.install()
 
-    subprocess.run.assert_called()
-    args = subprocess.run.call_args[0][0][:-1]
+    run_mock.assert_called()
+    args = run_mock.call_args[0][0][:-1]
     assert args == [
         str(env.executable),
         "-Im",

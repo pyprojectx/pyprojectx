@@ -1,5 +1,4 @@
 import os.path
-import subprocess
 import sys
 from pathlib import Path
 from unittest.mock import ANY
@@ -33,11 +32,11 @@ def test_parse_args():
 
 def test_run_tool(tmp_dir, mocker):
     toml = Path(__file__).with_name("data").joinpath("test.toml")
-    mocker.patch("subprocess.run")
+    run_mock = mocker.patch("subprocess.run")
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "tool-1"])
 
-    pip_install_args = _get_call_args(subprocess.run.mock_calls[0])
+    pip_install_args = _get_call_args(run_mock.mock_calls[0])
     first_arg = str(pip_install_args[0])
     assert (
         f"{tmp_dir.name}{os.sep}venvs{os.sep}"
@@ -46,8 +45,8 @@ def test_run_tool(tmp_dir, mocker):
     assert pip_install_args[1:-1] == ["-Im", "pip", "install", "--use-pep517", "--no-warn-script-location", "-r"]
     assert "build-reqs-" in pip_install_args[-1]
 
-    run_args = _get_call_args(subprocess.run.mock_calls[1])
-    run_kwargs = _get_call_kwargs(subprocess.run.mock_calls[1])
+    run_args = _get_call_args(run_mock.mock_calls[1])
+    run_kwargs = _get_call_kwargs(run_mock.mock_calls[1])
     assert run_args == ["tool-1"]
     path_env = run_kwargs["env"]["PATH"]
     assert (
@@ -60,11 +59,11 @@ def test_run_tool(tmp_dir, mocker):
 
 def test_run_tool_with_args(tmp_dir, mocker):
     toml = Path(__file__).with_name("data").joinpath("test.toml")
-    mocker.patch("subprocess.run")
+    run_mock = mocker.patch("subprocess.run")
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "tool-1", "arg1", "@last arg"])
 
-    subprocess.run.assert_called_with(["tool-1", "arg1", "@last arg"], shell=False, check=True, env=ANY)
+    run_mock.assert_called_with(["tool-1", "arg1", "@last arg"], shell=False, check=True, env=ANY)
 
 
 def test_run_no_cmd(tmp_dir):
@@ -84,12 +83,12 @@ def test_run_unknown_tool(tmp_dir):
 
 def test_run_tool_alias(tmp_dir, mocker):
     toml = Path(__file__).with_name("data").joinpath("test.toml")
-    mocker.patch("subprocess.run")
+    run_mock = mocker.patch("subprocess.run")
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "alias-1"])
 
-    subprocess.run.assert_called_with("tool-1 arg", shell=True, check=True, env=ANY)
-    path_env = _get_call_kwargs(subprocess.run.mock_calls[1])["env"]["PATH"]
+    run_mock.assert_called_with("tool-1 arg", shell=True, check=True, env=ANY)
+    path_env = _get_call_kwargs(run_mock.mock_calls[1])["env"]["PATH"]
     assert (
         f"{tmp_dir.name}{os.sep}venvs{os.sep}"
         f"tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.path.pathsep}" in path_env
@@ -98,34 +97,34 @@ def test_run_tool_alias(tmp_dir, mocker):
 
 def test_run_tool_alias_with_args(tmp_dir, mocker):
     toml = Path(__file__).with_name("data").joinpath("test.toml")
-    mocker.patch("subprocess.run")
+    run_mock = mocker.patch("subprocess.run")
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "alias-1", "alias-arg1", "alias-arg2"])
 
-    subprocess.run.assert_called_with("tool-1 arg alias-arg1 alias-arg2", shell=True, check=True, env=ANY)
+    run_mock.assert_called_with("tool-1 arg alias-arg1 alias-arg2", shell=True, check=True, env=ANY)
 
 
 def test_run_explicit_tool_alias_with_arg(tmp_dir, mocker):
     toml = Path(__file__).with_name("data").joinpath("test.toml")
-    mocker.patch("subprocess.run")
+    run_mock = mocker.patch("subprocess.run")
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "alias-3", "alias-arg"])
 
-    subprocess.run.assert_called_with("command arg alias-arg", shell=True, check=True, env=ANY)
+    run_mock.assert_called_with("command arg alias-arg", shell=True, check=True, env=ANY)
     assert (
         f"{tmp_dir.name}{os.sep}venvs{os.sep}"
         f"tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.path.pathsep}"
-        in _get_call_kwargs(subprocess.run.mock_calls[1])["env"]["PATH"]
+        in _get_call_kwargs(run_mock.mock_calls[1])["env"]["PATH"]
     )
 
 
 def test_combined_alias_with_arg(tmp_dir, mocker):
     toml = Path(__file__).with_name("data").joinpath("test.toml")
-    mocker.patch("subprocess.run")
+    run_mock = mocker.patch("subprocess.run")
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "combined-alias", "alias-arg"])
 
-    subprocess.run.assert_called_with(
+    run_mock.assert_called_with(
         f"path/to/pyprojectx --install-dir {tmp_dir} -t {toml} alias-1 && path/to/pyprojectx --install-dir {tmp_dir} "
         f"-t {toml} alias-2 path/to/pyprojectx --install-dir {tmp_dir} -t {toml} shell-command alias-arg",
         shell=True,
@@ -135,7 +134,7 @@ def test_combined_alias_with_arg(tmp_dir, mocker):
 
 def test_shell_command_alias(tmp_dir, mocker):
     toml = Path(__file__).with_name("data").joinpath("test.toml")
-    mocker.patch("subprocess.run")
+    run_mock = mocker.patch("subprocess.run")
 
     _run(
         [
@@ -149,7 +148,7 @@ def test_shell_command_alias(tmp_dir, mocker):
         ]
     )
 
-    subprocess.run.assert_called_with(
+    run_mock.assert_called_with(
         "ls -al alias-arg",
         shell=True,
         check=True,
