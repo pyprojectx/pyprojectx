@@ -71,4 +71,5 @@ build = "pw@install && pw@check && pw@poetry build"
 publish = "poetry publish --username __token__"
 
 [tool.pyprojectx.os.win.aliases]
-clean-install = "rm -r .venv || true && rm -r .pytest_cache || true && pw@poetry install && pw@pre-commit install"
+clean = "rmdir /s/q .venv & rmdir /s/q .pytest_cache & rmdir /s/q dist"
+clean-all = "pw@clean & rmdir /s/q .pyprojectx"

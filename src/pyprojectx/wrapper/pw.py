@@ -109,6 +109,7 @@ def ensure_pyprojectx(options):
     )
     env_context = env_builder.ensure_directories(venv_dir)
     pyprojectx_script = Path(env_context.bin_path, "pyprojectx")
+    pyprojectx_exe = Path(env_context.bin_path, "pyprojectx.exe")
     pip_cmd = [env_context.env_exe, "-m", "pip", "install"]
 
     if options.quiet:
@@ -117,7 +118,7 @@ def ensure_pyprojectx(options):
     else:
         out = sys.stderr
 
-    if not pyprojectx_script.is_file():
+    if not pyprojectx_script.is_file() and not pyprojectx_exe.is_file():
         if not options.quiet:
             print(f"{CYAN}creating pyprojectx venv in {BLUE}{venv_dir}{RESET}", file=sys.stderr)
         env_builder.create(venv_dir)
