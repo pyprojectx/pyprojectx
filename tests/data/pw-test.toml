@@ -7,3 +7,7 @@ say-hi = "pycowsay hi"
 say-hello = "@pycowsay: pycowsay hello"
 combine-pw-scripts = "pw@say-hi && pw@say-hello"
 failing-shell = "go-foo-bar"
+list-files = "ls"
+
+[tool.pyprojectx.os.win.aliases]
+list-files = "dir"

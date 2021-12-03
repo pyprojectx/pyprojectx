@@ -59,7 +59,8 @@ pre-commit = "pre-commit"
 
 [tool.pyprojectx.aliases]
 install = "poetry install"
-clean-install = "rm -r .venv || true && rm -r .pytest_cache || true && pw@poetry install && pw@pre-commit install"
+clean = "rm -rf .venv  && rm -rf .pytest_cache && rm -rf dist"
+clean-all = "pw@clean && rm -rf .pyprojectx"
 black = "black src tests"
 isort = "isort src tests"
 test = "poetry run pytest"
@@ -68,3 +69,6 @@ check-black = "black src tests --check"
 check = "pw@check-black && pw@check-pylint && pw@test"
 build = "pw@install && pw@check && pw@poetry build"
 publish = "poetry publish --username __token__"
+
+[tool.pyprojectx.os.win.aliases]
+clean-install = "rm -r .venv || true && rm -r .pytest_cache || true && pw@poetry install && pw@pre-commit install"
