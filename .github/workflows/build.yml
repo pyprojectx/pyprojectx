@@ -37,11 +37,5 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Linux Build and test
-        if: ${{ matrix.os == 'Ubuntu' }}
-        run: ./pw build
-
-      - name: Windows Build and test
-        if: ${{ matrix.os == 'Windows' }}
-        shell: cmd
-        run: pw build
+      - name: Test and build
+        run: python pw build
