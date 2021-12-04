@@ -139,6 +139,13 @@ class IsolatedVirtualEnv:
         :return: The subprocess.CompletedProcess instance
         """
         logger.info("Running command in isolated venv %s: %s", self.name, cmd)
+        if isinstance(cmd, List):
+            extension = ".exe" if sys.platform.startswith("win") else ""
+            cmd[0] = str(self.scripts_path.joinpath(cmd[0] + extension))
+            shell = False
+        else:
+            shell = True
+
         paths: Dict[str, None] = OrderedDict()
         paths[str(self.scripts_path)] = None
         if "PATH" in os.environ:
@@ -147,4 +154,4 @@ class IsolatedVirtualEnv:
         env = os.environ.copy()
         env.update(extra_environ)
         logger.debug("Environment for running command: %s", env)
-        return subprocess.run(cmd, env=env, shell=isinstance(cmd, str), check=True)
+        return subprocess.run(cmd, env=env, shell=shell, check=True)

@@ -104,13 +104,9 @@ def test_run(tmp_dir, capfd):
     captured = capfd.readouterr()
     assert captured.out.startswith("virtualenv")
 
-    env.run(["echo", "string", "with", "spaces"])
+    env.run("echo hello world")
     captured = capfd.readouterr()
-    assert captured.out.strip() == "string with spaces"
-
-    env.run("echo string with spaces")
-    captured = capfd.readouterr()
-    assert captured.out.strip() == "string with spaces"
+    assert captured.out.strip() == "hello world"
 
     set_verbosity(1)
     path = "%PATH%" if sys.platform == "win32" else "$PATH"

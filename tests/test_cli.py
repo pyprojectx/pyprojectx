@@ -47,7 +47,11 @@ def test_run_tool(tmp_dir, mocker):
 
     run_args = _get_call_args(run_mock.mock_calls[1])
     run_kwargs = _get_call_kwargs(run_mock.mock_calls[1])
-    assert run_args == ["tool-1"]
+    assert len(run_args) == 1
+    assert run_args[0].endswith(
+        f"{tmp_dir.name}{os.sep}venvs{os.sep}"
+        f"tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.sep}tool-1"
+    )
     path_env = run_kwargs["env"]["PATH"]
     assert (
         f"{tmp_dir.name}{os.sep}venvs{os.sep}tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}"
@@ -63,7 +67,16 @@ def test_run_tool_with_args(tmp_dir, mocker):
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "tool-1", "arg1", "@last arg"])
 
-    run_mock.assert_called_with(["tool-1", "arg1", "@last arg"], shell=False, check=True, env=ANY)
+    run_mock.assert_called_with(ANY, shell=False, check=True, env=ANY)
+    assert (
+        run_mock.mock_calls[1]
+        .args[0][0]
+        .endswith(
+            f"{tmp_dir.name}{os.sep}venvs{os.sep}"
+            f"tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.sep}tool-1"
+        )
+    )
+    assert run_mock.mock_calls[1].args[0][1:] == ["arg1", "@last arg"]
 
 
 def test_run_no_cmd(tmp_dir):
