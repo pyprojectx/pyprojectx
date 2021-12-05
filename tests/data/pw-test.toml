@@ -10,4 +10,4 @@ failing-shell = "go-foo-bar"
 list-files = "ls"
 
 [tool.pyprojectx.os.win.aliases]
-list-files = "dir"
+list-files = "dir /b"
