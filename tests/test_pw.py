@@ -11,7 +11,7 @@ from pyprojectx.wrapper import pw
 
 # pylint: disable=redefined-outer-name
 
-PW_CMD = ".\\pw" if sys.platform == "win32" else "./pw"
+PW_CMD = ".\\pw" if sys.platform.startswith("win") else "./pw"
 
 
 @pytest.fixture
@@ -50,7 +50,8 @@ def test_logs_and_stdout_with_quiet(tmp_project):
             "\n", os.linesep
         )
     )
-    assert proc_result.stderr.decode("utf-8") == ""
+    if not sys.platform.startswith("win"):
+        assert proc_result.stderr.decode("utf-8") == ""
 
     cmd = f"{PW_CMD} -q list-files *.toml"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
