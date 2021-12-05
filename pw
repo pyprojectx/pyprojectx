@@ -26,6 +26,8 @@ CYAN = "\033[96m"
 BLUE = "\033[94m"
 RED = "\033[91m"
 RESET = "\033[0m"
+if sys.platform.startswith("win"):
+    os.system("color")
 
 
 def run(args):
