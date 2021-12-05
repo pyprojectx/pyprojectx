@@ -30,7 +30,7 @@ def tmp_project(tmp_dir):
 
 def test_logs_and_stdout_with_quiet(tmp_project):
     project_dir, env = tmp_project
-    cmd = f"{PW_CMD} -q pycowsay 'Hello px!'"
+    cmd = f"{PW_CMD} -q pycowsay Hello px!"
     assert Path(project_dir, PW_CMD).is_file()
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
 
