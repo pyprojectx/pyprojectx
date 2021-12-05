@@ -46,7 +46,9 @@ def test_logs_and_stdout_with_quiet(tmp_project):
            ||----w |
            ||     ||
 
-"""
+""".replace(
+            "\n", os.linesep
+        )
     )
     assert proc_result.stderr.decode("utf-8") == ""
 
