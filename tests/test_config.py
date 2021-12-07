@@ -48,8 +48,17 @@ def test_alias_config():
     assert config.get_alias("backward-compatible-tool-ref") == ("tool-1", "command arg")
 
 
+def test_os_specific_alias_config(mocker):
+    config = Config(Path(__file__).with_name("data").joinpath("test.toml"))
+    assert config.get_alias("os-specific") == (None, "cmd")
+
+    mocker.patch("sys.platform", "my-os")
+    config = Config(Path(__file__).with_name("data").joinpath("test.toml"))
+    assert config.get_alias("os-specific") == (None, "my-os-cmd")
+
+
 def test_invalid_toml():
-    with pytest.raises(Warning, match=r".+tests/data/invalid.toml: Illegal character '\\n' \(at line 2, column 15\)"):
+    with pytest.raises(Warning, match=r".+invalid.toml: Illegal character"):
         Config(Path(__file__).with_name("data").joinpath("invalid.toml"))
 
 

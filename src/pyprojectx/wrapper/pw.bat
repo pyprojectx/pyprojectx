@@ -1,2 +1,2 @@
 @echo off
-python px %*
+python %~dp0pw %*

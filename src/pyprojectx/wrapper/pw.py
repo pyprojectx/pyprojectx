@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 from venv import EnvBuilder
 
-VERSION = "0.9.0"
+VERSION = "0.9.4"
 
 PYPROJECTX_INSTALL_DIR_ENV_VAR = "PYPROJECTX_INSTALL_DIR"
 PYPROJECTX_PACKAGE_ENV_VAR = "PYPROJECTX_PACKAGE"
@@ -26,6 +26,8 @@ CYAN = "\033[96m"
 BLUE = "\033[94m"
 RED = "\033[91m"
 RESET = "\033[0m"
+if sys.platform.startswith("win"):
+    os.system("color")
 
 
 def run(args):
@@ -38,7 +40,7 @@ def run(args):
         if not options.install_dir:
             explicit_options += ["--install-dir", str(options.install_path)]
 
-        subprocess.run([pyprojectx_script, *explicit_options, *args], check=True)
+        subprocess.run([str(pyprojectx_script), *explicit_options, *args], check=True)
     except subprocess.CalledProcessError as e:
         raise SystemExit(e.returncode) from e
 
@@ -109,6 +111,7 @@ def ensure_pyprojectx(options):
     )
     env_context = env_builder.ensure_directories(venv_dir)
     pyprojectx_script = Path(env_context.bin_path, "pyprojectx")
+    pyprojectx_exe = Path(env_context.bin_path, "pyprojectx.exe")
     pip_cmd = [env_context.env_exe, "-m", "pip", "install"]
 
     if options.quiet:
@@ -117,7 +120,7 @@ def ensure_pyprojectx(options):
     else:
         out = sys.stderr
 
-    if not pyprojectx_script.is_file():
+    if not pyprojectx_script.is_file() and not pyprojectx_exe.is_file():
         if not options.quiet:
             print(f"{CYAN}creating pyprojectx venv in {BLUE}{venv_dir}{RESET}", file=sys.stderr)
         env_builder.create(venv_dir)

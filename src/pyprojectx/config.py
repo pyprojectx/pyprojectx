@@ -1,4 +1,5 @@
 import re
+import sys
 from pathlib import Path
 from typing import Iterable, Optional, Tuple
 
@@ -20,6 +21,7 @@ class Config:
                 toml_dict = tomli.load(f)
                 self._tools = toml_dict.get("tool", {}).get("pyprojectx", {})
                 self._aliases = self._tools.get("aliases", {})
+                self._os_aliases = self._merge_os_aliases()
         except Exception as e:
             raise Warning(f"Could not parse {self._toml_path}: {e}") from e
 
@@ -72,3 +74,11 @@ class Config:
 
     def __repr__(self):
         return str(self._tools)
+
+    def _merge_os_aliases(self):
+        aliases = self._tools.get("aliases", {})
+        os_dict = self._tools.get("os", {})
+        for os_key in os_dict:
+            if sys.platform.startswith(os_key) and isinstance(os_dict[os_key], dict):
+                aliases.update(os_dict[os_key].get("aliases", {}))
+        return aliases

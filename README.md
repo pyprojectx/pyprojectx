@@ -1,4 +1,5 @@
 # pyprojectx
+
 Execute scripts from pyproject.toml, installing tools on-the-fly
 
 Getting started with a Python project should be a one-liner:
@@ -6,7 +7,7 @@ Getting started with a Python project should be a one-liner:
 git clone https://github.com/houbie/pyprojectx.git && cd pyprojectx && ./pw build
 ```
 
-![Cast](https://raw.githubusercontent.com/houbie/pyprojectx/0.9.0/docs/poetry-build-cast.svg)
+![Cast](https://raw.githubusercontent.com/houbie/pyprojectx/0.9.1/docs/poetry-build-cast.svg)
 
 Pyprojectx provides a CLI wrapper for automatic installation of Python tools:
 * Make it be a breeze for others to get started with your project or tutorial

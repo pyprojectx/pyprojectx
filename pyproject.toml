@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyprojectx"
-version = "0.9.0"
+version = "0.9.4"
 description = "Execute scripts from pyproject.toml, installing tools on-the-fly"
 license = "MIT"
 authors = ["Houbie <ivo@houbrechts-it.be>"]
@@ -23,7 +23,6 @@ virtualenv = "^20.10.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
-# idealy pylint should not be in here, but it is required by the Pycharm/Intellij plugin
 pytest-mock = "^3.6.1"
 
 [build-system]
@@ -60,12 +59,17 @@ pre-commit = "pre-commit"
 
 [tool.pyprojectx.aliases]
 install = "poetry install"
-clean-install = "rm -r .venv || true && rm -r .pytest_cache || true && pw@poetry install && pw@pre-commit install"
+clean = "rm -rf .venv  && rm -rf .pytest_cache && rm -rf dist"
+clean-all = "pw@ clean && rm -rf .pyprojectx"
 black = "black src tests"
 isort = "isort src tests"
 test = "poetry run pytest"
 check-pylint = "pylint src tests"
 check-black = "black src tests --check"
-check = "pw@check-black && pw@check-pylint && pw@test"
-build = "pw@install && pw@check && pw@poetry build"
+check = "pw@ check-black && pw@ check-pylint && pw@ test"
+build = "pw@ install && pw@ check && pw@ poetry build"
 publish = "poetry publish --username __token__"
+
+[tool.pyprojectx.os.win.aliases]
+clean = "rmdir /s/q .venv & rmdir /s/q .pytest_cache & rmdir /s/q dist"
+clean-all = "pw@ clean & rmdir /s/q .pyprojectx"

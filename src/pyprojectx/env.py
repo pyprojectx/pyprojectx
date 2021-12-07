@@ -36,11 +36,19 @@ class IsolatedVirtualEnv:
         :param name: The name for the environment
         :param requirements: The requirements to install in the environment
         """
+        self._name = name
         self._base_path = base_path
         self._requirements = requirements
         self._path = _calculate_path(base_path, name, self._requirements)
         self._scripts_path_file = self._path.joinpath(".scripts_path")
         self._executable = None
+
+    @property
+    def name(self) -> str:
+        """
+        The name of the isolated environment.
+        """
+        return self._name
 
     @property
     def path(self) -> Path:
@@ -96,7 +104,7 @@ class IsolatedVirtualEnv:
             req_file.write(os.linesep.join(self._requirements))
         try:
             cmd = [
-                self._executable,
+                str(self._executable),
                 "-Im",
                 "pip",
                 "install",
@@ -130,7 +138,14 @@ class IsolatedVirtualEnv:
         :param cmd: The command string to run
         :return: The subprocess.CompletedProcess instance
         """
-        logger.info("Running command in IsolatedVirtualEnv: %s", cmd)
+        logger.info("Running command in isolated venv %s: %s", self.name, cmd)
+        if isinstance(cmd, List):
+            extension = ".exe" if sys.platform.startswith("win") else ""
+            cmd[0] = str(self.scripts_path.joinpath(cmd[0] + extension))
+            shell = False
+        else:
+            shell = True
+
         paths: Dict[str, None] = OrderedDict()
         paths[str(self.scripts_path)] = None
         if "PATH" in os.environ:
@@ -139,4 +154,4 @@ class IsolatedVirtualEnv:
         env = os.environ.copy()
         env.update(extra_environ)
         logger.debug("Environment for running command: %s", env)
-        return subprocess.run(cmd, env=env, shell=isinstance(cmd, str), check=True)
+        return subprocess.run(cmd, env=env, shell=shell, check=True)
