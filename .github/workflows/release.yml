@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release-pypi:
+    name: release-pypi
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Cache .pyprojectx
+        uses: actions/cache@v2
+        env:
+          cache-name: .pyprojectx
+        with:
+          path: .pyprojectx
+          key: pyprojectx
+
+      - name: Build
+        run: python pw build
+
+      - name: Publish to Pypi
+        run: python pw publish --password dummy --dry-run
+
+      - name: Prepare github release
+        run: |
+          rm -f wrappers.zip .changelog.md
+          awk '/-{3,}/{flag=1;next}/Release/{if (flag==1)exit}flag' CHANGELOG.md > .changelog.md
+          sed -i "s/__version__/${GITHUB_REF##*/}/g" src/pyprojectx/wrapper/pw.py
+          zip -j wrappers.zip src/pyprojectx/wrapper/pw*
+
+      - name: Create githu release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: .changelog.md
+          files: wrappers.zip

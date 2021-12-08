@@ -19,19 +19,18 @@ Pyprojectx brings `npm run` to Python with:
 * isolated dependencies: tools are not required to be development dependencies
 
 ## Installation
-Copy the *nix and widows commands, _pw_ and _pw.bat_, to your project's root directory and add them under version control.
+Copy the [wrapper scripts](https://github.com/houbie/mm-github-pages-starter/releases/latest/download/wrappers.zip)
+into the root of your project.
 
-Python  >= 3.7 needs to be available on your PATH.
+Python >= 3.7 must be available on your PATH.
 
-### osx / linux
+* osx / linux :
 ```shell
-curl -s https://raw.githubusercontent.com/houbie/pyprojectx/0.9.0/src/pyprojectx/wrapper/pw.py -o pw && curl -s https://raw.githubusercontent.com/houbie/pyprojectx/0.9.0/src/pyprojectx/wrapper/pw.bat -o pw.bat && chmod a+x pw
+curl -LO https://github.com/houbie/mm-github-pages-starter/releases/latest/download/wrappers.zip && unzip wrappers.zip && rm -f wrappers.zip
 ```
 
-### windows
-```shell
-curl -s https://raw.githubusercontent.com/houbie/pyprojectx/0.9.0/src/pyprojectx/wrapper/pw.py -o pw && curl -s https://raw.githubusercontent.com/houbie/pyprojectx/0.9.0/src/pyprojectx/wrapper/pw.bat -o pw.bat
-```
+* windows: unpack the [wrappers zip](https://github.com/houbie/mm-github-pages-starter/releases/latest/download/wrappers.zip)
+
 **NOTE** On windows you need to explicitly mark the osx/linux script as executable before adding it to version control.
 When using git:
 ```shell
