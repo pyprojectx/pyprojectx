@@ -27,9 +27,6 @@ jobs:
       - name: Build
         run: python pw build
 
-      - name: Publish to Pypi
-        run: python pw publish --password dummy --dry-run
-
       - name: Prepare github release
         run: |
           rm -f wrappers.zip .changelog.md
@@ -42,3 +39,6 @@ jobs:
         with:
           body_path: .changelog.md
           files: wrappers.zip
+
+      - name: Publish to Pypi
+        run: python pw publish --password dummy --dry-run

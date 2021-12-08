@@ -1,4 +1,3 @@
-Release v1.0.0 (2021-xx-xx)
+Release v0.9.0 (2021-11-25)
 ----------------------------
-### Features & Improvements
-Draft release
+MVP release
