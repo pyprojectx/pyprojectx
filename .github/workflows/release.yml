@@ -24,17 +24,12 @@ jobs:
           path: .pyprojectx
           key: pyprojectx
 
-      - name: Build
-        run: python pw build
-
-      - name: Prepare github release
+      - name: Build release
         run: |
-          rm -f wrappers.zip .changelog.md
-          awk '/-{3,}/{flag=1;next}/Release/{if (flag==1)exit}flag' CHANGELOG.md > .changelog.md
-          sed -i "s/__version__/${GITHUB_REF##*/}/g" src/pyprojectx/wrapper/pw.py
-          zip -j wrappers.zip src/pyprojectx/wrapper/pw*
+          python pw prep-release
+          python pw build
 
-      - name: Create githu release
+      - name: Create github release
         uses: softprops/action-gh-release@v1
         with:
           body_path: .changelog.md

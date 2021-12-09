@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyprojectx"
-version = "0.0.0"
+version = "0.9.0"
 description = "Execute scripts from pyproject.toml, installing tools on-the-fly"
 license = "MIT"
 authors = ["Houbie <ivo@houbrechts-it.be>"]
@@ -25,15 +25,8 @@ virtualenv = "^20.10.0"
 pytest = "^6.2.5"
 pytest-mock = "^3.6.1"
 
-[tool.poetry-dynamic-versioning]
-enable = true
-vcs = "git"
-style = "semver"
-[tool.poetry-dynamic-versioning.substitution]
-files = ["src/pyprojectx/wrapper/*.py"]
-
 [build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]
@@ -58,7 +51,7 @@ disable = [
 ]
 
 [tool.pyprojectx]
-poetry = ["poetry==1.1.11", "poetry-dynamic-versioning==0.13.1"]
+poetry = "poetry==1.1.11"
 black = "black==21.7b0"
 isort = "isort==5.9.3"
 pylint = "pylint==2.11.1"
@@ -66,6 +59,7 @@ pre-commit = "pre-commit"
 
 [tool.pyprojectx.aliases]
 install = "poetry install"
+outdated = "poetry show --outdated"
 clean = "rm -rf .venv  && rm -rf .pytest_cache && rm -rf dist"
 clean-all = "pw@ clean && rm -rf .pyprojectx"
 black = "black src tests"
@@ -75,7 +69,22 @@ check-pylint = "pylint src tests"
 check-black = "black src tests --check"
 check = "pw@ check-black && pw@ check-pylint && pw@ test"
 build = "pw@ install && pw@ check && pw@ poetry build"
+
+# used in github actions:
 publish = "poetry publish --username __token__"
+prep-release = """\
+# cleanup
+rm -f wrappers.zip .changelog.md
+# extract version from tag
+RELEASE_VERSION="${GITHUB_REF##*/}"
+pw@ poetry version $RELEASE_VERSION
+# replace __version__ in wrapper
+sed -i -e "s/__version__/${RELEASE_VERSION}/g" src/pyprojectx/wrapper/pw.py
+# cleanup sed backup
+rm -rf src/pyprojectx/wrapper/pw.py?*
+zip -j wrappers.zip src/pyprojectx/wrapper/pw*
+awk '/-{3,}/{flag=1;next}/Release/{if (flag==1)exit}flag' CHANGELOG.md > .changelog.md
+"""
 
 [tool.pyprojectx.os.win.aliases]
 clean = "rmdir /s/q .venv & rmdir /s/q .pytest_cache & rmdir /s/q dist"
