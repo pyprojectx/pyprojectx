@@ -6,6 +6,7 @@ from unittest.mock import ANY
 import pytest
 
 from pyprojectx.cli import _get_options, _run
+from pyprojectx.wrapper import pw
 
 # pylint: disable=protected-access, no-member
 
@@ -17,7 +18,8 @@ EXTENSION = ".exe" if sys.platform == "win32" else ""
 def test_parse_args():
     assert _get_options(["--toml", "an-option", "my-cmd"]).toml_path == Path("an-option")
     assert _get_options(["-t", "an-option", "my-cmd"]).toml_path == Path("an-option")
-    assert _get_options(["my-cmd"]).toml_path == Path("pyproject.toml")
+    assert _get_options(["my-cmd"]).toml_path == Path(pw.__file__).with_name("pyproject.toml")
+    assert _get_options(["-g", "my-cmd"]).toml_path == Path.home().joinpath(".pyprojectx", "pyproject.toml")
 
     assert _get_options(["--install-dir", "an-option", "my-cmd"]).install_path == Path("an-option")
 

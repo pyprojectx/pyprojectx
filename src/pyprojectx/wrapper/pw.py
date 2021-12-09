@@ -52,13 +52,15 @@ def get_options(args):
         or os.environ.get(PYPROJECTX_INSTALL_DIR_ENV_VAR, Path(__file__).with_name(DEFAULT_INSTALL_DIR))
     )
     options.toml_path = Path(options.toml) if options.toml else Path(__file__).with_name(PYPROJECT_TOML)
-
+    if options.use_global:
+        options.toml_path = Path.home().joinpath(DEFAULT_INSTALL_DIR, PYPROJECT_TOML)
     if os.environ.get(PYPROJECTX_PACKAGE_ENV_VAR):
         options.version = "development"
         options.pyprojectx_package = os.environ.get(PYPROJECTX_PACKAGE_ENV_VAR)
     else:
         options.version = VERSION
         options.pyprojectx_package = f"pyprojectx~={VERSION}"
+    options.verbosity = 0 if options.quiet or not options.verbosity else options.verbosity
     return options
 
 
@@ -68,10 +70,17 @@ def arg_parser():
     )
     parser.add_argument("--version", action="version", version=VERSION)
     parser.add_argument(
+        "--global",
+        "-g",
+        action="store_true",
+        dest="use_global",
+        help=f"use the global toml config file, located in {Path.home().joinpath(DEFAULT_INSTALL_DIR,PYPROJECT_TOML)}",
+    )
+    parser.add_argument(
         "--toml",
         "-t",
         action="store",
-        help="he toml config file. Defaults to 'pyproject.toml' in the same directory as the pw script",
+        help="the toml config file. Defaults to 'pyproject.toml' in the same directory as the pw script",
     )
     parser.add_argument(
         "--install-dir",

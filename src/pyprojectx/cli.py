@@ -1,7 +1,5 @@
-import os
 import subprocess
 import sys
-from pathlib import Path
 from typing import Iterable, List, Optional, Union
 
 from pyprojectx.config import Config
@@ -16,7 +14,6 @@ def main() -> None:
 
 def _run(argv: List[str]) -> None:
     options = _get_options(argv[1:])
-    set_verbosity(options.verbosity)
     cmd = options.cmd
     config = Config(options.toml_path)
     tool, alias_cmd = config.get_alias(cmd)
@@ -97,15 +94,9 @@ def _resolve_alias_references(alias_cmd: str, cmd: str, argv: List[str]) -> str:
 
 
 def _get_options(args):
-    options = pw.arg_parser().parse_args(args)
+    options = pw.get_options(args)
     options.cmd = options.cmd[0]
-    options.toml_path = Path(options.toml) if options.toml else Path(pw.PYPROJECT_TOML)
-    options.install_path = Path(
-        options.install_dir or os.environ.get(pw.PYPROJECTX_INSTALL_DIR_ENV_VAR, options.toml_path.parent)
-    )
     options.venvs_dir = options.install_path.joinpath("venvs")
-    options.verbosity = options.verbosity or 0
-    if options.quiet:
-        options.verbosity = 0
+    set_verbosity(options.verbosity)
     logger.debug("Parsed cli arguments: %s", options)
     return options

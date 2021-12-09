@@ -10,6 +10,24 @@ if [ -e "${pwDir}/pw" ]
 then
   /usr/bin/env python3 "${pwDir}/pw" "$@"
 else
-  echo "ERROR: no pw script found in any parent directory"
-  exit 1
+  for arg
+  do
+    if [ "$arg" = "-g" ] || [ "$arg" = "--global" ]
+    then
+      globalArg=true
+    fi
+  done
+  if [ "$globalArg" = true ]
+  then
+    if [ -e "${HOME}/.pyprojectx/global/pw" ]
+    then
+      /usr/bin/env python3 "${HOME}/.pyprojectx/global/pw" "$@"
+    else
+       echo "ERROR: no global pw script found in ${HOME}/.pyprojectx/global"
+       exit 1
+    fi
+  else
+    echo "ERROR: no pw script found in any parent directory"
+    exit 1
+  fi
 fi
