@@ -5,6 +5,8 @@ from typing import Iterable, Optional, Tuple
 
 import tomli
 
+from pyprojectx.wrapper.pw import BLUE, CYAN, RESET
+
 
 class Config:
     """
@@ -24,6 +26,28 @@ class Config:
                 self._os_aliases = self._merge_os_aliases()
         except Exception as e:
             raise Warning(f"Could not parse {self._toml_path}: {e}") from e
+
+    def show_info(self, cmd):
+        tool, alias = self.get_alias(cmd)
+        if alias:
+            print(f"{cmd}{BLUE} is an alias in {CYAN}{self._toml_path.absolute()}", file=sys.stderr)
+            if tool:
+                print(f"{BLUE}and runs in the {CYAN}{tool}{BLUE} tool context", file=sys.stderr)
+            print(f"{BLUE}command:{RESET}", file=sys.stderr)
+            print(alias)
+        elif self.is_tool(cmd):
+            print(f"{cmd}{BLUE} is a tool in {CYAN}{self._toml_path.absolute()}", file=sys.stderr)
+            print(f"{BLUE}requirements:{RESET}", file=sys.stderr)
+            print(self.get_tool_requirements(cmd))
+        else:
+            print(
+                f"{cmd}{BLUE} is not configured as tool or alias in {self._toml_path.absolute()}:{RESET}",
+                file=sys.stderr,
+            )
+            print(f"{BLUE}available aliases:{RESET}", file=sys.stderr)
+            print("\n".join(self._aliases.keys()))
+            print(f"{BLUE}available tools:{RESET}", file=sys.stderr)
+            print("\n".join(self._tools.keys() - ["aliases", "os"]))
 
     def get_tool_requirements(self, key) -> Iterable[str]:
         """

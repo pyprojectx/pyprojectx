@@ -11,7 +11,7 @@ from pyprojectx.wrapper import pw
 # pylint: disable=protected-access, no-member
 
 PY_VER = f"py{sys.version_info.major}.{sys.version_info.minor}"
-SCRIPTS_DIR = "Scripts" if sys.platform == "win32" else "bin"
+SCRIPTS_DIR = "Scripts" if sys.platform.startswith("win") else "bin"
 EXTENSION = ".exe" if sys.platform == "win32" else ""
 
 
@@ -31,7 +31,8 @@ def test_parse_args():
     assert _get_options(["my-cmd"]).verbosity == 0
     assert _get_options(["-vv", "-q", "my-cmd"]).verbosity == 0
 
-    assert _get_options(["--init", "global", "-"]).init == "global"
+    assert _get_options(["--init", "global"]).init
+    assert _get_options(["-i", "all"]).info
 
 
 def test_run_tool(tmp_dir, mocker):

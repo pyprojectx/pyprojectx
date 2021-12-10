@@ -71,39 +71,46 @@ def arg_parser():
         "--toml",
         "-t",
         action="store",
-        help="the toml config file. Defaults to 'pyproject.toml' in the same directory as the pw script",
+        help="The toml config file. Defaults to 'pyproject.toml' in the same directory as the pw script.",
     )
     parser.add_argument(
         "--install-dir",
         action="store",
-        help=f"the directory where all tools (including pyprojectx) are installed; defaults to the"
+        help=f"The directory where all tools (including pyprojectx) are installed; defaults to the"
         f"{PYPROJECTX_INSTALL_DIR_ENV_VAR} environment value if set, else '.pyprojectx'"
-        f" in the same directory as the pw script",
+        f" in the same directory as the invoked pw script",
     )
     parser.add_argument(
         "--force-install",
         "-f",
         action="store_true",
-        help="force clean installation of the virtual environment used to run the command, if any",
+        help="Force clean installation of the virtual environment used to run cmd, if any",
     )
     parser.add_argument(
         "--verbose",
         "-v",
         action="count",
         dest="verbosity",
-        help="give more output; option is additive and can be used up to 2 times",
+        help="Give more output. This option is additive and can be used up to 2 times.",
     )
     parser.add_argument(
         "--quiet",
         "-q",
         action="store_true",
-        help="give no output",
+        help="Suppress output",
+    )
+    parser.add_argument(
+        "--info",
+        "-i",
+        action="store_true",
+        help="Show the configuration details of cmd in stead of running it. "
+        "If cmd is not configured as tool or alias, a list with all available tools and aliases is shown.",
     )
     parser.add_argument(
         "--init",
-        choices=["global"],
-        help="initialize the global pyprojectx setup in you home directory; "
-        "Note: use a dash (-) for the mandatory cmd option",
+        action="store_true",
+        help="Create or prepare a pyproject.toml and pyprojectx wrapper scripts. "
+        "Run with '--init help' to show available init commands",
     )
     parser.add_argument("cmd", nargs=1, help="The command or alias to execute.")
     parser.add_argument("cmd_args", nargs=argparse.REMAINDER, help="The arguments for the command or alias.")

@@ -5,6 +5,6 @@ then
   /usr/bin/env python3 "${HOME}/.pyprojectx/global/pw" "$@"
 else
    echo "ERROR: no global pw script found in ${HOME}/.pyprojectx/global."
-   echo "gx relies on the HOME environment variable to be set."
+   echo "pxg relies on the HOME environment variable to be set."
    exit 1
 fi

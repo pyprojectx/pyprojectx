@@ -10,6 +10,8 @@ httpie = "httpie"
 scipy = ["scipy", "matplotlib", "ipython", "jupyter", "pandas", "sympy", "nose"]
 
 [tool.pyprojectx.aliases]
+notebook = "jupyter notebook"
+scipy-notebook = "@scipy: jupyter notebook"
 https = "@httpie: https"
 http = "@httpie: http"
 postjson = "@httpie: http POST pie.dev/post message=Awesome!"

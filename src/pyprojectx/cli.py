@@ -15,13 +15,16 @@ def main() -> None:
 
 def _run(argv: List[str]) -> None:
     options = _get_options(argv[1:])
-
     if options.init:
-        initialize(options.init)
+        initialize(options)
         return
 
-    cmd = options.cmd
     config = Config(options.toml_path)
+    cmd = options.cmd
+    if options.info:
+        config.show_info(cmd)
+        return
+
     tool, alias_cmd = config.get_alias(cmd)
     if alias_cmd:
         _run_alias(
