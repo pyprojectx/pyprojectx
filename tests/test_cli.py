@@ -19,7 +19,6 @@ def test_parse_args():
     assert _get_options(["--toml", "an-option", "my-cmd"]).toml_path == Path("an-option")
     assert _get_options(["-t", "an-option", "my-cmd"]).toml_path == Path("an-option")
     assert _get_options(["my-cmd"]).toml_path == Path(pw.__file__).with_name("pyproject.toml")
-    assert _get_options(["-g", "my-cmd"]).toml_path == Path.home().joinpath(".pyprojectx", "pyproject.toml")
 
     assert _get_options(["--install-dir", "an-option", "my-cmd"]).install_path == Path("an-option")
 
@@ -31,6 +30,8 @@ def test_parse_args():
     assert _get_options(["-vv", "my-cmd"]).verbosity == 2
     assert _get_options(["my-cmd"]).verbosity == 0
     assert _get_options(["-vv", "-q", "my-cmd"]).verbosity == 0
+
+    assert _get_options(["--init", "global", "-"]).init == "global"
 
 
 def test_run_tool(tmp_dir, mocker):

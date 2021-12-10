@@ -4,6 +4,7 @@ from typing import Iterable, List, Optional, Union
 
 from pyprojectx.config import Config
 from pyprojectx.env import IsolatedVirtualEnv
+from pyprojectx.initializer.initializers import initialize
 from pyprojectx.log import logger, set_verbosity
 from pyprojectx.wrapper import pw
 
@@ -14,6 +15,11 @@ def main() -> None:
 
 def _run(argv: List[str]) -> None:
     options = _get_options(argv[1:])
+
+    if options.init:
+        initialize(options.init)
+        return
+
     cmd = options.cmd
     config = Config(options.toml_path)
     tool, alias_cmd = config.get_alias(cmd)

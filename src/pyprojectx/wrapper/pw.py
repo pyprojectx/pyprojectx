@@ -52,8 +52,6 @@ def get_options(args):
         or os.environ.get(PYPROJECTX_INSTALL_DIR_ENV_VAR, Path(__file__).with_name(DEFAULT_INSTALL_DIR))
     )
     options.toml_path = Path(options.toml) if options.toml else Path(__file__).with_name(PYPROJECT_TOML)
-    if options.use_global:
-        options.toml_path = Path.home().joinpath(DEFAULT_INSTALL_DIR, PYPROJECT_TOML)
     if os.environ.get(PYPROJECTX_PACKAGE_ENV_VAR):
         options.version = "development"
         options.pyprojectx_package = os.environ.get(PYPROJECTX_PACKAGE_ENV_VAR)
@@ -69,13 +67,6 @@ def arg_parser():
         description="Execute commands or aliases defined in the [tool.pyprojectx] section of pyproject.toml.",
     )
     parser.add_argument("--version", action="version", version=VERSION)
-    parser.add_argument(
-        "--global",
-        "-g",
-        action="store_true",
-        dest="use_global",
-        help=f"use the global toml config file, located in {Path.home().joinpath(DEFAULT_INSTALL_DIR,PYPROJECT_TOML)}",
-    )
     parser.add_argument(
         "--toml",
         "-t",
@@ -107,6 +98,12 @@ def arg_parser():
         "-q",
         action="store_true",
         help="give no output",
+    )
+    parser.add_argument(
+        "--init",
+        choices=["global"],
+        help="initialize the global pyprojectx setup in you home directory; "
+        "Note: use a dash (-) for the mandatory cmd option",
     )
     parser.add_argument("cmd", nargs=1, help="The command or alias to execute.")
     parser.add_argument("cmd_args", nargs=argparse.REMAINDER, help="The arguments for the command or alias.")
