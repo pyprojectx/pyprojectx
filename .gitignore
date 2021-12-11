@@ -132,3 +132,4 @@ dmypy.json
 .pyprojectx
 /.changelog.md
 /wrappers.zip
+/.vs

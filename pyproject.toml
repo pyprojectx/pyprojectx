@@ -59,7 +59,7 @@ pre-commit = "pre-commit"
 
 [tool.pyprojectx.aliases]
 install = "poetry install"
-run = "pyprojectx -t pyproject.toml "
+run = "poetry run pyprojectx -t pyproject.toml "
 outdated = "poetry show --outdated"
 clean = "rm -rf .venv  && rm -rf .pytest_cache && rm -rf dist"
 clean-all = "pw@ clean && rm -rf .pyprojectx"
