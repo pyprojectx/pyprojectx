@@ -15,7 +15,7 @@ from pyprojectx.wrapper import pw
 
 @pytest.fixture
 def tmp_project(tmp_dir):
-    toml = Path(__file__).with_name("data").joinpath("pw-test.toml")
+    toml = Path(__file__).parent.with_name("data").joinpath("pw-test.toml")
     shutil.copyfile(toml, tmp_dir.joinpath(pw.PYPROJECT_TOML))
     pw_copy = Path(tmp_dir, "pw")
     pyprojectx_package = toml.parent.joinpath("../..")
@@ -102,11 +102,11 @@ def test_output_with_errors(tmp_project):
     assert "'foo-bar' is not configured as pyprojectx tool or alias in" in proc_result.stderr.decode("utf-8")
 
 
-def test_linux_px_invoked_from_sub_directory_with_verbose(tmp_project):
+def test_px_invoked_from_sub_directory_with_verbose(tmp_project):
     project_dir, env = tmp_project
     cwd = project_dir.joinpath("subdir")
     os.mkdir(cwd)
-    shutil.copy(Path(__file__).parent.joinpath(f"../src/pyprojectx/wrapper/px{SCRIPT_EXTENSION}"), cwd)
+    shutil.copy(Path(__file__).parent.parent.joinpath(f"../src/pyprojectx/wrapper/px{SCRIPT_EXTENSION}"), cwd)
 
     cmd = f"{SCRIPT_PREFIX}px combine-pw-scripts"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=True)
