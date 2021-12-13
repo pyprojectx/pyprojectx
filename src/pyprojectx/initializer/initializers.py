@@ -7,8 +7,8 @@ import tomli
 
 from pyprojectx.wrapper.pw import BLUE, CYAN, DEFAULT_INSTALL_DIR, PYPROJECT_TOML, RESET
 
-SCRIP_EXTENSION = ".bat" if sys.platform.startswith("win") else ""
-SCRIP_PREFIX = "" if sys.platform.startswith("win") else "./"
+SCRIPT_EXTENSION = ".bat" if sys.platform.startswith("win") else ""
+SCRIPT_PREFIX = "" if sys.platform.startswith("win") else "./"
 
 
 def initialize(options):
@@ -48,7 +48,7 @@ def initialize_project(_):
     if sys.platform.startswith("win"):
         print(f"When using git, run {RESET}git add pw pw.bat && git update-index --chmod=+x pw'")
     print(
-        f"{BLUE}Run {RESET}{SCRIP_PREFIX}pw --info -{BLUE}"
+        f"{BLUE}Run {RESET}{SCRIPT_PREFIX}pw --info -{BLUE}"
         f" to see the available tools and aliases in your project.{RESET}"
     )
 
@@ -67,8 +67,8 @@ def initialize_global(options):
         return
 
     shutil.copy2(wrapper_dir.joinpath("pw.py"), target_pw)
-    shutil.copy2(wrapper_dir.joinpath(f"px{SCRIP_EXTENSION}"), global_dir.parent)
-    shutil.copy2(wrapper_dir.joinpath(f"pxg{SCRIP_EXTENSION}"), global_dir.parent)
+    shutil.copy2(wrapper_dir.joinpath(f"px{SCRIPT_EXTENSION}"), global_dir.parent)
+    shutil.copy2(wrapper_dir.joinpath(f"pxg{SCRIPT_EXTENSION}"), global_dir.parent)
     target_toml = global_dir.joinpath(PYPROJECT_TOML)
     if not target_toml.exists():
         shutil.copy2(Path(__file__).with_name("global-template.toml"), target_toml)

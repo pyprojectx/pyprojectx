@@ -7,11 +7,10 @@ from pathlib import Path
 
 import pytest
 
+from pyprojectx.initializer.initializers import SCRIPT_EXTENSION, SCRIPT_PREFIX
 from pyprojectx.wrapper import pw
 
 # pylint: disable=redefined-outer-name
-
-PW_CMD = ".\\pw" if sys.platform.startswith("win") else "./pw"
 
 
 @pytest.fixture
@@ -30,8 +29,8 @@ def tmp_project(tmp_dir):
 
 def test_logs_and_stdout_with_quiet(tmp_project):
     project_dir, env = tmp_project
-    cmd = f"{PW_CMD} -q pycowsay Hello px!"
-    assert Path(project_dir, PW_CMD).is_file()
+    cmd = f"{SCRIPT_PREFIX}pw -q pycowsay Hello px!"
+    assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
 
     assert (
@@ -53,7 +52,7 @@ def test_logs_and_stdout_with_quiet(tmp_project):
     if not sys.platform.startswith("win"):
         assert proc_result.stderr.decode("utf-8") == ""
 
-    cmd = f"{PW_CMD} -q list-files *.toml"
+    cmd = f"{SCRIPT_PREFIX}pw -q list-files *.toml"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
     assert proc_result.stdout.decode("utf-8").strip() == "pyproject.toml"
 
@@ -62,7 +61,7 @@ def test_logs_and_stdout_when_alias_invoked_from_sub_directory_with_verbose(tmp_
     project_dir, env = tmp_project
     cwd = project_dir.joinpath("subdir")
     os.mkdir(cwd)
-    cmd = f"..{os.sep}{PW_CMD} -vv combine-pw-scripts"
+    cmd = f"..{os.sep}pw -vv combine-pw-scripts"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=True)
 
     assert "< hi >" in proc_result.stdout.decode("utf-8")
@@ -79,7 +78,7 @@ def test_logs_and_stdout_when_alias_invoked_from_sub_directory_with_verbose(tmp_
 
 def test_output_with_errors(tmp_project):
     project_dir, env = tmp_project
-    cmd = f"{PW_CMD} -q failing-install"
+    cmd = f"{SCRIPT_PREFIX}pw -q failing-install"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
 
     assert proc_result.returncode
@@ -88,14 +87,14 @@ def test_output_with_errors(tmp_project):
         "utf-8"
     )
 
-    cmd = f"{PW_CMD} -q failing-shell"
+    cmd = f"{SCRIPT_PREFIX}pw -q failing-shell"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
 
     assert proc_result.returncode
     assert proc_result.stdout.decode("utf-8") == ""
     assert "go-foo-bar" in proc_result.stderr.decode("utf-8")
 
-    cmd = f"{PW_CMD} -q foo-bar"
+    cmd = f"{SCRIPT_PREFIX}pw -q foo-bar"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
 
     assert proc_result.returncode
@@ -103,14 +102,13 @@ def test_output_with_errors(tmp_project):
     assert "'foo-bar' is not configured as pyprojectx tool or alias in" in proc_result.stderr.decode("utf-8")
 
 
-@pytest.mark.skipif(sys.platform.startswith("win"), reason="linux only")
 def test_linux_px_invoked_from_sub_directory_with_verbose(tmp_project):
     project_dir, env = tmp_project
     cwd = project_dir.joinpath("subdir")
     os.mkdir(cwd)
-    shutil.copy(Path(__file__).parent.joinpath("../src/pyprojectx/wrapper/px"), cwd)
+    shutil.copy(Path(__file__).parent.joinpath(f"../src/pyprojectx/wrapper/px{SCRIPT_EXTENSION}"), cwd)
 
-    cmd = "./px combine-pw-scripts"
+    cmd = f"{SCRIPT_PREFIX}px combine-pw-scripts"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=True)
 
     assert "< hello >" in proc_result.stdout.decode("utf-8")
