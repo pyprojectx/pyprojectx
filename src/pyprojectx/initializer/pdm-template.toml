@@ -11,7 +11,7 @@ pdm = "pdm>=1.1"
 [tool.pyprojectx.aliases]
 install = "pdm install"
 run = "pdm run"
-outdated = "pdm show --outdated"
+outdated = "pdm update --outdated"
 test = "pdm run pytest"
 
 # example aliases

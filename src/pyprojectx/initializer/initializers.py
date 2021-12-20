@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -11,6 +12,8 @@ from pyprojectx.wrapper.pw import BLUE, CYAN, DEFAULT_INSTALL_DIR, PYPROJECT_TOM
 
 SCRIPT_EXTENSION = ".bat" if sys.platform.startswith("win") else ""
 SCRIPT_PREFIX = "" if sys.platform.startswith("win") else "./"
+
+HOME_DIR = Path(os.environ.get("PYPROJECTX_HOME_DIR", Path.home()))
 
 
 def initialize(options):
@@ -53,9 +56,10 @@ def _initialize_build_tool(tool, options):
     proc = subprocess.run(
         [f"{SCRIPT_PREFIX}pw", "--toml", template, tool, "--version"], check=True, capture_output=True
     )
-    version = proc.stdout.decode("utf-8").strip().split()[-1]
+    version = re.search(r"(\d+\.)+(\d+)", proc.stdout.decode("utf-8"))[0]
     old_requirement = f"{tool}>=1.1"
     new_requirement = f"{tool}=={version}"
+    logger.info("setting version in %s : %s", PYPROJECT_TOML, new_requirement)
     _replace_in_file(old_requirement, new_requirement, template)
     subprocess.run([f"{SCRIPT_PREFIX}pw", "--toml", template, tool, "init"] + options.cmd_args, check=True)
     logger.debug("appending template to %s...", PYPROJECT_TOML)
@@ -122,8 +126,9 @@ def initialize_global(options):
     """Initialize the global pyprojectx setup in your home directory.
     Use '--init global --force' to overwrite.
     """
-    global_dir = Path.home().joinpath(DEFAULT_INSTALL_DIR, "global")
+    global_dir = HOME_DIR.joinpath(DEFAULT_INSTALL_DIR, "global")
     wrapper_dir = Path(__file__).parent.parent.joinpath("wrapper")
+    logger.debug("creating global directory %s", global_dir)
     os.makedirs(global_dir, exist_ok=True)
 
     target_pw = global_dir.joinpath("pw")
