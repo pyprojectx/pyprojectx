@@ -1,0 +1,53 @@
+[tool.poetry]
+name = "pyprojectx"
+version = "0.1.0"
+description = "Execute scripts from pyproject.toml, installing tools on-the-fly"
+authors = ["Houbie <ivo@houbrechts-it.be>"]
+
+[tool.poetry.scripts]
+pyprojectx = "pyprojectx.cli:main"
+
+[tool.poetry.dependencies]
+python = ">=3.6, <4.0"
+tomli = "^1.2.2"
+virtualenv = "^20.10.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+# idealy pylint should not be in here, but it is required by the Pycharm/Intellij plugin
+pylint = "^2.11.1"
+pytest-mock = "^3.6.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+
+[tool.pylint.format]
+max-line-length = 120
+variable-rgx = '^[a-z_][a-z0-9_]*$'
+[tool.pylint.messages_control]
+disable = [
+    "missing-docstring",
+    "unspecified-encoding"
+]
+[tool.pyprojectx]
+poetry = "poetry==1.1.11"
+black = "black==21.7b0"
+isort = "isort==5.9.3"
+pre-commit = "pre-commit"
+
+[tool.pyprojectx.alias]
+install = "poetry install"
+clean-install = "rm -r .venv || true && rm -r .pytest_cache || true && ./pw poetry install && ./pw pre-commit install"
+test = "poetry run pytest"
+check-pylint = "poetry run pylint pw src tests"
+black = "black pw src tests"
+isort = "isort pw src tests"
+check = "./pw test && ./pw check-pylint"
+build = "./pw isort && ./pw black && ./pw install && ./pw check"

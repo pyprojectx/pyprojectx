@@ -1,0 +1,8 @@
+#!/Users/ihoubr/nikedev/repos/pypx/pyprojectx/.pyprojectx/pyprojectx/0.9.4-py3.9/bin/python3
+# -*- coding: utf-8 -*-
+import re
+import sys
+from virtualenv.__main__ import run_with_catch
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(run_with_catch())
