@@ -19,9 +19,9 @@ class Config:
             with open(self._toml_path, "rb") as f:
                 toml_dict = tomli.load(f)
                 self._tools = toml_dict.get("tool", {}).get("pyprojectx", {})
-                self._aliases = self._tools.get("alias", {})
+                self._aliases = self._tools.get("aliases", {})
         except Exception as e:
-            raise Warning(f"Could not parse {self._toml_path}: {e}")
+            raise Warning(f"Could not parse {self._toml_path}: {e}") from e
 
     def get_tool_requirements(self, key) -> Iterable[str]:
         """

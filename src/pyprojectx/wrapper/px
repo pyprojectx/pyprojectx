@@ -1,0 +1,15 @@
+#!/bin/sh
+
+pwDir="$(pwd)"
+while [ "${pwDir}" != "" -a ! -e "${pwDir}/pw" ]
+do
+  pwDir="${pwDir%/*}"
+done
+
+if [ -e "${pwDir}/pw" ]
+then
+  /usr/bin/env python3 "${pwDir}/pw" "$@"
+else
+  echo "ERROR: no pw script found in any parent directory"
+  exit 1
+fi
