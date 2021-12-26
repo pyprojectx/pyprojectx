@@ -11,7 +11,7 @@ from pyprojectx.wrapper import pw
 
 # pylint: disable=redefined-outer-name
 
-PW_CMD = "pw.bat" if sys.platform == "win32" else "./pw"
+PW_CMD = ".\\pw" if sys.platform.startswith("win") else "./pw"
 
 
 @pytest.fixture
@@ -30,7 +30,8 @@ def tmp_project(tmp_dir):
 
 def test_logs_and_stdout_with_quiet(tmp_project):
     project_dir, env = tmp_project
-    cmd = f"{PW_CMD} -q pycowsay 'Hello px!'"
+    cmd = f"{PW_CMD} -q pycowsay Hello px!"
+    assert Path(project_dir, PW_CMD).is_file()
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
 
     assert (
@@ -45,22 +46,29 @@ def test_logs_and_stdout_with_quiet(tmp_project):
            ||----w |
            ||     ||
 
-"""
+""".replace(
+            "\n", os.linesep
+        )
     )
-    assert proc_result.stderr.decode("utf-8") == ""
+    if not sys.platform.startswith("win"):
+        assert proc_result.stderr.decode("utf-8") == ""
+
+    cmd = f"{PW_CMD} -q list-files *.toml"
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
+    assert proc_result.stdout.decode("utf-8").strip() == "pyproject.toml"
 
 
 def test_logs_and_stdout_when_alias_invoked_from_sub_directory_with_verbose(tmp_project):
     project_dir, env = tmp_project
     cwd = project_dir.joinpath("subdir")
     os.mkdir(cwd)
-    cmd = "../pw -vv combine-pw-scripts"
+    cmd = f"..{os.sep}{PW_CMD} -vv combine-pw-scripts"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=True)
 
     assert "< hi >" in proc_result.stdout.decode("utf-8")
     assert "< hello >" in proc_result.stdout.decode("utf-8")
     assert "creating pyprojectx venv in" in proc_result.stderr.decode("utf-8")
-    assert "INFO:pyprojectx.log:Running command in IsolatedVirtualEnv: pycowsay hi" in proc_result.stderr.decode(
+    assert "INFO:pyprojectx.log:Running command in isolated venv pycowsay: pycowsay hi" in proc_result.stderr.decode(
         "utf-8"
     )
     assert (
@@ -95,8 +103,8 @@ def test_output_with_errors(tmp_project):
     assert "'foo-bar' is not configured as pyprojectx tool or alias in" in proc_result.stderr.decode("utf-8")
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="no windows px script yet")
-def test_px_invoked_from_sub_directory_with_verbose(tmp_project):
+@pytest.mark.skipif(sys.platform.startswith("win"), reason="linux only")
+def test_linux_px_invoked_from_sub_directory_with_verbose(tmp_project):
     project_dir, env = tmp_project
     cwd = project_dir.joinpath("subdir")
     os.mkdir(cwd)

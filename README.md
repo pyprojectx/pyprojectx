@@ -7,7 +7,7 @@ Getting started with a Python project should be a one-liner:
 git clone https://github.com/houbie/pyprojectx.git && cd pyprojectx && ./pw build
 ```
 
-![Cast](https://raw.githubusercontent.com/houbie/pyprojectx/0.9.0/docs/poetry-build-cast.svg)
+![Cast](https://raw.githubusercontent.com/houbie/pyprojectx/main/docs/poetry-build-cast.svg)
 
 Pyprojectx provides a CLI wrapper for automatic installation of Python tools:
 * Make it be a breeze for others to get started with your project or tutorial
@@ -25,12 +25,12 @@ Python  >= 3.7 needs to be available on your PATH.
 
 ### osx / linux
 ```shell
-curl -s https://raw.githubusercontent.com/houbie/pyprojectx/0.9.0/src/pyprojectx/wrapper/pw.py -o pw && curl -s https://raw.githubusercontent.com/houbie/pyprojectx/0.9.0/src/pyprojectx/wrapper/pw.bat -o pw.bat && chmod a+x pw
+curl -s https://raw.githubusercontent.com/houbie/pyprojectx/main/src/pyprojectx/wrapper/pw.py -o pw && curl -s https://raw.githubusercontent.com/houbie/pyprojectx/main/src/pyprojectx/wrapper/pw.bat -o pw.bat && chmod a+x pw
 ```
 
 ### windows
 ```shell
-curl -s https://raw.githubusercontent.com/houbie/pyprojectx/0.9.0/src/pyprojectx/wrapper/pw.py -o pw && curl -s https://raw.githubusercontent.com/houbie/pyprojectx/0.9.0/src/pyprojectx/wrapper/pw.bat -o pw.bat
+curl -s https://raw.githubusercontent.com/houbie/pyprojectx/main/src/pyprojectx/wrapper/pw.py -o pw && curl -s https://raw.githubusercontent.com/houbie/pyprojectx/main/src/pyprojectx/wrapper/pw.bat -o pw.bat
 ```
 **NOTE** On windows you need to explicitly mark the osx/linux script as executable before adding it to version control.
 When using git:

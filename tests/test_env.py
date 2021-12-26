@@ -50,11 +50,11 @@ def test_isolation(tmp_dir):
     env.install()
     with pytest.raises(subprocess.CalledProcessError):
         debug = "import sys; import os; print(os.linesep.join(sys.path));"
-        subprocess.check_call([env.executable, "-c", f"{debug} import pyprojectx.env"])
+        subprocess.check_call([str(env.executable), "-c", f"{debug} import pyprojectx.env"])
 
 
 def test_isolated_env_install_arguments(mocker, tmp_dir):
-    mocker.patch("subprocess.run")
+    run_mock = mocker.patch("subprocess.run")
     env = IsolatedVirtualEnv(
         tmp_dir,
         "env-name",
@@ -62,10 +62,10 @@ def test_isolated_env_install_arguments(mocker, tmp_dir):
     )
     env.install()
 
-    subprocess.run.assert_called()
-    args = subprocess.run.call_args[0][0][:-1]
+    run_mock.assert_called()
+    args = run_mock.call_args[0][0][:-1]
     assert args == [
-        env.executable,
+        str(env.executable),
         "-Im",
         "pip",
         "install",
@@ -79,7 +79,7 @@ def test_default_pip_is_never_too_old(tmp_dir):
     env = IsolatedVirtualEnv(tmp_dir, "env-name", [])
     env.install()
     version = subprocess.check_output(
-        [env.executable, "-c", "import pip; print(pip.__version__)"], universal_newlines=True
+        [str(env.executable), "-c", "import pip; print(pip.__version__)"], universal_newlines=True
     ).strip()
     assert Version(version) >= Version("19.1")
 
@@ -104,13 +104,9 @@ def test_run(tmp_dir, capfd):
     captured = capfd.readouterr()
     assert captured.out.startswith("virtualenv")
 
-    env.run(["echo", "string", "with", "spaces"])
+    env.run("echo hello world")
     captured = capfd.readouterr()
-    assert captured.out == "string with spaces\n"
-
-    env.run("echo string with spaces")
-    captured = capfd.readouterr()
-    assert captured.out == "string with spaces\n"
+    assert captured.out.strip() == "hello world"
 
     set_verbosity(1)
     path = "%PATH%" if sys.platform == "win32" else "$PATH"
