@@ -14,8 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ Ubuntu, Windows ]
-#        python-version: [ "3.7", "3.8", "3.9", "3.10" ]
-        python-version: [ "3.10" ]
+        python-version: [ "3.7", "3.8", "3.9", "3.10" ]
         include:
           - os: Ubuntu
             image: ubuntu-latest
@@ -25,16 +24,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Cache .pyprojectx
+        uses: actions/cache@v2
+        env:
+          cache-name: .pyprojectx
+        with:
+          path: .pyprojectx
+          key: ${{ runner.os }}-pyprojectx
+
       - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Linux Build and test
-        if: ${{ matrix.os == 'Ubuntu' }}
-        run: ./pw build
-
-      - name: Windows Build and test
-        if: ${{ matrix.os == 'Windows' }}
-        shell: cmd
-        run: pw.bat build
+      - name: Test and build
+        run: python pw build

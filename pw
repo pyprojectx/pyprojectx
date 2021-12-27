@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 from venv import EnvBuilder
 
-VERSION = "0.7.0"
+VERSION = "0.9.4"
 
 PYPROJECTX_INSTALL_DIR_ENV_VAR = "PYPROJECTX_INSTALL_DIR"
 PYPROJECTX_PACKAGE_ENV_VAR = "PYPROJECTX_PACKAGE"
@@ -52,13 +52,13 @@ def get_options(args):
         or os.environ.get(PYPROJECTX_INSTALL_DIR_ENV_VAR, Path(__file__).with_name(DEFAULT_INSTALL_DIR))
     )
     options.toml_path = Path(options.toml) if options.toml else Path(__file__).with_name(PYPROJECT_TOML)
-
     if os.environ.get(PYPROJECTX_PACKAGE_ENV_VAR):
         options.version = "development"
         options.pyprojectx_package = os.environ.get(PYPROJECTX_PACKAGE_ENV_VAR)
     else:
         options.version = VERSION
         options.pyprojectx_package = f"pyprojectx~={VERSION}"
+    options.verbosity = 0 if options.quiet or not options.verbosity else options.verbosity
     return options
 
 
@@ -71,7 +71,7 @@ def arg_parser():
         "--toml",
         "-t",
         action="store",
-        help="he toml config file. Defaults to 'pyproject.toml' in the same directory as the pw script",
+        help="the toml config file. Defaults to 'pyproject.toml' in the same directory as the pw script",
     )
     parser.add_argument(
         "--install-dir",
@@ -98,6 +98,12 @@ def arg_parser():
         "-q",
         action="store_true",
         help="give no output",
+    )
+    parser.add_argument(
+        "--init",
+        choices=["global"],
+        help="initialize the global pyprojectx setup in you home directory; "
+        "Note: use a dash (-) for the mandatory cmd option",
     )
     parser.add_argument("cmd", nargs=1, help="The command or alias to execute.")
     parser.add_argument("cmd_args", nargs=argparse.REMAINDER, help="The arguments for the command or alias.")
