@@ -133,3 +133,4 @@ dmypy.json
 /.changelog.md
 /wrappers.zip
 /.vs
+/dist-zip

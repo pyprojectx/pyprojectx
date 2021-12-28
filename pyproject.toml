@@ -89,8 +89,10 @@ pw@ poetry version $RELEASE_VERSION
 sed -i -e "s/__version__/${RELEASE_VERSION}/g" src/pyprojectx/wrapper/pw.py
 # cleanup sed backup
 rm -r src/pyprojectx/wrapper/pw.py?*
-mv src/pyprojectx/wrapper/pw.py src/pyprojectx/wrapper/pw
-zip -j wrappers.zip src/pyprojectx/wrapper/pw*
+mkdir -p dist-zip
+cp src/pyprojectx/wrapper/pw.py dist-zip/pw
+cp src/pyprojectx/wrapper/pw.bat dist-zip/pw.bat
+zip -j wrappers.zip dist-zip/pw*
 awk '/-{3,}/{flag=1;next}/Release/{if (flag==1)exit}flag' CHANGELOG.md > .changelog.md
 """
 
