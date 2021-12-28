@@ -7,29 +7,29 @@ Getting started with a Python project should be a one-liner:
 git clone https://github.com/houbie/pyprojectx.git && cd pyprojectx && ./pw build
 ```
 
-![Cast](https://raw.githubusercontent.com/houbie/pyprojectx/0.9.1/docs/poetry-build-cast.svg)
+![Cast](https://raw.githubusercontent.com/houbie/pyprojectx/main/docs/poetry-build-cast.svg)
 
 Pyprojectx provides a CLI wrapper for automatic installation of Python tools:
 * Make it be a breeze for others to get started with your project or tutorial
 * Get reproducible builds by always using the correct versions of your build tools
-* Plays well with build tools like [Poetry](https://python-poetry.org/)
+* Plays well with build tools like [Poetry](https://python-poetry.org/) and [PDM](https://pdm.fming.dev/)
 
 Pyprojectx brings `npm run` to Python with:
 * less keystrokes
 * isolated dependencies: tools are not required to be development dependencies
 
 ## Installation
-Copy the [wrapper scripts](https://github.com/houbie/mm-github-pages-starter/releases/latest/download/wrappers.zip)
+Copy the [wrapper scripts](https://github.com/houbie/pyprojectx/releases/latest/download/wrappers.zip)
 into the root of your project.
 
 Python >= 3.7 must be available on your PATH.
 
 * osx / linux :
 ```shell
-curl -LO https://github.com/houbie/mm-github-pages-starter/releases/latest/download/wrappers.zip && unzip wrappers.zip && rm -f wrappers.zip
+curl -LO https://github.com/houbie/pyprojectx/releases/latest/download/wrappers.zip && unzip wrappers.zip && rm -f wrappers.zip
 ```
 
-* windows: unpack the [wrappers zip](https://github.com/houbie/mm-github-pages-starter/releases/latest/download/wrappers.zip)
+* windows: unpack the [wrappers zip](https://github.com/houbie/pyprojectx/releases/latest/download/wrappers.zip)
 
 **NOTE** On windows you need to explicitly mark the osx/linux script as executable before adding it to version control.
 When using git:
@@ -96,9 +96,8 @@ Aliases can be invoked as is or with extra arguments:
 ## Isolation
 Each tool gets installed in an isolated virtual environment.
 
-These are all located in the user's platform-specific home directory under _.pyprojectx/venvs_.
-
-This location can be modified by setting the `PYPROJECTX_HOME` environment variable (f.e. on your CI/CD server).
+These are all located in in the _.pyprojectx_ directory of your project
+(where _pyproject.toml_ is located).
 
 # Usage
 Instead of calling the commandline of a tool directly, prefix it with `path\to\pw`.
@@ -120,10 +119,11 @@ cd src
 Check _pw_ specific options with `pw --help`
 
 ## Bonus
-If you want to avoid typing `./pw` (or `../pw` when in a subdirectory), you can copy the _rp_ (_run pyprojectx_) script to a
-location on your PATH (f.e. _/usr/local/bin_, or create a symlink with `ln -fs $(pwd)/px /usr/local/bin/px`).
+If you want to avoid typing `./pw` (or `../pw` when in a subdirectory), you can install the _px_
+script in your home directory with `./pw --init global` (or `pw --init global` on Windows) and
+add _~/.pyprojectx_ to your PATH.
 
-From then on, you can replace _pw_ with _rp_ and invoke it from any (sub)directory containing the _pw_ script.
+From then on, you can replace _pw_ with _px_ and invoke it from any (sub)directory containing the _pw_ script.
 ```shell
 cd my-pyprojectx-project
 px test
@@ -132,7 +132,8 @@ px test sometest.py
 ```
 
 ## Uninstall / cleaning up
-Delete the _.pyprojectx_ directory in your project's root.
+* Delete the _.pyprojectx_ directory in your project's root.
+* Delete the global _.pyprojectx_ directory in your home directory.
 
 ## Why yet another tool when we already have pipx etc.?
 * As Python noob I had hard times setting up a project and building existing projects
@@ -154,10 +155,6 @@ Delete the _.pyprojectx_ directory in your project's root.
 * Projects that still use the **python-wraptor** scripts and need to be migrated to **pyprojectx**
   * [Pyprojectx examples](https://github.com/houbie/wrapped-pi)
   * [Facebook's PathPicker fork](https://github.com/houbie/PathPicker) (using Poetry)
-
-## TODO
-* px script for Windows
-* init script that copies the pw scripts and initializes pyproject.toml
 
 ## Development
 * Build/test:
