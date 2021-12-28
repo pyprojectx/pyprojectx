@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyprojectx"
-version = "0.9.5"
+version = "0.8.0"
 description = "Execute scripts from pyproject.toml, installing tools on-the-fly"
 license = "MIT"
 authors = ["Houbie <ivo@houbrechts-it.be>"]
@@ -59,13 +59,19 @@ pre-commit = "pre-commit"
 
 [tool.pyprojectx.aliases]
 install = "poetry install"
-run = "pyprojectx -t pyproject.toml "
+run = "poetry run pyprojectx -t pyproject.toml "
 outdated = "poetry show --outdated"
-clean = "rm -rf .venv  && rm -rf .pytest_cache && rm -rf dist"
-clean-all = "pw@ clean && rm -rf .pyprojectx"
+clean = """\
+rm -r .venv
+rm -r .pytest_cache
+rm -r dist"""
+clean-all = """\
+pw@ clean
+rm -r .pyprojectx"""
 black = "black src tests"
 isort = "isort src tests"
-test = "poetry run pytest"
+test = "poetry run pytest tests/unit"
+integration-test = "poetry run pytest tests/integration"
 check-pylint = "pylint src tests"
 check-black = "black src tests --check"
 check = "pw@ check-black && pw@ check-pylint && pw@ test"
@@ -82,11 +88,16 @@ pw@ poetry version $RELEASE_VERSION
 # replace __version__ in wrapper
 sed -i -e "s/__version__/${RELEASE_VERSION}/g" src/pyprojectx/wrapper/pw.py
 # cleanup sed backup
-rm -rf src/pyprojectx/wrapper/pw.py?*
+rm -r src/pyprojectx/wrapper/pw.py?*
 zip -j wrappers.zip src/pyprojectx/wrapper/pw*
 awk '/-{3,}/{flag=1;next}/Release/{if (flag==1)exit}flag' CHANGELOG.md > .changelog.md
 """
 
 [tool.pyprojectx.os.win.aliases]
-clean = "rmdir /s/q .venv & rmdir /s/q .pytest_cache & rmdir /s/q dist"
-clean-all = "pw@ clean & rmdir /s/q .pyprojectx"
+clean = """\
+rmdir /s/q .venv
+rmdir /s/q .pytest_cache
+rmdir /s/q dist"""
+clean-all = """\
+pw@ clean
+rmdir /s/q .pyprojectx"""
