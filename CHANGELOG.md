@@ -1,3 +1,3 @@
-Release v0.9.0 (2021-11-25)
+Release v0.8.2 (2021-12-28)
 ----------------------------
-MVP release
+First official release
