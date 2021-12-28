@@ -54,14 +54,16 @@ def _initialize_build_tool(tool, options):
 
     logger.info("installing %s...", tool)
     proc = subprocess.run(
-        [f"{SCRIPT_PREFIX}pw", "--toml", template, tool, "--version"], check=True, capture_output=True
+        f"{SCRIPT_PREFIX}pw --toml {template} {tool} --version", shell=True, check=True, capture_output=True
     )
     version = re.search(r"(\d+\.)+(\d+)", proc.stdout.decode("utf-8"))[0]
     old_requirement = f"{tool}>=1.1"
     new_requirement = f"{tool}=={version}"
     logger.info("setting version in %s : %s", PYPROJECT_TOML, new_requirement)
     _replace_in_file(old_requirement, new_requirement, template)
-    subprocess.run([f"{SCRIPT_PREFIX}pw", "--toml", template, tool, "init"] + options.cmd_args, check=True)
+    subprocess.run(
+        f"{SCRIPT_PREFIX}pw --toml {template} {tool} init " + " ".join(options.cmd_args), shell=True, check=True
+    )
     logger.debug("appending template to %s...", PYPROJECT_TOML)
     with open(template, "rt") as src:
         with open(PYPROJECT_TOML, "at") as dest:
