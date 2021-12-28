@@ -1,2 +1,2 @@
 @echo off
-python %~dp0pw %*
+python "%~dp0pw" %*

@@ -36,7 +36,7 @@ def test_parse_args():
 
 
 def test_run_tool(tmp_dir, mocker):
-    toml = Path(__file__).with_name("data").joinpath("test.toml")
+    toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
     run_mock = mocker.patch("subprocess.run")
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "tool-1"])
@@ -67,7 +67,7 @@ def test_run_tool(tmp_dir, mocker):
 
 
 def test_run_tool_with_args(tmp_dir, mocker):
-    toml = Path(__file__).with_name("data").joinpath("test.toml")
+    toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
     run_mock = mocker.patch("subprocess.run")
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "tool-1", "arg1", "@last arg"])
@@ -82,13 +82,13 @@ def test_run_tool_with_args(tmp_dir, mocker):
 
 
 def test_run_no_cmd(tmp_dir):
-    toml = Path(__file__).with_name("data").joinpath("test.toml")
+    toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
     with pytest.raises(SystemExit, match="2"):
         _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml)])
 
 
 def test_run_unknown_tool(tmp_dir):
-    toml = Path(__file__).with_name("data").joinpath("test.toml")
+    toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
     with pytest.raises(
         SystemExit,
         match="1",
@@ -97,7 +97,7 @@ def test_run_unknown_tool(tmp_dir):
 
 
 def test_run_tool_alias(tmp_dir, mocker):
-    toml = Path(__file__).with_name("data").joinpath("test.toml")
+    toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
     run_mock = mocker.patch("subprocess.run")
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "alias-1"])
@@ -111,7 +111,7 @@ def test_run_tool_alias(tmp_dir, mocker):
 
 
 def test_run_tool_alias_with_args(tmp_dir, mocker):
-    toml = Path(__file__).with_name("data").joinpath("test.toml")
+    toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
     run_mock = mocker.patch("subprocess.run")
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "alias-1", "alias-arg1", "alias-arg2"])
@@ -120,7 +120,7 @@ def test_run_tool_alias_with_args(tmp_dir, mocker):
 
 
 def test_run_explicit_tool_alias_with_arg(tmp_dir, mocker):
-    toml = Path(__file__).with_name("data").joinpath("test.toml")
+    toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
     run_mock = mocker.patch("subprocess.run")
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "alias-3", "alias-arg"])
@@ -134,7 +134,7 @@ def test_run_explicit_tool_alias_with_arg(tmp_dir, mocker):
 
 
 def test_combined_alias_with_arg(tmp_dir, mocker):
-    toml = Path(__file__).with_name("data").joinpath("test.toml")
+    toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
     run_mock = mocker.patch("subprocess.run")
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "combined-alias", "alias-arg"])
@@ -148,7 +148,7 @@ def test_combined_alias_with_arg(tmp_dir, mocker):
 
 
 def test_shell_command_alias(tmp_dir, mocker):
-    toml = Path(__file__).with_name("data").joinpath("test.toml")
+    toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
     run_mock = mocker.patch("subprocess.run")
 
     _run(

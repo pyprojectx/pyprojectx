@@ -16,7 +16,7 @@ import virtualenv
 from pyprojectx.log import logger
 
 
-def _calculate_path(base_path: Path, name: str, requirements: Iterable[str]) -> Path:
+def calculate_path(base_path: Path, name: str, requirements: Iterable[str]) -> Path:
     md5 = hashlib.md5()
     for req in requirements:
         md5.update(req.strip().encode())
@@ -39,7 +39,7 @@ class IsolatedVirtualEnv:
         self._name = name
         self._base_path = base_path
         self._requirements = requirements
-        self._path = _calculate_path(base_path, name, self._requirements)
+        self._path = calculate_path(base_path, name, self._requirements)
         self._scripts_path_file = self._path.joinpath(".scripts_path")
         self._executable = None
 

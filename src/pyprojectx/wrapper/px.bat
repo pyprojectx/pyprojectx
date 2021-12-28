@@ -1,16 +1,22 @@
-set I = %cd%
+@echo off
+setlocal
+
+set "curDir=%cd%"
 
 :findPw
-if [not] exist %~fIpw (
-    if exist %~fI.. (
-        set I = %~fI..
+if not exist "%curDir%\pw" (
+    for %%I in ("%curDir%\..") do (
+        set "curDir=%%~fI"
+        set "drive=%%~dI"
+    )
+    if not "%curDir%" == "%drive%\" (
         goto findPw
     )
 )
 
-if exist %~fIpw (
-  python %~fIpw %*
+if exist "%curDir%\pw" (
+  python "%curDir%\pw" %*
 ) else (
-    echo "ERROR: no pw script found in any parent directory"
-    exit 1
+    echo ERROR: no pw script found in any parent directory
+    exit /b 1
 )

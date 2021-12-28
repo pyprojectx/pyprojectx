@@ -1,0 +1,30 @@
+
+[tool.pyprojectx]
+poetry = "poetry>=1.1"
+
+# example tools commonly used in poetry projects
+#black = "black"
+#isort = "isort"
+#pylint = "pylint"
+#pre-commit = "pre-commit"
+
+[tool.pyprojectx.aliases]
+install = "poetry install"
+run = "poetry run"
+outdated = "poetry show --outdated"
+test = "poetry run pytest"
+
+# example aliases
+#clean = "rm -rf .venv  && rm -rf .pytest_cache && rm -rf dist"
+#clean-all = "pw@ clean && rm -rf .pyprojectx"
+#black = "black src tests"
+#isort = "isort src tests"
+#check-pylint = "pylint src tests"
+#check-black = "black src tests --check"
+#check = "pw@ check-black && pw@ check-pylint && pw@ test"
+#build = "pw@ install && pw@ check && pw@ poetry build"
+
+[tool.pyprojectx.os.win.aliases]
+# example os specific aliases
+#clean = "rmdir /s/q .venv & rmdir /s/q .pytest_cache & rmdir /s/q dist"
+#clean-all = "pw@ clean & rmdir /s/q .pyprojectx"
