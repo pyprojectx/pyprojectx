@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyprojectx"
-version = "0.8.4"
+version = "0.8.5"
 description = "Execute scripts from pyproject.toml, installing tools on-the-fly"
 license = "MIT"
 authors = ["Houbie <ivo@houbrechts-it.be>"]

@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 from venv import EnvBuilder
 
-VERSION = "0.8.3"
+VERSION = "0.8.4"
 
 PYPROJECTX_INSTALL_DIR_ENV_VAR = "PYPROJECTX_INSTALL_DIR"
 PYPROJECTX_PACKAGE_ENV_VAR = "PYPROJECTX_PACKAGE"
@@ -103,17 +103,18 @@ def arg_parser():
         "--info",
         "-i",
         action="store_true",
-        help="Show the configuration details of cmd in stead of running it. "
-        "If cmd is not configured as tool or alias, a list with all available tools and aliases is shown.",
+        help="Show the configuration details of a command in stead of running it. "
+        "If the command is not configured as tool or alias, a list with all available tools and aliases is shown.",
     )
     parser.add_argument(
         "--init",
         action="store_true",
         help="Create or prepare a pyproject.toml and pyprojectx wrapper scripts. "
-        "Run with '--init help' to show available init commands",
+        "Run with '--init help' to show available init options",
     )
-    parser.add_argument("cmd", nargs=1, help="The command or alias to execute.")
-    parser.add_argument("cmd_args", nargs=argparse.REMAINDER, help="The arguments for the command or alias.")
+    parser.add_argument(
+        "command", nargs=argparse.REMAINDER, help="The command/alias with optional arguments to execute."
+    )
     return parser
 
 
