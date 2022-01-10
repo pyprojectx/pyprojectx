@@ -65,3 +65,30 @@ def test_invalid_toml():
 def test_unexisting_toml():
     with pytest.raises(Warning, match=r"No such file or directory"):
         Config(Path(__file__).parent.with_name("data").joinpath("unexisting.toml"))
+
+
+@pytest.mark.parametrize(
+    "shorcut, aliases",
+    [
+        ("aaa-bbb-ccc", ["aaa-bbb-ccc"]),
+        ("aaaBbbDdd", ["aaaBbbDdd"]),
+        ("b123-c123-d123", ["b123-c123-d123"]),
+        ("c123D123", ["c123D123"]),
+        ("d123-E123", ["d123-E123"]),
+        ("aBC", ["aaa-bbb-ccc"]),
+        ("aaBbCc", ["aaa-bbb-ccc"]),
+        ("e", []),
+        ("aC", []),
+        ("A", []),
+        ("E", ["E"]),
+        ("a", ["aaa-bbb-ccc", "aaaBbbDdd"]),
+        ("aB", ["aaa-bbb-ccc", "aaaBbbDdd"]),
+        ("b", ["b123-c123-d123"]),
+        ("bCD", ["b123-c123-d123"]),
+        ("c1D1", ["c123D123"]),
+        ("dE", ["d123-E123"]),
+    ],
+)
+def test_find_aliases(shorcut, aliases):
+    config = Config(Path(__file__).parent.with_name("data").joinpath("alias-abbreviations.toml"))
+    assert config.find_aliases(shorcut) == aliases

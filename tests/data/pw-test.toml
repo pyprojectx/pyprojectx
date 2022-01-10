@@ -3,9 +3,10 @@ pycowsay = "pycowsay==0.0.0.1"
 failing-install = "pycowsay==123.456.789.0"
 
 [tool.pyprojectx.aliases]
-say-hi = "pycowsay hi"
-say-hello = "@pycowsay: pycowsay hello"
-combine-pw-scripts = "pw@say-hi && pw@say-hello"
+pycowsay = "pycowsay"
+pycowsay-hi = "pycowsay hi"
+pycowsay-hello = "@pycowsay: pycowsay hello"
+combine-pw-scripts = "pw@pycowsay-hi && pw@pycowsay-hello"
 failing-shell = "go-foo-bar"
 list-files = "ls"
 

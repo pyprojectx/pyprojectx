@@ -1,0 +1,11 @@
+[tool.pyprojectx]
+tool-1 = ["req1", "req2"]
+tool-2 = 'tool2 requirement'
+
+[tool.pyprojectx.aliases]
+aaa-bbb-ccc = ""
+aaaBbbDdd = ""
+b123-c123-d123 = ""
+c123D123 = ""
+d123-E123 = ""
+E = ""

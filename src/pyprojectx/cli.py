@@ -25,15 +25,29 @@ def _run(argv: List[str]) -> None:
         config.show_info(cmd)
         return
 
-    tool, alias_cmd = config.get_alias(cmd)
-    if alias_cmd:
-        _run_alias(
-            tool,
-            alias_cmd,
-            argv,
-            requirements=config.get_tool_requirements(tool),
-            options=options,
-        )
+    aliases = config.find_aliases(cmd)
+    logger.debug("Matching aliases for %s: %s", cmd, ", ".join(aliases))
+    if aliases:
+        if len(aliases) > 1:
+            print(
+                f"{pw.RED}'{cmd}' is ambiguous",
+                file=sys.stderr,
+            )
+            print(
+                f"{pw.BLUE}Candidates are:{pw.RESET}",
+                file=sys.stderr,
+            )
+            print(", ".join(aliases), file=sys.stderr)
+            raise SystemExit(1)
+        tool, alias_cmd = config.get_alias(aliases[0])
+        if alias_cmd:
+            _run_alias(
+                tool,
+                alias_cmd,
+                argv,
+                requirements=config.get_tool_requirements(tool),
+                options=options,
+            )
     elif config.is_tool(cmd):
         _run_in_tool_venv(
             cmd,
@@ -42,10 +56,7 @@ def _run(argv: List[str]) -> None:
             options=options,
         )
     else:
-        print(
-            f"{pw.RED}'{cmd}' is not configured as pyprojectx tool or alias in {options.toml_path}{pw.RESET}",
-            file=sys.stderr,
-        )
+        config.show_info(cmd, error=True)
         raise SystemExit(1)
 
 
@@ -104,7 +115,11 @@ def _resolve_alias_references(alias_cmd: str, cmd: str, argv: List[str]) -> str:
 
 def _get_options(args):
     options = pw.get_options(args)
-    options.cmd = options.cmd[0]
+    if options.command:
+        options.cmd, *options.cmd_args = options.command
+    else:
+        options.cmd = None
+        options.cmd_args = []
     options.venvs_dir = options.install_path.joinpath("venvs")
     set_verbosity(options.verbosity)
     logger.debug("Parsed cli arguments: %s", options)

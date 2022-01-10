@@ -1,7 +1,8 @@
 import re
 import sys
+from itertools import zip_longest
 from pathlib import Path
-from typing import Iterable, Optional, Tuple
+from typing import Iterable, List, Optional, Tuple
 
 import tomli
 
@@ -27,27 +28,29 @@ class Config:
         except Exception as e:
             raise Warning(f"Could not parse {self._toml_path}: {e}") from e
 
-    def show_info(self, cmd):
+    def show_info(self, cmd, error=False):
         tool, alias = self.get_alias(cmd)
+        out = sys.stderr if error else sys.stdout
         if alias:
             print(f"{cmd}{BLUE} is an alias in {CYAN}{self._toml_path.absolute()}", file=sys.stderr)
             if tool:
                 print(f"{BLUE}and runs in the {CYAN}{tool}{BLUE} tool context", file=sys.stderr)
             print(f"{BLUE}command:{RESET}", file=sys.stderr)
-            print(alias)
+            print(alias, file=out)
         elif self.is_tool(cmd):
             print(f"{cmd}{BLUE} is a tool in {CYAN}{self._toml_path.absolute()}", file=sys.stderr)
             print(f"{BLUE}requirements:{RESET}", file=sys.stderr)
-            print(self.get_tool_requirements(cmd))
+            print(self.get_tool_requirements(cmd), file=out)
         else:
-            print(
-                f"{cmd}{BLUE} is not configured as tool or alias in {self._toml_path.absolute()}:{RESET}",
-                file=sys.stderr,
-            )
+            if cmd:
+                print(
+                    f"{cmd}{BLUE} is not configured as tool or alias in {self._toml_path.absolute()}:{RESET}",
+                    file=sys.stderr,
+                )
             print(f"{BLUE}available aliases:{RESET}", file=sys.stderr)
-            print("\n".join(self._aliases.keys()))
+            print("\n".join(self._aliases.keys()), file=out)
             print(f"{BLUE}available tools:{RESET}", file=sys.stderr)
-            print("\n".join(self._tools.keys() - ["aliases", "os"]))
+            print("\n".join(self._tools.keys() - ["aliases", "os"]), file=out)
 
     def get_tool_requirements(self, key) -> Iterable[str]:
         """
@@ -96,6 +99,21 @@ class Config:
             return tool, alias_cmd
         return None, alias_cmd
 
+    def find_aliases(self, abbrev: str) -> List[str]:
+        """
+        Find all alias keys that match the abbreviation.
+        The abbreviation can use camel case patterns that are expanded to match camel case and kebab case names.
+        For example the pattern foBa (or even fB) matches fooBar and foo-bar.
+        If the abbreviation is exactly equal to an alias key, only that key is returned, even if the abbreviation
+        matches other alias keys.
+        :param abbrev: abbreviated or full alias key to search for
+        :return: a list of matching alias keys
+        """
+        if abbrev in self._aliases.keys():
+            return [abbrev]
+
+        return [key for key in self._aliases.keys() if camel_match(abbrev, key)]
+
     def __repr__(self):
         return str(self._tools)
 
@@ -106,3 +124,18 @@ class Config:
             if sys.platform.startswith(os_key) and isinstance(os_dict[os_key], dict):
                 aliases.update(os_dict[os_key].get("aliases", {}))
         return aliases
+
+
+def camel_match(abbrev, key):
+    abbrev_parts = to_camel_parts(abbrev)
+    full_parts = to_camel_parts(key)
+    return all(f.startswith(s) for s, f in zip_longest(abbrev_parts, full_parts, fillvalue=""))
+
+
+def to_camel_parts(key):
+    if not key:
+        return []
+    if len(key) < 2:
+        return [key]
+    camel = re.sub(r"(-\w)", lambda m: m.group(0)[1].upper(), key)
+    return filter(len, re.split("([A-Z][^A-Z]*)", camel[0].lower() + camel[1:]))
