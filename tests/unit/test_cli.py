@@ -83,7 +83,7 @@ def test_run_tool_with_args(tmp_dir, mocker):
 
 def test_run_no_cmd(tmp_dir):
     toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
-    with pytest.raises(SystemExit, match="2"):
+    with pytest.raises(SystemExit, match="1"):
         _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml)])
 
 

@@ -41,9 +41,8 @@ git update-index --chmod=+x pw
 ## Configuration
 Add the _tool.pyprojectx_ section inside _pyproject.toml_ in your project's root directory.
 
-Each entry has the form
-
-`tool = "pip-install-arguments"`
+Each entry has the form `tool = "pip-requirements"`, where _pip-requirements_ adheres to the
+[requirements file format](https://pip.pypa.io/en/stable/reference/requirements-file-format/).
 
 Example:
 ```toml
@@ -52,7 +51,7 @@ Example:
 poetry = "poetry==1.1.11"
 # use the latest black
 black = "black"
-# install flake8 in combination with plugins
+# install flake8 in combination with plugins; one line per requirement 
 flake8 = """
 flake8
 flake8-bandit
@@ -96,7 +95,7 @@ Aliases can be invoked as is or with extra arguments:
 ## Isolation
 Each tool gets installed in an isolated virtual environment.
 
-These are all located in in the _.pyprojectx_ directory of your project
+These are all located in the _.pyprojectx_ directory of your project
 (where _pyproject.toml_ is located).
 
 # Usage
@@ -116,9 +115,29 @@ cd src
 ..\pw black *.py
 ```
 
+When you run an alias on the command-line, you don’t have to provide the full name of the alias.
+You only need to provide enough of the alias name to uniquely identify it.
+For example, it’s likely `./pw che` is enough to run the _check_ alias if it exists.
+
+You can use camel case patterns for more complex abbreviations. These patterns are expanded to match camel case
+and kebab case names. For example the pattern foBa (or even fB) matches fooBar and foo-bar.
+
+**NOTE** aliases can hide tool commands. F.e. a _pylint-src_ alias will hide the _pylint_ tool and will always run
+when running `./pw pylint some args`. This can be solved by making sure that no alias name starts with _pylint_ or by
+adding _pylint_ as an alias: `pylint="pylint"`.
+
 Check _pw_ specific options with `pw --help`
 
-## Bonus
+## Project initialization
+Initialize a new or existing project with the _--init_ option.
+* `./pw --init project`: add pyprojectx example sections to an existing or new _pyproject.toml_ in the current directory.
+* `./pw --init poetry`: initialize a [Poetry](https://python-poetry.org/) project and add pyprojectx example sections to _pyproject.toml_.
+* `./pw --init pdm`: initialize a [PDM](https://pdm.fming.dev/) project and add pyprojectx example sections to _pyproject.toml_.
+* `./pw --init global`: initialize a global pyprojectx setup in your home directory that can be accessed with the _pgx_ command.
+This turns pyprojectx into a lightweight [Pipex](https://pypa.github.io/pipx/) alternative.
+* `./pw --init` or `./pw --init help`:  show initializer help.
+
+## px: run pw from any subdirectory
 If you want to avoid typing `./pw` (or `../pw` when in a subdirectory), you can install the _px_
 script in your home directory with `./pw --init global` (or `pw --init global` on Windows) and
 add _~/.pyprojectx_ to your PATH.
@@ -138,7 +157,7 @@ px test sometest.py
 ## Why yet another tool when we already have pipx etc.?
 * As Python noob I had hard times setting up a project and building existing projects
 * There is always someone in the team having issues with his setup, either with a specific tool, with Homebrew, pipx, ...
-* Adding tools as dev dependencies often leads to dependency conflicts
+* Adding tools as dev dependencies impacts your production dependencies and can even lead to unresolvable conflicts
 * Different projects often require different versions of the same tool
 
 ## Best practices
@@ -148,7 +167,6 @@ px test sometest.py
 * Pin down the version of your build tool to prevent the "project doesn't build anymore" syndrome.
   Eventually a new version of the build tool with breaking changes will be released.
 * There is a category of tools that you don't want to version: tools that interact with changing environments.
-  You probably want to update those on a regular basis by running `./pw --upgrade my-evolving-tool`.
 
 ## Examples
 * This project (using Poetry)

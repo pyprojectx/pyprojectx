@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyprojectx"
-version = "0.8.3"
+version = "0.8.4"
 description = "Execute scripts from pyproject.toml, installing tools on-the-fly"
 license = "MIT"
 authors = ["Houbie <ivo@houbrechts-it.be>"]
@@ -66,16 +66,17 @@ rm -r .venv
 rm -r .pytest_cache
 rm -r dist"""
 clean-all = """\
-pw@ clean
+pw@clean
 rm -r .pyprojectx"""
 black = "black src tests"
 isort = "isort src tests"
-test = "poetry run pytest tests/unit"
+unit-test = "poetry run pytest tests/unit"
 integration-test = "poetry run pytest tests/integration"
+test = "pw@unit-test && pw@integration-test"
 check-pylint = "pylint src tests"
 check-black = "black src tests --check"
-check = "pw@ check-black && pw@ check-pylint && pw@ test"
-build = "pw@ install && pw@ check && pw@ poetry build"
+check = "pw@check-black && pw@check-pylint && pw@test"
+build = "pw@install && pw@check && pw@poetry build"
 
 # used in github actions:
 publish = "poetry publish --username __token__"
@@ -84,7 +85,7 @@ prep-release = """\
 rm -f wrappers.zip .changelog.md
 # extract version from tag
 RELEASE_VERSION="${GITHUB_REF##*/v}"
-pw@ poetry version $RELEASE_VERSION
+pw@poetry version $RELEASE_VERSION
 # replace __version__ in wrapper
 sed -i -e "s/__version__/${RELEASE_VERSION}/g" src/pyprojectx/wrapper/pw.py
 # cleanup sed backup
@@ -102,5 +103,5 @@ rmdir /s/q .venv
 rmdir /s/q .pytest_cache
 rmdir /s/q dist"""
 clean-all = """\
-pw@ clean
+pw@clean
 rmdir /s/q .pyprojectx"""

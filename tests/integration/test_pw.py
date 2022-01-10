@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -56,6 +57,21 @@ def test_logs_and_stdout_when_alias_invoked_from_sub_directory_with_verbose(tmp_
     )
 
 
+def test_alias_abbreviations(tmp_project):
+    project_dir, env = tmp_project
+    cmd = f"{SCRIPT_PREFIX}pw -q pHe"
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
+    assert "< hello >" in proc_result.stdout.decode("utf-8")
+    assert proc_result.stderr.decode("utf-8") == ""
+
+    cmd = f"{SCRIPT_PREFIX}pw -q pycow"
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
+    assert proc_result.returncode
+    assert "'pycow' is ambiguous" in proc_result.stderr.decode("utf-8")
+    assert "pycowsay, pycowsay-hi, pycowsay-hello" in proc_result.stderr.decode("utf-8")
+    assert proc_result.stdout.decode("utf-8") == ""
+
+
 def test_output_with_errors(tmp_project):
     project_dir, env = tmp_project
     cmd = f"{SCRIPT_PREFIX}pw -q failing-install"
@@ -79,4 +95,5 @@ def test_output_with_errors(tmp_project):
 
     assert proc_result.returncode
     assert proc_result.stdout.decode("utf-8") == ""
-    assert "'foo-bar' is not configured as pyprojectx tool or alias in" in proc_result.stderr.decode("utf-8")
+    stderr = proc_result.stderr.decode("utf-8")
+    assert re.search("foo-bar.+is not configured as tool or alias in.+pyproject.toml", stderr)

@@ -28,7 +28,6 @@ jobs:
         run: |
           python pw prep-release
           python pw build
-          python pw integration-test
 
       - name: Create github release
         uses: softprops/action-gh-release@v1
