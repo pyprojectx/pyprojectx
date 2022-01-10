@@ -62,14 +62,16 @@ def test_alias_abbreviations(tmp_project):
     cmd = f"{SCRIPT_PREFIX}pw -q pHe"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
     assert "< hello >" in proc_result.stdout.decode("utf-8")
-    assert proc_result.stderr.decode("utf-8") == ""
+    if not sys.platform.startswith("win"):
+        assert proc_result.stderr.decode("utf-8") == ""
 
     cmd = f"{SCRIPT_PREFIX}pw -q pycow"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
     assert proc_result.returncode
     assert "'pycow' is ambiguous" in proc_result.stderr.decode("utf-8")
     assert "pycowsay, pycowsay-hi, pycowsay-hello" in proc_result.stderr.decode("utf-8")
-    assert proc_result.stdout.decode("utf-8") == ""
+    if not sys.platform.startswith("win"):
+        assert proc_result.stdout.decode("utf-8") == ""
 
 
 def test_output_with_errors(tmp_project):
