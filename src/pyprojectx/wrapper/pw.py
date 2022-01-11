@@ -64,7 +64,8 @@ def get_options(args):
 
 def arg_parser():
     parser = argparse.ArgumentParser(
-        description="Execute commands or aliases defined in the [tool.pyprojectx] section of pyproject.toml.",
+        description="Execute commands or aliases defined in the [tool.pyprojectx] section of pyproject.toml. "
+        "Use the -i or --info option to see available tools and aliases.",
     )
     parser.add_argument("--version", action="version", version=VERSION)
     parser.add_argument(
