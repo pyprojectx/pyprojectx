@@ -24,14 +24,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Cache .pyprojectx
-        uses: actions/cache@v2
-        env:
-          cache-name: .pyprojectx
-        with:
-          path: .pyprojectx
-          key: ${{ runner.os }}-pyprojectx
-
       - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
         uses: actions/setup-python@v2
         with:
