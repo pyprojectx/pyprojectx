@@ -64,7 +64,6 @@ The _tool.pyprojectx.aliases_ section can contain optional commandline aliases i
 
 `alias = [@tool_key:] command`
 
-
 Example:
 ```toml
 [tool.pyprojectx.alias]
