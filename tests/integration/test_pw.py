@@ -4,6 +4,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 from pyprojectx.initializer.initializers import SCRIPT_PREFIX
 
 # pylint: disable=redefined-outer-name
@@ -74,28 +76,24 @@ def test_alias_abbreviations(tmp_project):
         assert proc_result.stdout.decode("utf-8") == ""
 
 
-def test_output_with_errors(tmp_project):
+@pytest.mark.parametrize(
+    "cmd, stderr",
+    [
+        (
+            f"{SCRIPT_PREFIX}pw -q failing-install",
+            "PYPROJECTX ERROR: installation of 'failing-install' failed with exit code",
+        ),
+        (f"{SCRIPT_PREFIX}pw -q failing-shell", "go-foo-bar"),
+        (f"{SCRIPT_PREFIX}pw -q foo-bar", "foo-bar.+is not configured as tool or alias in.+pyproject.toml"),
+        (
+            f"{SCRIPT_PREFIX}pw",
+            "usage: pyprojectx",
+        ),
+    ],
+)
+def test_output_with_errors(cmd, stderr, tmp_project):
     project_dir, env = tmp_project
-    cmd = f"{SCRIPT_PREFIX}pw -q failing-install"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
-
     assert proc_result.returncode
     assert proc_result.stdout.decode("utf-8") == ""
-    assert "PYPROJECTX ERROR: installation of 'failing-install' failed with exit code" in proc_result.stderr.decode(
-        "utf-8"
-    )
-
-    cmd = f"{SCRIPT_PREFIX}pw -q failing-shell"
-    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
-
-    assert proc_result.returncode
-    assert proc_result.stdout.decode("utf-8") == ""
-    assert "go-foo-bar" in proc_result.stderr.decode("utf-8")
-
-    cmd = f"{SCRIPT_PREFIX}pw -q foo-bar"
-    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
-
-    assert proc_result.returncode
-    assert proc_result.stdout.decode("utf-8") == ""
-    stderr = proc_result.stderr.decode("utf-8")
-    assert re.search("foo-bar.+is not configured as tool or alias in.+pyproject.toml", stderr)
+    assert re.search(stderr, proc_result.stderr.decode("utf-8"))

@@ -25,6 +25,10 @@ def _run(argv: List[str]) -> None:
         config.show_info(cmd)
         return
 
+    if not cmd:
+        pw.arg_parser().print_help(file=sys.stderr)
+        raise SystemExit(1)
+
     aliases = config.find_aliases(cmd)
     logger.debug("Matching aliases for %s: %s", cmd, ", ".join(aliases))
     if aliases:
