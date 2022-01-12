@@ -150,7 +150,7 @@ def initialize_global(options):
         print(
             f"Add the scripts to your path, by adding\n"
             f"{RESET}{global_dir.parent.absolute()}\n"
-            f"{BLUE}to the path environment variable.",
+            f"{BLUE}to the path environment variable.{RESET}",
             file=sys.stderr,
         )
     else:
