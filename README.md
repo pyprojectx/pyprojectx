@@ -169,9 +169,7 @@ px test sometest.py
 
 ## Examples
 * This project (using Poetry)
-* Projects that still use the **python-wraptor** scripts and need to be migrated to **pyprojectx**
-  * [Pyprojectx examples](https://github.com/houbie/wrapped-pi)
-  * [Facebook's PathPicker fork](https://github.com/houbie/PathPicker) (using Poetry)
+* [px-demo](https://github.com/houbie/px-demo)
 
 ## Development
 * Build/test:
