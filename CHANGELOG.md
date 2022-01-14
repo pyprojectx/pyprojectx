@@ -1,4 +1,4 @@
-Release v0.8.5 (TBD)
+Release v0.8.5 (2022-01-14)
 ----------------------------
 ### Bug Fixes
 - Display help when running pw without any option or command
