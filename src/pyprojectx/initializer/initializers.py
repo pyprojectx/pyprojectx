@@ -157,7 +157,10 @@ def initialize_global(options):
         print(
             f"Add the scripts to your PATH, f.e. by appending following to your shell's profile"
             f" ({RESET}~/.profile{BLUE}, {RESET}~/.zshrc{BLUE}, {RESET}~/..bashrc{BLUE}, ...):\n"
-            f"{RESET}export PATH=$PATH:{global_dir.parent.absolute()}, file=sys.stderr"
+            f"{RESET}export PATH=$PATH:{global_dir.parent.absolute()}"
+            f"\nOr for xonsh's ~/.xonshrc append the following\n"
+            f"{RESET}$PATH.append('{global_dir.parent.absolute()}')",
+            file=sys.stderr,
         )
         print(
             f"{BLUE}Run {RESET}px --info -{BLUE} to see the available tools and aliases in your project.",
