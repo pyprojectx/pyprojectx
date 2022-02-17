@@ -119,7 +119,7 @@ def test_post_install(tmp_project):
 
 
   ------------------
-< after post-install >
+< after-post-install >
   ------------------
    \\   ^__^
     \\  (oo)\\_______

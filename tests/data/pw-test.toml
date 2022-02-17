@@ -13,7 +13,7 @@ pycowsay-hello = "@pycowsay: pycowsay hello"
 combine-pw-scripts = "pw@pycowsay-hi && pw@pycowsay-hello"
 failing-shell = "go-foo-bar"
 list-files = "ls"
-say-post-install = "@post-install-pycowsay: pycowsay 'after post-install'"
+say-post-install = "@post-install-pycowsay: pycowsay after-post-install"
 create-file = "touch post-install-file.txt"
 
 [tool.pyprojectx.os.win.aliases]
