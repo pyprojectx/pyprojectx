@@ -16,10 +16,12 @@ import virtualenv
 from pyprojectx.log import logger
 
 
-def calculate_path(base_path: Path, name: str, requirements: Iterable[str]) -> Path:
+def calculate_path(base_path: Path, name: str, requirements: Iterable[str], post_install: str) -> Path:
     md5 = hashlib.md5()
     for req in requirements:
         md5.update(req.strip().encode())
+    if post_install:
+        md5.update(post_install.strip().encode())
     return Path(
         base_path, f"{name.lower()}-{md5.hexdigest()}-py{sys.version_info.major}.{sys.version_info.minor}"
     ).absolute()
@@ -30,16 +32,16 @@ class IsolatedVirtualEnv:
     Encapsulates the location and installation of an isolated virtual environment.
     """
 
-    def __init__(self, base_path: Path, name: str, requirements: Iterable[str]) -> None:
+    def __init__(self, base_path: Path, name: str, requirements_config: dict) -> None:
         """
         :param base_path: The base path for all environments
         :param name: The name for the environment
-        :param requirements: The requirements to install in the environment
+        :param requirements_config: The requirements and post-install script to install in the environment
         """
         self._name = name
         self._base_path = base_path
-        self._requirements = requirements
-        self._path = calculate_path(base_path, name, self._requirements)
+        self._requirements = requirements_config.get("requirements", [])
+        self._path = calculate_path(base_path, name, self._requirements, requirements_config.get("post-install"))
         self._scripts_path_file = self._path.joinpath(".scripts_path")
         self._executable = None
 

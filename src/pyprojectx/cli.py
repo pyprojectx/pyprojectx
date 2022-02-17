@@ -93,7 +93,7 @@ def _run_in_tool_venv(
     pw_args,
 ) -> None:
     logger.debug("Running tool command in virtual environment, tool: %s, full command: %s", tool, full_cmd)
-    venv = IsolatedVirtualEnv(options.venvs_dir, tool, requirements["requirements"])
+    venv = IsolatedVirtualEnv(options.venvs_dir, tool, requirements)
     if not venv.is_installed or options.force_install:
         try:
             venv.install(quiet=options.quiet)

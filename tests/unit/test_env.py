@@ -15,10 +15,12 @@ def test_isolated_env_path(tmp_dir):
     env = IsolatedVirtualEnv(
         tmp_dir,
         "env-name",
-        [
-            "requirement1",
-            "requirement2",
-        ],
+        {
+            "requirements": [
+                "requirement1",
+                "requirement2",
+            ]
+        },
     )
     assert (
         f"{tmp_dir.name}{os.sep}"
@@ -28,7 +30,7 @@ def test_isolated_env_path(tmp_dir):
 
 
 def test_isolated_env_install(tmp_dir):
-    env = IsolatedVirtualEnv(tmp_dir, "env-name", [])
+    env = IsolatedVirtualEnv(tmp_dir, "env-name", {})
     assert not env.is_installed
 
     env.install()
@@ -37,7 +39,7 @@ def test_isolated_env_install(tmp_dir):
 
 
 def test_isolated_env_remove(tmp_dir):
-    env = IsolatedVirtualEnv(tmp_dir, "env-name", [])
+    env = IsolatedVirtualEnv(tmp_dir, "env-name", {})
     env.install()
     assert env.path.exists()
     env.remove()
@@ -46,7 +48,7 @@ def test_isolated_env_remove(tmp_dir):
 
 def test_isolation(tmp_dir):
     subprocess.check_call([sys.executable, "-c", "import pyprojectx.env"])
-    env = IsolatedVirtualEnv(tmp_dir, "env-name", [])
+    env = IsolatedVirtualEnv(tmp_dir, "env-name", {})
     env.install()
     with pytest.raises(subprocess.CalledProcessError):
         debug = "import sys; import os; print(os.linesep.join(sys.path));"
@@ -58,7 +60,7 @@ def test_isolated_env_install_arguments(mocker, tmp_dir):
     env = IsolatedVirtualEnv(
         tmp_dir,
         "env-name",
-        ["some", "requirements"],
+        {"requirements": ["some", "requirements"]},
     )
     env.install()
 
@@ -76,7 +78,7 @@ def test_isolated_env_install_arguments(mocker, tmp_dir):
 
 
 def test_default_pip_is_never_too_old(tmp_dir):
-    env = IsolatedVirtualEnv(tmp_dir, "env-name", [])
+    env = IsolatedVirtualEnv(tmp_dir, "env-name", {})
     env.install()
     version = subprocess.check_output(
         [str(env.executable), "-c", "import pip; print(pip.__version__)"], universal_newlines=True
@@ -88,9 +90,11 @@ def test_run(tmp_dir, capfd):
     env = IsolatedVirtualEnv(
         tmp_dir,
         "env-name",
-        [
-            "virtualenv==20.10.0",
-        ],
+        {
+            "requirements": [
+                "virtualenv==20.10.0",
+            ]
+        },
     )
     env.install()
     captured = capfd.readouterr()

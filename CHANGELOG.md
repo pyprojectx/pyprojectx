@@ -1,3 +1,8 @@
+Release v0.8.7 (2022-02-17)
+----------------------------
+### Features & Improvements
+- Re-install a tool when its post-install script has changed.
+
 Release v0.8.6 (2022-02-17)
 ----------------------------
 ### Features & Improvements
