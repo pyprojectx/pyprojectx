@@ -51,7 +51,7 @@ disable = [
 ]
 
 [tool.pyprojectx]
-poetry = "poetry==1.1.13"
+poetry = { requirements = "poetry==1.1.13", post-install = "pw@pre-commit install" }
 black = "black==22.1.0"
 isort = "isort==5.10.1"
 pylint = "pylint==2.12.2"
