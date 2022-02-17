@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ##################################################################################
-# Pyprojectx                                                                     #
+# Pyprojectx wrapper script                                                      #
 # https://github.com/houbie/pyprojectx                                           #
 #                                                                                #
 # Copyright (c) 2021 Ivo Houbrechts                                              #

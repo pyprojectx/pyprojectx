@@ -2,7 +2,7 @@ import re
 import sys
 from itertools import zip_longest
 from pathlib import Path
-from typing import Iterable, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 import tomli
 
@@ -52,20 +52,30 @@ class Config:
             print(f"{BLUE}available tools:{RESET}", file=sys.stderr)
             print("\n".join(self._tools.keys() - ["aliases", "os"]), file=out)
 
-    def get_tool_requirements(self, key) -> Iterable[str]:
+    def get_tool_requirements(self, key) -> dict:
         """
         Get the requirements (dependencies) for a configured tool in the [tool.pyprojectx] section.
-        The requirements can either be specified as a string or a list of strings.
+        The requirements can either be specified as a string, a list of strings or an object with requirements and
+        post-install as keys.
         A multiline string is treated as one requirement per line.
         :param key: The key (tool name) to look for
-        :return: the requirements as a list or None if key is not found
+        :return: a dict with the requirements as a list and the post-install script, or None if key is not found
         """
-        requirements = self._tools.get(key)
-        if isinstance(requirements, list):
-            return requirements
-        if isinstance(requirements, str):
-            return requirements.splitlines()
-        return []
+        requirements_config = self._tools.get(key)
+        post_install = None
+        requirements = []
+        if isinstance(requirements_config, str):
+            requirements = requirements_config.splitlines()
+        if isinstance(requirements_config, list):
+            requirements = requirements_config
+        if isinstance(requirements_config, dict):
+            reqs = requirements_config.get("requirements")
+            if isinstance(reqs, str):
+                requirements = reqs.splitlines()
+            if isinstance(reqs, list):
+                requirements = reqs
+            post_install = requirements_config.get("post-install")
+        return {"requirements": requirements, "post-install": post_install}
 
     def is_tool(self, key) -> bool:
         """

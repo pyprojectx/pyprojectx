@@ -1,6 +1,6 @@
 import subprocess
 import sys
-from typing import Iterable, List, Optional, Union
+from typing import List, Optional, Union
 
 from pyprojectx.config import Config
 from pyprojectx.env import IsolatedVirtualEnv
@@ -29,6 +29,8 @@ def _run(argv: List[str]) -> None:
         pw.arg_parser().print_help(file=sys.stderr)
         raise SystemExit(1)
 
+    cmd_index = argv.index(cmd)
+    pw_args = argv[:cmd_index]
     aliases = config.find_aliases(cmd)
     logger.debug("Matching aliases for %s: %s", cmd, ", ".join(aliases))
     if aliases:
@@ -48,7 +50,7 @@ def _run(argv: List[str]) -> None:
             _run_alias(
                 tool,
                 alias_cmd,
-                argv,
+                pw_args,
                 requirements=config.get_tool_requirements(tool),
                 options=options,
             )
@@ -58,6 +60,7 @@ def _run(argv: List[str]) -> None:
             [cmd, *options.cmd_args],
             requirements=config.get_tool_requirements(cmd),
             options=options,
+            pw_args=pw_args,
         )
     else:
         config.show_info(cmd, error=True)
@@ -67,19 +70,14 @@ def _run(argv: List[str]) -> None:
 def _run_alias(
     tool: Optional[str],
     alias_cmd: str,
-    argv: List[str],
-    requirements: Iterable[str],
+    pw_args: List[str],
+    requirements: dict,
     options,
 ) -> None:
     logger.debug("Running alias command, tool: %s, command: %s, arguments: %s", tool, alias_cmd, options.cmd_args)
-    full_cmd = " ".join([_resolve_alias_references(alias_cmd, options.cmd, argv)] + options.cmd_args)
+    full_cmd = " ".join([_replace_pw_references(alias_cmd, pw_args)] + options.cmd_args)
     if tool:
-        _run_in_tool_venv(
-            tool,
-            full_cmd,
-            requirements=requirements,
-            options=options,
-        )
+        _run_in_tool_venv(tool, full_cmd, requirements=requirements, options=options, pw_args=pw_args)
     else:
         try:
             subprocess.run(full_cmd, shell=True, check=True)
@@ -90,14 +88,18 @@ def _run_alias(
 def _run_in_tool_venv(
     tool: str,
     full_cmd: Union[str, List[str]],
-    requirements: Iterable[str],
+    requirements: dict,
     options,
+    pw_args,
 ) -> None:
     logger.debug("Running tool command in virtual environment, tool: %s, full command: %s", tool, full_cmd)
-    venv = IsolatedVirtualEnv(options.venvs_dir, tool, requirements)
+    venv = IsolatedVirtualEnv(options.venvs_dir, tool, requirements["requirements"])
     if not venv.is_installed or options.force_install:
         try:
             venv.install(quiet=options.quiet)
+            if requirements["post-install"]:
+                post_install_cmd = _replace_pw_references(requirements["post-install"], pw_args)
+                venv.run(post_install_cmd)
         except subprocess.CalledProcessError as e:
             print(
                 f"{pw.RED}PYPROJECTX ERROR: installation of '{tool}' failed with exit code {e.returncode}{pw.RESET}",
@@ -111,9 +113,9 @@ def _run_in_tool_venv(
         raise SystemExit(e.returncode) from e
 
 
-def _resolve_alias_references(alias_cmd: str, cmd: str, argv: List[str]) -> str:
-    cmd_index = argv.index(cmd)
-    replacement = " ".join(argv[:cmd_index]) + " "
+def _replace_pw_references(alias_cmd: str, pw_args: List[str]) -> str:
+    """Replace all occurrences of pw@ with the path to the pw script (argv[0]) plus all pw options"""
+    replacement = " ".join(pw_args) + " "
     return alias_cmd.replace("pw@", replacement)
 
 

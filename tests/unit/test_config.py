@@ -7,7 +7,7 @@ from pyprojectx.config import Config
 
 def test_no_config():
     config = Config(Path(__file__).parent.with_name("data").joinpath("test-no-config.toml"))
-    assert config.get_tool_requirements("tool") == []
+    assert config.get_tool_requirements("tool") == {"requirements": [], "post-install": None}
     assert not config.is_tool("tool")
     assert config.get_alias("alias") == (None, None)
 
@@ -25,16 +25,25 @@ def test_tool_config():
     config = Config(Path(__file__).parent.with_name("data").joinpath("test.toml"))
 
     assert config.is_tool("tool-1")
-    assert config.get_tool_requirements("tool-1") == ["req1", "req2"]
+    assert config.get_tool_requirements("tool-1") == {"requirements": ["req1", "req2"], "post-install": None}
 
     assert config.is_tool("tool-2")
-    assert config.get_tool_requirements("tool-2") == ["tool2 requirement"]
+    assert config.get_tool_requirements("tool-2") == {"requirements": ["tool2 requirement"], "post-install": None}
 
     assert config.is_tool("tool-3")
-    assert config.get_tool_requirements("tool-3") == ["req1", "req2", "req3"]
+    assert config.get_tool_requirements("tool-3") == {"requirements": ["req1", "req2", "req3"], "post-install": None}
+
+    assert config.is_tool("tool-4")
+    assert config.get_tool_requirements("tool-4") == {"requirements": ["tool-4-req1"], "post-install": None}
+
+    assert config.is_tool("tool-5")
+    assert config.get_tool_requirements("tool-5") == {
+        "requirements": ["tool-5-req1", "tool-5-req2"],
+        "post-install": "tool-5 && pw@alias-1",
+    }
 
     assert not config.is_tool("nope")
-    assert config.get_tool_requirements("nope") == []
+    assert config.get_tool_requirements("nope") == {"requirements": [], "post-install": None}
 
 
 def test_alias_config():

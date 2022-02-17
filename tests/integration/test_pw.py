@@ -97,3 +97,43 @@ def test_output_with_errors(cmd, stderr, tmp_project):
     assert proc_result.returncode
     assert proc_result.stdout.decode("utf-8") == ""
     assert re.search(stderr, proc_result.stderr.decode("utf-8"))
+
+
+def test_post_install(tmp_project):
+    project_dir, env = tmp_project
+    cmd = f"{SCRIPT_PREFIX}pw -q say-post-install"
+    assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
+
+    assert (
+        proc_result.stdout.decode("utf-8")
+        == """
+  -------------------
+< post-install-action >
+  -------------------
+   \\   ^__^
+    \\  (oo)\\_______
+       (__)\\       )\\/\\
+           ||----w |
+           ||     ||
+
+
+  ------------------
+< after post-install >
+  ------------------
+   \\   ^__^
+    \\  (oo)\\_______
+       (__)\\       )\\/\\
+           ||----w |
+           ||     ||
+
+""".replace(
+            "\n", os.linesep
+        )
+    )
+    if not sys.platform.startswith("win"):
+        assert proc_result.stderr.decode("utf-8") == ""
+
+    cmd = f"{SCRIPT_PREFIX}pw -q list-files *.txt"
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
+    assert proc_result.stdout.decode("utf-8").strip() == "post-install-file.txt"

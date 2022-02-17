@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyprojectx"
-version = "0.8.5"
+version = "0.8.6"
 description = "Execute scripts from pyproject.toml, installing tools on-the-fly"
 license = "MIT"
 authors = ["Houbie <ivo@houbrechts-it.be>"]
@@ -18,12 +18,12 @@ pyprojectx = "pyprojectx.cli:main"
 
 [tool.poetry.dependencies]
 python = ">=3.7, <4.0"
-tomli = "^1.2.2"
-virtualenv = "^20.10.0"
+tomli = "^2.0.1"
+virtualenv = "^20.13.1"
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.2.5"
-pytest-mock = "^3.6.1"
+pytest = "^7.0.1"
+pytest-mock = "^3.7.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -51,20 +51,17 @@ disable = [
 ]
 
 [tool.pyprojectx]
-poetry = "poetry==1.1.12"
-black = "black==21.7b0"
-isort = "isort==5.9.3"
-pylint = "pylint==2.11.1"
+poetry = "poetry==1.1.13"
+black = "black==22.1.0"
+isort = "isort==5.10.1"
+pylint = "pylint==2.12.2"
 pre-commit = "pre-commit"
 
 [tool.pyprojectx.aliases]
 install = "poetry install"
 run = "poetry run pyprojectx -t pyproject.toml "
 outdated = "poetry show --outdated"
-clean = """\
-rm -r .venv
-rm -r .pytest_cache
-rm -r dist"""
+clean = "rm -r .venv .pytest_cache dist"
 clean-all = """\
 pw@clean
 rm -r .pyprojectx"""
@@ -98,10 +95,7 @@ awk '/-{3,}/{flag=1;next}/Release/{if (flag==1)exit}flag' CHANGELOG.md > .change
 """
 
 [tool.pyprojectx.os.win.aliases]
-clean = """\
-rmdir /s/q .venv
-rmdir /s/q .pytest_cache
-rmdir /s/q dist"""
+clean = "rmdir /s/q .venv .pytest_cache dist"
 clean-all = """\
 pw@clean
 rmdir /s/q .pyprojectx"""
