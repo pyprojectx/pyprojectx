@@ -1,4 +1,4 @@
-![pyprojectx](https://raw.githubusercontent.com/houbie/pyprojectx/main/docs/px.png)
+![pyprojectx](docs/px.png)
 
 Execute scripts from pyproject.toml, installing tools on-the-fly
 
