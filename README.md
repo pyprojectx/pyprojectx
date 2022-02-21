@@ -1,4 +1,4 @@
-# pyprojectx
+![pyprojectx](https://raw.githubusercontent.com/houbie/pyprojectx/main/docs/px.png)
 
 Execute scripts from pyproject.toml, installing tools on-the-fly
 
@@ -51,7 +51,7 @@ Example:
 poetry = "poetry==1.1.11"
 # use the latest black
 black = "black"
-# install flake8 in combination with plugins; one line per requirement 
+# install flake8 in combination with plugins; one line per requirement
 flake8 = """
 flake8
 flake8-bandit
