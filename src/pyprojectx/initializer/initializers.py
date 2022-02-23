@@ -118,7 +118,7 @@ def _print_usage():
     if sys.platform.startswith("win"):
         print(f"When using git, run {RESET}git add pw pw.bat && git update-index --chmod=+x pw'", file=sys.stderr)
     print(
-        f"{BLUE}Run {RESET}{SCRIPT_PREFIX}pw --show -{BLUE}"
+        f"{BLUE}Run {RESET}{SCRIPT_PREFIX}pw --info -{BLUE}"
         f" to see the available tools and aliases in your project.{RESET}",
         file=sys.stderr,
     )
@@ -163,11 +163,11 @@ def initialize_global(options):
             file=sys.stderr,
         )
         print(
-            f"{BLUE}Run {RESET}px --show -{BLUE} to see the available tools and aliases in your project.",
+            f"{BLUE}Run {RESET}px --info -{BLUE} to see the available tools and aliases in your project.",
             file=sys.stderr,
         )
         print(
-            f"Run {RESET}pxg --show -{BLUE} to see the available tools and aliases in the global pyprojectx.{RESET}",
+            f"Run {RESET}pxg --info -{BLUE} to see the available tools and aliases in the global pyprojectx.{RESET}",
             file=sys.stderr,
         )
 

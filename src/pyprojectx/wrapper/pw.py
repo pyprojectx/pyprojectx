@@ -17,7 +17,7 @@ from venv import EnvBuilder
 
 VERSION = "__version__"
 
-PYPROJECTX_DIR_ENV_VAR = "PYPROJECTX_DIR"
+PYPROJECTX_INSTALL_DIR_ENV_VAR = "PYPROJECTX_INSTALL_DIR"
 PYPROJECTX_PACKAGE_ENV_VAR = "PYPROJECTX_PACKAGE"
 PYPROJECT_TOML = "pyproject.toml"
 DEFAULT_INSTALL_DIR = ".pyprojectx"
@@ -37,8 +37,8 @@ def run(args):
         explicit_options = []
         if not options.toml:
             explicit_options += ["--toml", str(options.toml_path)]
-        if not options.pyprojectx_dir:
-            explicit_options += ["--pyprojectx-dir", str(options.install_path)]
+        if not options.install_dir:
+            explicit_options += ["--install-dir", str(options.install_path)]
 
         subprocess.run([str(pyprojectx_script), *explicit_options, *args], check=True)
     except subprocess.CalledProcessError as e:
@@ -48,7 +48,8 @@ def run(args):
 def get_options(args):
     options = arg_parser().parse_args(args)
     options.install_path = Path(
-        options.pyprojectx_dir or os.environ.get(PYPROJECTX_DIR_ENV_VAR, Path(__file__).with_name(DEFAULT_INSTALL_DIR))
+        options.install_dir
+        or os.environ.get(PYPROJECTX_INSTALL_DIR_ENV_VAR, Path(__file__).with_name(DEFAULT_INSTALL_DIR))
     )
     options.toml_path = Path(options.toml) if options.toml else Path(__file__).with_name(PYPROJECT_TOML)
     if os.environ.get(PYPROJECTX_PACKAGE_ENV_VAR):
@@ -64,7 +65,7 @@ def get_options(args):
 def arg_parser():
     parser = argparse.ArgumentParser(
         description="Execute commands or aliases defined in the [tool.pyprojectx] section of pyproject.toml. "
-        "Use the -s or --show option to see available tools and aliases.",
+        "Use the -i or --info option to see available tools and aliases.",
     )
     parser.add_argument("--version", action="version", version=VERSION)
     parser.add_argument(
@@ -74,10 +75,10 @@ def arg_parser():
         help="The toml config file. Defaults to 'pyproject.toml' in the same directory as the pw script.",
     )
     parser.add_argument(
-        "--pyprojectx-dir",
+        "--install-dir",
         action="store",
         help=f"The directory where all tools (including pyprojectx) are installed; defaults to the"
-        f"{PYPROJECTX_DIR_ENV_VAR} environment value if set, else '.pyprojectx'"
+        f"{PYPROJECTX_INSTALL_DIR_ENV_VAR} environment value if set, else '.pyprojectx'"
         f" in the same directory as the invoked pw script",
     )
     parser.add_argument(
@@ -100,8 +101,8 @@ def arg_parser():
         help="Suppress output",
     )
     parser.add_argument(
-        "--show",
-        "-s",
+        "--info",
+        "-i",
         action="store_true",
         help="Show the configuration details of a command in stead of running it. "
         "If the command is not configured as tool or alias, a list with all available tools and aliases is shown.",

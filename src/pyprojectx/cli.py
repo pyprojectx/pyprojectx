@@ -21,8 +21,8 @@ def _run(argv: List[str]) -> None:
 
     config = Config(options.toml_path)
     cmd = options.cmd
-    if options.show:
-        config.show(cmd)
+    if options.info:
+        config.show_info(cmd)
         return
 
     if not cmd:
@@ -63,7 +63,7 @@ def _run(argv: List[str]) -> None:
             pw_args=pw_args,
         )
     else:
-        config.show(cmd, error=True)
+        config.show_info(cmd, error=True)
         raise SystemExit(1)
 
 
