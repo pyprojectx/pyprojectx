@@ -28,7 +28,7 @@ class Config:
         except Exception as e:
             raise Warning(f"Could not parse {self._toml_path}: {e}") from e
 
-    def show_info(self, cmd, error=False):
+    def show(self, cmd, error=False):
         tool, alias = self.get_alias(cmd)
         out = sys.stderr if error else sys.stdout
         if alias:

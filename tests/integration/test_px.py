@@ -35,7 +35,7 @@ def test_initialize_project(tmp_project):
     assert cwd.joinpath("pw").exists()
     assert cwd.joinpath("pw.bat").exists()
 
-    cmd = f"{SCRIPT_PREFIX}px -i -"
+    cmd = f"{SCRIPT_PREFIX}px -s -"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=True)
     assert proc_result.stdout.decode("utf-8").strip() == ""
     assert "is not configured as tool or alias" in proc_result.stderr.decode("utf-8")
@@ -56,10 +56,10 @@ def test_initialize_build_tool(tmp_project, tool):
 
     aliases = ["install", "run", "outdated", "test", tool]
 
-    cmd = f"{SCRIPT_PREFIX}px -i -"
+    cmd = f"{SCRIPT_PREFIX}px -s -"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=True)
     assert proc_result.stdout.decode("utf-8").strip().split() == aliases
-    cmd = f"{SCRIPT_PREFIX}px -i install"
+    cmd = f"{SCRIPT_PREFIX}px -s install"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=True)
     assert "is an alias" in proc_result.stderr.decode("utf-8")
     assert proc_result.stdout.decode("utf-8").strip() == f"{tool} install"
