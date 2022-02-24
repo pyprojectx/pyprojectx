@@ -27,9 +27,9 @@ def test_parse_args():
     assert not _get_options(["my-cmd"]).force_install
 
     assert _get_options(["--verbose", "my-cmd"]).verbosity == 1
-    assert _get_options(["-vv", "my-cmd"]).verbosity == 2
+    assert _get_options(["--verbose", "--verbose", "my-cmd"]).verbosity == 2
     assert _get_options(["my-cmd"]).verbosity == 0
-    assert _get_options(["-vv", "-q", "my-cmd"]).verbosity == 0
+    assert _get_options(["--verbose", "--verbose", "-q", "my-cmd"]).verbosity == 0
 
     assert _get_options(["--init", "global"]).init
     assert _get_options(["-i", "all"]).info
