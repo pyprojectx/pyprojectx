@@ -45,7 +45,7 @@ def test_logs_and_stdout_when_alias_invoked_from_sub_directory_with_verbose(tmp_
     project_dir, env = tmp_project
     cwd = project_dir.joinpath("subdir")
     os.makedirs(cwd, exist_ok=True)
-    cmd = f"..{os.sep}pw -vv combine-pw-scripts"
+    cmd = f"..{os.sep}pw --verbose --verbose combine-pw-scripts"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=True)
 
     assert "< hi >" in proc_result.stdout.decode("utf-8")
