@@ -1,30 +1,31 @@
 
 [tool.pyprojectx]
-# example tools commonly used in Python
+# commonly used tools
+black = "black"
+isort = "isort"
 #poetry = "poetry"
 #pdm = "pdm"
-#jupyter = "jupyter"
-#black = "black"
-#isort = "isort"
 #pylint = "pylint"
 #pre-commit = "pre-commit"
+#jupyter = ["jupyter", "."]
 
 [tool.pyprojectx.aliases]
 # example aliases
+black = "black src tests"
+isort = "isort src tests"
 #install = "poetry install"
 #run = "poetry run"
 #outdated = "poetry show --outdated"
-#clean = "rm -rf .venv  && rm -rf .pytest_cache && rm -rf dist"
+clean = "rm -rf .venv .pytest_cache dist"
 #clean-all = "pw@ clean && rm -rf .pyprojectx"
-#black = "black src tests"
-#isort = "isort src tests"
 #test = "poetry run pytest"
 #check-pylint = "pylint src tests"
 #check-black = "black src tests --check"
 #check = "pw@ check-black && pw@ check-pylint && pw@ test"
 #build = "pw@ install && pw@ check && pw@ poetry build"
+#notebook = "jupyter notebook -y"
 
 [tool.pyprojectx.os.win.aliases]
 # example os specific aliases
-#clean = "rmdir /s/q .venv & rmdir /s/q .pytest_cache & rmdir /s/q dist"
+clean = "rmdir /s/q .venv .pytest_cache dist"
 #clean-all = "pw@ clean & rmdir /s/q .pyprojectx"

@@ -56,6 +56,7 @@ black = "black==22.1.0"
 isort = "isort==5.10.1"
 pylint = "pylint==2.12.2"
 pre-commit = "pre-commit"
+mkdocs = ["mkdocs ~=1.2", "mkdocs-material ~=8.2", "mkdocstrings[python] ~=0.18", "markdown-include ~=0.6", ]
 
 [tool.pyprojectx.aliases]
 install = "poetry install"
@@ -93,6 +94,9 @@ cp src/pyprojectx/wrapper/pw.bat dist-zip/pw.bat
 zip -j wrappers.zip dist-zip/pw*
 awk '/-{3,}/{flag=1;next}/Release/{if (flag==1)exit}flag' CHANGELOG.md > .changelog.md
 """
+
+generate-usage = "pw@ --help > docs/docs/usage.txt"
+serve-docs = "@mkdocs: cd docs && mkdocs serve"
 
 [tool.pyprojectx.os.win.aliases]
 clean = "rmdir /s/q .venv .pytest_cache dist"

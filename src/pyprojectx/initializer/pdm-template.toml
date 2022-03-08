@@ -2,11 +2,12 @@
 [tool.pyprojectx]
 pdm = "pdm>=1.1"
 
-# example tools commonly used in pdm projects
+# commonly used tools
 #black = "black"
 #isort = "isort"
 #pylint = "pylint"
 #pre-commit = "pre-commit"
+#jupyter = ["jupyter", "."]
 
 [tool.pyprojectx.aliases]
 install = "pdm install"
@@ -15,7 +16,7 @@ outdated = "pdm update --outdated"
 test = "pdm run pytest"
 
 # example aliases
-#clean = "rm -rf .venv  && rm -rf .pytest_cache && rm -rf dist"
+#clean = "rm -rf .venv .pytest_cache dist"
 #clean-all = "pw@ clean && rm -rf .pyprojectx"
 #black = "black src tests"
 #isort = "isort src tests"
@@ -23,8 +24,9 @@ test = "pdm run pytest"
 #check-black = "black src tests --check"
 #check = "pw@ check-black && pw@ check-pylint && pw@ test"
 #build = "pw@ install && pw@ check && pw@ pdm build"
+#notebook = "jupyter notebook -y"
 
 [tool.pyprojectx.os.win.aliases]
 # example os specific aliases
-#clean = "rmdir /s/q .venv & rmdir /s/q .pytest_cache & rmdir /s/q dist"
+#clean = "rmdir /s/q .venv .pytest_cache dist"
 #clean-all = "pw@ clean & rmdir /s/q .pyprojectx"

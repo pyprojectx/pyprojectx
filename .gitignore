@@ -129,8 +129,9 @@ dmypy.json
 .pyre/
 
 .idea
-.pyprojectx
 /.changelog.md
 /wrappers.zip
 /.vs
 /dist-zip
+.pyprojectx/
+/docs/docs/usage.txt
