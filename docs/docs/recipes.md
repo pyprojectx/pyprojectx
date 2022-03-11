@@ -56,8 +56,8 @@ serve-docs = "@mkdocs: cd docs && mkdocs serve"
 deploy-docs = "@mkdocs: cd docs && mkdocs gh-deploy"
 ```
 
-See Pyprojectx own [pyproject.toml](https://github.com/houbie/pyprojectx/blob/main/pyproject.toml) for a full example
-with Poetry, or [px-demo](https://github.com/houbie/px-demo) for an example project with PDM.
+See Pyprojectx own [pyproject.toml](https://github.com/pyprojectx/pyprojectx/blob/main/pyproject.toml) for a full example
+with Poetry, or [px-demo](https://github.com/pyprojectx/px-demo) for an example project with PDM.
 
 
 ## Github actions
@@ -90,8 +90,8 @@ jobs:
       - name: Test and build
         run: python pw build
 ```
-See Pyprojectx own [build](https://github.com/houbie/pyprojectx/blob/main/.github/workflows/build.yml)
-and [release](https://github.com/houbie/pyprojectx/blob/main/.github/workflows/release.yml) workflows for a full example.
+See Pyprojectx own [build](https://github.com/pyprojectx/pyprojectx/blob/main/.github/workflows/build.yml)
+and [release](https://github.com/pyprojectx/pyprojectx/blob/main/.github/workflows/release.yml) workflows for a full example.
 
 ## Experiment with your project in a Jupyter notebook
 You can launch a notebook that has access to your project packages without the need to install anything upfront.

@@ -19,26 +19,26 @@ not even Pyprojectx itself!
 
 Projects can be build/tested/used immediately without explicit installation nor initialization:
 ```bash
-git clone https://github.com/houbie/px-demo.git
+git clone https://github.com/pyprojectx/px-demo.git
 cd px-demo
 ./pw build
 ```
-![Clone and Build](https://raw.githubusercontent.com/houbie/pyprojectx/main/docs/docs/assets/build.png)
+![Clone and Build](https://raw.githubusercontent.com/pyprojectx/pyprojectx/main/docs/docs/assets/build.png)
 
 ## Installation
 One of the key features is that there is no need to install anything explicitly (except a Python 3.7+ interpreter).
 
 `cd` into your project directory and download the
-[wrapper scripts](https://github.com/houbie/pyprojectx/releases/latest/download/wrappers.zip):
+[wrapper scripts](https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip):
 
 **Linux/Mac**
 ```bash
-curl -LO https://github.com/houbie/pyprojectx/releases/latest/download/wrappers.zip && unzip wrappers.zip && rm -f wrappers.zip
+curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip wrappers.zip && rm -f wrappers.zip
 ```
 
 **Windows**
 ```powershell
-(Invoke-WebRequest https://github.com/houbie/pyprojectx/releases/latest/download/wrappers.zip).Content | Expand-Archive -DestinationPath .
+(Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip).Content | Expand-Archive -DestinationPath .
 ```
 
 ## Project initialization
@@ -117,12 +117,12 @@ Aliases can be invoked as is or with extra arguments:
 
 ## Example projects
 * This project (using Poetry)
-* [px-demo](https://github.com/houbie/px-demo) (using PDM)
+* [px-demo](https://github.com/pyprojectx/px-demo) (using PDM)
 
 ## Development
 * Build/test:
 ```shell
-git clone git@github.com:houbie/pyprojectx.git
+git clone https://github.com/pyprojectx/pyprojectx.git
 cd pyprojectx
 ./pw build
 ```

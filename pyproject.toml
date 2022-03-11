@@ -5,8 +5,8 @@ description = "Execute scripts from pyproject.toml, installing tools on-the-fly"
 license = "MIT"
 authors = ["Houbie <ivo@houbrechts-it.be>"]
 readme = "README.md"
-homepage = "https://github.com/houbie/pyprojectx"
-documentation = "https://github.com/houbie/pyprojectx"
+homepage = "https://github.com/pyprojectx/pyprojectx"
+documentation = "https://pyprojectx.github.io"
 keywords = ["build", "dependency", "pyprojectx"]
 classifiers = [
     "Topic :: Software Development :: Build Tools",
@@ -97,6 +97,7 @@ awk '/-{3,}/{flag=1;next}/Release/{if (flag==1)exit}flag' CHANGELOG.md > .change
 
 generate-usage = "pw@ --help > docs/docs/usage.txt"
 serve-docs = "@mkdocs: cd docs && mkdocs serve"
+deploy-docs = "@mkdocs: cd docs && mkdocs gh-deploy"
 
 [tool.pyprojectx.os.win.aliases]
 clean = "rmdir /s/q .venv .pytest_cache dist"

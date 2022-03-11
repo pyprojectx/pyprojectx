@@ -2,7 +2,7 @@
 
 ##################################################################################
 # Pyprojectx wrapper script                                                      #
-# https://github.com/houbie/pyprojectx                                           #
+# https://github.com/pyprojectx/pyprojectx                                       #
 #                                                                                #
 # Copyright (c) 2021 Ivo Houbrechts                                              #
 #                                                                                #

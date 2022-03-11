@@ -1,0 +1,27 @@
+name: Deploy documentation
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Deploy documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.10
+
+      - name: Cache .pyprojectx
+        uses: actions/cache@v2
+        env:
+          cache-name: .pyprojectx
+        with:
+          path: .pyprojectx
+          key: pyprojectx
+
+      - name: Deploy docs
+        run: python pw deploy-docs

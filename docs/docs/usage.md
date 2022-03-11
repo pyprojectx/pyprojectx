@@ -15,13 +15,13 @@ and run the init command.
 ## Plain Python project
 === "Linux/Mac"
     ```bash
-    curl -LO https://github.com/houbie/pyprojectx/releases/latest/download/wrappers.zip && unzip wrappers.zip && rm -f wrappers.zip
+    curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip wrappers.zip && rm -f wrappers.zip
     ./pw --init project
     ```
 
 === "Windows"
     ```powershell
-    (Invoke-WebRequest https://github.com/houbie/pyprojectx/releases/latest/download/wrappers.zip).Content | Expand-Archive -DestinationPath .
+    (Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip).Content | Expand-Archive -DestinationPath .
     pw --init project
     ```
 
@@ -31,13 +31,13 @@ Now you can use the [`px`](/usage/#install-the-global-px-script) or `pw` script 
 Start the interactive poetry initializer:
 === "Linux/Mac"
     ```bash
-    curl -LO https://github.com/houbie/pyprojectx/releases/latest/download/wrappers.zip && unzip wrappers.zip && rm -f wrappers.zip
+    curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip wrappers.zip && rm -f wrappers.zip
     ./pw --init poetry
     ```
 
 === "Windows"
     ```powershell
-    (Invoke-WebRequest https://github.com/houbie/pyprojectx/releases/latest/download/wrappers.zip).Content | Expand-Archive -DestinationPath .
+    (Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip).Content | Expand-Archive -DestinationPath .
     pw --init poetry
     ```
 
@@ -56,13 +56,13 @@ Now you can run any Poetry command with the [`px`](/usage/#install-the-global-px
 Start the interactive pdm initializer:
 === "Linux/Mac"
     ```bash
-    curl -LO https://github.com/houbie/pyprojectx/releases/latest/download/wrappers.zip && unzip wrappers.zip && rm -f wrappers.zip
+    curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip wrappers.zip && rm -f wrappers.zip
     ./pw --init pdm
     ```
 
 === "Windows"
     ```powershell
-    (Invoke-WebRequest https://github.com/houbie/pyprojectx/releases/latest/download/wrappers.zip).Content | Expand-Archive -DestinationPath .
+    (Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip).Content | Expand-Archive -DestinationPath .
     pw --init pdm
     ```
 

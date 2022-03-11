@@ -1,7 +1,9 @@
 site_name: Pyprojectx
 
-repo_url: https://github.com/houbie/pyprojectx
-#edit_uri: edit/main/docs/docs
+repo_url: https://github.com/pyprojectx/pyprojectx
+edit_uri: edit/main/docs/docs
+remote_name: https://github.com/pyprojectx/pyprojectx.github.io.git
+remote_branch: main
 
 theme:
   name: material
@@ -50,7 +52,7 @@ copyright: Copyright &copy; 2020 <a href="https://upcycled-code.com/">Ivo Houbre
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/houbie/pyprojectx
+      link: https://github.com/pyprojectx/pyprojectx
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/IvoHoubrechts
 

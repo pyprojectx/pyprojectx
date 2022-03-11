@@ -18,32 +18,32 @@ not even Pyprojectx itself!
 Projects can be build/tested/used immediately without explicit installation nor initialization:
 === "Linux/Mac"
     ```bash
-    git clone https://github.com/houbie/px-demo.git
+    git clone https://github.com/pyprojectx/px-demo.git
     cd px-demo
     ./pw build
     ```
 === "Windows"
     ```powershell
-    git clone https://github.com/houbie/px-demo.git
+    git clone https://github.com/pyprojectx/px-demo.git
     cd px-demo
     pw build
     ```
-![Clone and Build](/assets/build.png)
+![Clone and Build](assets/build.png)
 
 ## Installation
 One of the key features is that there is no need to install anything explicitly (except a Python 3.7+ interpreter).
 
 `cd` into your project directory and download the
-[wrapper scripts](https://github.com/houbie/pyprojectx/releases/latest/download/wrappers.zip):
+[wrapper scripts](https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip):
 
 === "Linux/Mac"
     ```bash
-    curl -LO https://github.com/houbie/pyprojectx/releases/latest/download/wrappers.zip && unzip wrappers.zip && rm -f wrappers.zip
+    curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip wrappers.zip && rm -f wrappers.zip
     ```
 
 === "Windows"
     ```powershell
-    (Invoke-WebRequest https://github.com/houbie/pyprojectx/releases/latest/download/wrappers.zip).Content | Expand-Archive -DestinationPath .
+    (Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip).Content | Expand-Archive -DestinationPath .
     ```
 
 With the wrapper scripts in place, you can generate example configuration (see [Initialize a new or existing project](/usage/#initialize-a-new-or-existing-project)):
