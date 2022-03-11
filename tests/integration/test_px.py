@@ -37,7 +37,7 @@ def test_initialize_project(tmp_project):
 
     cmd = f"{SCRIPT_PREFIX}px -i -"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=True)
-    assert proc_result.stdout.decode("utf-8").strip() == "black\nisort\nclean\nisort\nblack"
+    assert set(proc_result.stdout.decode("utf-8").split()) == {"clean", "isort", "black"}
     assert "is not configured as tool or alias" in proc_result.stderr.decode("utf-8")
 
 
