@@ -6,9 +6,17 @@ import sys
 from pathlib import Path
 
 import tomli
+import userpath
 
 from pyprojectx.log import logger
-from pyprojectx.wrapper.pw import BLUE, CYAN, DEFAULT_INSTALL_DIR, PYPROJECT_TOML, RESET
+from pyprojectx.wrapper.pw import (
+    BLUE,
+    CYAN,
+    DEFAULT_INSTALL_DIR,
+    PYPROJECT_TOML,
+    RED,
+    RESET,
+)
 
 SCRIPT_EXTENSION = ".bat" if sys.platform.startswith("win") else ""
 SCRIPT_PREFIX = "" if sys.platform.startswith("win") else "./"
@@ -146,28 +154,33 @@ def initialize_global(options):
         shutil.copy2(Path(__file__).with_name("global-template.toml"), target_toml)
 
     print(f"{BLUE}Pyprojectx scripts are installed in your home directory.", file=sys.stderr)
-    if sys.platform.startswith("win"):
+    ensure_path(global_dir)
+    print(
+        f"{BLUE}Run {RESET}px --info -{BLUE} to see the available tools and aliases in your project.",
+        file=sys.stderr,
+    )
+    print(
+        f"Run {RESET}pxg --info -{BLUE} to see the available tools and aliases in the global pyprojectx.{RESET}",
+        file=sys.stderr,
+    )
+
+
+def ensure_path(location: Path):
+    global_path = str(location.parent.absolute())
+    # pylint: disable=broad-except
+    try:
+        if userpath.in_current_path(global_path):
+            print(f"{global_path} is already in PATH.", file=sys.stderr)
+        else:
+            userpath.append(global_path, "pyprojectx")
+            print(f"{global_path} has been been added to PATH", file=sys.stderr)
+        if userpath.need_shell_restart(global_path):
+            print(
+                " but you need to open a new terminal or re-login for this PATH change to take effect.", file=sys.stderr
+            )
+    except Exception:
         print(
-            f"Add the scripts to your path, by adding\n"
-            f"{RESET}{global_dir.parent.absolute()}\n"
-            f"{BLUE}to the path environment variable.{RESET}",
-            file=sys.stderr,
-        )
-    else:
-        print(
-            f"Add the scripts to your PATH, f.e. by appending following to your shell's profile"
-            f" ({RESET}~/.profile{BLUE}, {RESET}~/.zshrc{BLUE}, {RESET}~/..bashrc{BLUE}, ...):\n"
-            f"{RESET}export PATH=$PATH:{global_dir.parent.absolute()}"
-            f"\nOr for xonsh's ~/.xonshrc append the following\n"
-            f"{RESET}$PATH.append('{global_dir.parent.absolute()}')",
-            file=sys.stderr,
-        )
-        print(
-            f"{BLUE}Run {RESET}px --info -{BLUE} to see the available tools and aliases in your project.",
-            file=sys.stderr,
-        )
-        print(
-            f"Run {RESET}pxg --info -{BLUE} to see the available tools and aliases in the global pyprojectx.{RESET}",
+            f"{global_path} {RED} could not be added automatically to PATH. You will need to add it manually{RESET}",
             file=sys.stderr,
         )
 

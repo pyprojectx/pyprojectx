@@ -17,9 +17,10 @@ classifiers = [
 pyprojectx = "pyprojectx.cli:main"
 
 [tool.poetry.dependencies]
-python = ">=3.7, <4.0"
+python = ">=3.7"
 tomli = "^2.0.1"
-virtualenv = "^20.13.1"
+virtualenv = "^20.13.3"
+userpath = "^1.8.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.1"

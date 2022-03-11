@@ -37,7 +37,7 @@ def test_initialize_project(tmp_project):
 
     cmd = f"{SCRIPT_PREFIX}px -i -"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=True)
-    assert proc_result.stdout.decode("utf-8").strip() == ""
+    assert proc_result.stdout.decode("utf-8").strip() == "black\nisort\nclean\nisort\nblack"
     assert "is not configured as tool or alias" in proc_result.stderr.decode("utf-8")
 
 
@@ -77,7 +77,9 @@ def test_initialize_build_tool(tmp_project, tool):
         assert f'{tool} = "{tool}=={version}"' in f.read()
 
 
-def test_initialize_global(tmp_project):
+def test_initialize_global(tmp_project, mocker):
+    mocker.patch("userpath.append")
+
     project_dir, env = tmp_project
     cwd = project_dir.joinpath("global")
     copy_px(cwd)
