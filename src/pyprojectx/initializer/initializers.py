@@ -154,7 +154,8 @@ def initialize_global(options):
         shutil.copy2(Path(__file__).with_name("global-template.toml"), target_toml)
 
     print(f"{BLUE}Pyprojectx scripts are installed in your home directory.", file=sys.stderr)
-    ensure_path(global_dir)
+    if "--skip-path" not in options.cmd_args:
+        ensure_path(global_dir)
     print(
         f"{BLUE}Run {RESET}px --info -{BLUE} to see the available tools and aliases in your project.",
         file=sys.stderr,

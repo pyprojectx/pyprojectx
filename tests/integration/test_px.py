@@ -77,14 +77,12 @@ def test_initialize_build_tool(tmp_project, tool):
         assert f'{tool} = "{tool}=={version}"' in f.read()
 
 
-def test_initialize_global(tmp_project, mocker):
-    mocker.patch("userpath.append")
-
+def test_initialize_global(tmp_project):
     project_dir, env = tmp_project
     cwd = project_dir.joinpath("global")
     copy_px(cwd)
     env["PYPROJECTX_HOME_DIR"] = str(cwd)
-    cmd = f"{SCRIPT_PREFIX}px --verbose --verbose --init global"
+    cmd = f"{SCRIPT_PREFIX}px --verbose --verbose --init global --skip-path"
     subprocess.run(cmd, shell=True, cwd=cwd, env=env, check=True)
 
     px_dir = cwd.joinpath(".pyprojectx")
