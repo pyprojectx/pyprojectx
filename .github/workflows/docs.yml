@@ -32,4 +32,4 @@ jobs:
           repository-name: pyprojectx/pyprojectx.github.io
           branch: main
           folder: docs/site
-          ssh-key: ${{ GH_PAGES_DEPLOY_KEY }}
+          ssh-key: ${{ secrets.GH_PAGES_DEPLOY_KEY }}
