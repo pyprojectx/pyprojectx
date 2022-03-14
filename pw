@@ -2,7 +2,7 @@
 
 ##################################################################################
 # Pyprojectx wrapper script                                                      #
-# https://github.com/houbie/pyprojectx                                           #
+# https://github.com/pyprojectx/pyprojectx                                       #
 #                                                                                #
 # Copyright (c) 2021 Ivo Houbrechts                                              #
 #                                                                                #
@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 from venv import EnvBuilder
 
-VERSION = "0.8.7"
+VERSION = "0.9.9"
 
 PYPROJECTX_INSTALL_DIR_ENV_VAR = "PYPROJECTX_INSTALL_DIR"
 PYPROJECTX_PACKAGE_ENV_VAR = "PYPROJECTX_PACKAGE"
@@ -66,6 +66,7 @@ def arg_parser():
     parser = argparse.ArgumentParser(
         description="Execute commands or aliases defined in the [tool.pyprojectx] section of pyproject.toml. "
         "Use the -i or --info option to see available tools and aliases.",
+        allow_abbrev=False,
     )
     parser.add_argument("--version", action="version", version=VERSION)
     parser.add_argument(
@@ -77,9 +78,9 @@ def arg_parser():
     parser.add_argument(
         "--install-dir",
         action="store",
-        help=f"The directory where all tools (including pyprojectx) are installed; defaults to the"
-        f"{PYPROJECTX_INSTALL_DIR_ENV_VAR} environment value if set, else '.pyprojectx'"
-        f" in the same directory as the invoked pw script",
+        help=f"The directory where all tools (including pyprojectx) are installed; defaults to the "
+        f"{PYPROJECTX_INSTALL_DIR_ENV_VAR} environment value if set, else '.pyprojectx' "
+        f"in the same directory as the invoked pw script",
     )
     parser.add_argument(
         "--force-install",
