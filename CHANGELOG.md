@@ -1,3 +1,8 @@
+Release v0.9.9 (2022-03-13)
+----------------------------
+### Features & Improvements
+- Automatically add the global scripts to the PATH when running "pw --init global"
+
 Release v0.8.7 (2022-02-17)
 ----------------------------
 ### Features & Improvements

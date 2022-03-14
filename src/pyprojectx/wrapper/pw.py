@@ -2,7 +2,7 @@
 
 ##################################################################################
 # Pyprojectx wrapper script                                                      #
-# https://github.com/houbie/pyprojectx                                           #
+# https://github.com/pyprojectx/pyprojectx                                       #
 #                                                                                #
 # Copyright (c) 2021 Ivo Houbrechts                                              #
 #                                                                                #
@@ -78,9 +78,9 @@ def arg_parser():
     parser.add_argument(
         "--install-dir",
         action="store",
-        help=f"The directory where all tools (including pyprojectx) are installed; defaults to the"
-        f"{PYPROJECTX_INSTALL_DIR_ENV_VAR} environment value if set, else '.pyprojectx'"
-        f" in the same directory as the invoked pw script",
+        help=f"The directory where all tools (including pyprojectx) are installed; defaults to the "
+        f"{PYPROJECTX_INSTALL_DIR_ENV_VAR} environment value if set, else '.pyprojectx' "
+        f"in the same directory as the invoked pw script",
     )
     parser.add_argument(
         "--force-install",

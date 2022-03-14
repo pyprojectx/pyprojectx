@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "pyprojectx"
-version = "0.8.7"
+version = "0.9.9"
 description = "Execute scripts from pyproject.toml, installing tools on-the-fly"
 license = "MIT"
 authors = ["Houbie <ivo@houbrechts-it.be>"]
 readme = "README.md"
-homepage = "https://github.com/houbie/pyprojectx"
-documentation = "https://github.com/houbie/pyprojectx"
+homepage = "https://github.com/pyprojectx/pyprojectx"
+documentation = "https://pyprojectx.github.io"
 keywords = ["build", "dependency", "pyprojectx"]
 classifiers = [
     "Topic :: Software Development :: Build Tools",
@@ -17,9 +17,10 @@ classifiers = [
 pyprojectx = "pyprojectx.cli:main"
 
 [tool.poetry.dependencies]
-python = ">=3.7, <4.0"
+python = ">=3.7"
 tomli = "^2.0.1"
-virtualenv = "^20.13.1"
+virtualenv = "^20.13.3"
+userpath = "^1.8.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.1"
@@ -56,6 +57,7 @@ black = "black==22.1.0"
 isort = "isort==5.10.1"
 pylint = "pylint==2.12.2"
 pre-commit = "pre-commit"
+mkdocs = ["mkdocs ~=1.2", "mkdocs-material ~=8.2", "mkdocstrings[python] ~=0.18", "markdown-include ~=0.6", ]
 
 [tool.pyprojectx.aliases]
 install = "poetry install"
@@ -93,6 +95,10 @@ cp src/pyprojectx/wrapper/pw.bat dist-zip/pw.bat
 zip -j wrappers.zip dist-zip/pw*
 awk '/-{3,}/{flag=1;next}/Release/{if (flag==1)exit}flag' CHANGELOG.md > .changelog.md
 """
+
+generate-usage = "pw@ --help > docs/docs/usage.txt"
+serve-docs = "@mkdocs: cd docs && mkdocs serve"
+deploy-docs = "@mkdocs: cd docs && mkdocs gh-deploy"
 
 [tool.pyprojectx.os.win.aliases]
 clean = "rmdir /s/q .venv .pytest_cache dist"

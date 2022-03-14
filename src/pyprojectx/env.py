@@ -155,5 +155,6 @@ class IsolatedVirtualEnv:
         extra_environ = {"PATH": os.pathsep.join(paths)}
         env = os.environ.copy()
         env.update(extra_environ)
+        logger.debug("Final command to run: %s", cmd)
         logger.debug("Environment for running command: %s", env)
         return subprocess.run(cmd, env=env, shell=shell, check=True)
