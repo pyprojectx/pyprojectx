@@ -23,5 +23,12 @@ jobs:
           path: .pyprojectx
           key: pyprojectx
 
+      - name: Build docs
+        run: python pw generate-docs
+
       - name: Deploy docs
-        run: python pw deploy-docs
+        uses: JamesIves/github-pages-deploy-action@v4.2.5
+        with:
+          repository-name: pyprojectx/pyprojectx.github.io
+          branch: main
+          folder: docs/site
