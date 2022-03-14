@@ -40,8 +40,8 @@ Above `clean` alias will override the default one on Windows
 
 !!! note "Aliases are interpreted by the OS shell"
 
-    The alias `show-path = "echo %PATH%"` will print the PATH environent variable on Windows, but will print
-    litterally `%PATH%` on another OS.
+    The alias `show-path = "echo %PATH%"` will print the PATH environment variable on Windows, but will print
+    literally `%PATH%` on another OS.
 
 ## Combining aliases
 Use the `pw@` prefix to call alias from another alias.
@@ -65,7 +65,7 @@ When installing multiple tools/packages together, or when using a tool that inst
 you can define aliases to expose additional scripts besides the main script.
 
 By starting an alias with `@tool-name:`, where _tool-name_ is the key of a `[tool.pyprojectx]` entry, the alias always
-runs in the context of the virtual environment that is created for `tool-nane`.
+runs in the context of the virtual environment that is created for `tool-name`.
 
 ```toml
 [tool.pyprojectx]
