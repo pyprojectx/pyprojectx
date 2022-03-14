@@ -1,7 +1,9 @@
-Release v0.9.9 (2022-03-13)
+Release v0.9.9 (2022-03-14)
 ----------------------------
 ### Features & Improvements
 - Automatically add the global scripts to the PATH when running "pw --init global"
+- Moved pyprojectx to its own github organization
+- Published full documentation on https://pyprojectx.github.io
 
 Release v0.8.7 (2022-02-17)
 ----------------------------
