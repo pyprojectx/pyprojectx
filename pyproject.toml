@@ -98,6 +98,7 @@ awk '/-{3,}/{flag=1;next}/Release/{if (flag==1)exit}flag' CHANGELOG.md > .change
 
 generate-usage = "pw@ --help > docs/docs/usage.txt"
 serve-docs = "@mkdocs: cd docs && mkdocs serve"
+generate-docs = "@mkdocs: cd docs && mkdocs build"
 deploy-docs = "@mkdocs: cd docs && mkdocs gh-deploy"
 
 [tool.pyprojectx.os.win.aliases]
