@@ -43,7 +43,7 @@ One of the key features is that there is no need to install anything explicitly 
 
 === "Windows"
     ```powershell
-    (Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip).Content | Expand-Archive -DestinationPath .
+    Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
     ```
 
 With the wrapper scripts in place, you can generate example configuration (see [Initialize a new or existing project](/usage/#initialize-a-new-or-existing-project)):
