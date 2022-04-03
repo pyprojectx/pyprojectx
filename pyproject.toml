@@ -39,6 +39,8 @@ profile = "black"
 [tool.pylint.format]
 max-line-length = 120
 variable-rgx = '^[a-z_][a-z0-9_]*$'
+[tool.pylint.similarities]
+ignore-imports= true
 [tool.pylint.master]
 init-hook = """
 import sys
