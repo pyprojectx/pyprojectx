@@ -12,7 +12,7 @@ or a [PDM](https://pdm.fming.dev/) project.
 Cd into your existing project directory (or create a new empty directory), download the wrapper scripts
 and run the init command.
 
-## Plain Python project
+### Plain Python project
 === "Linux/Mac"
     ```bash
     curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip wrappers.zip && rm -f wrappers.zip
@@ -27,7 +27,7 @@ and run the init command.
 
 Now you can use the [`px`](/usage/#install-the-global-px-script) or `pw` script to show available tools and commands: `px -i`.
 
-## Poetry project
+### Poetry project
 Start the interactive poetry initializer:
 === "Linux/Mac"
     ```bash
@@ -53,7 +53,7 @@ Now you can run any Poetry command with the [`px`](/usage/#install-the-global-px
     It makes it easier to locate files and to keep your system clean when removing the project.
 
 ## PDM project
-Start the interactive pdm initializer:
+Start the interactive PDM initializer:
 === "Linux/Mac"
     ```bash
     curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip wrappers.zip && rm -f wrappers.zip
@@ -65,12 +65,6 @@ Start the interactive pdm initializer:
     Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
     .\pw --init pdm
     ```
-
-
-    *  Start the interactive PDM init command:
-       ```shell
-       px --init pdm
-       ```
 Now you can run any pdm command with the [`px`](/usage/#install-the-global-px-script) or `pw` script, f.e. `px pdm install`
 
 ## Install the global `px` script
