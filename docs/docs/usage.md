@@ -21,8 +21,8 @@ and run the init command.
 
 === "Windows"
     ```powershell
-    (Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip).Content | Expand-Archive -DestinationPath .
-    pw --init project
+    Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
+    .\pw --init project
     ```
 
 Now you can use the [`px`](/usage/#install-the-global-px-script) or `pw` script to show available tools and commands: `px -i`.
@@ -37,8 +37,8 @@ Start the interactive poetry initializer:
 
 === "Windows"
     ```powershell
-    (Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip).Content | Expand-Archive -DestinationPath .
-    pw --init poetry
+    Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
+    .\pw --init poetry
     ```
 
 Now you can run any Poetry command with the [`px`](/usage/#install-the-global-px-script) or `pw` script, f.e. `px poetry install`
@@ -62,8 +62,8 @@ Start the interactive pdm initializer:
 
 === "Windows"
     ```powershell
-    (Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip).Content | Expand-Archive -DestinationPath .
-    pw --init pdm
+    Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
+    .\pw --init pdm
     ```
 
 

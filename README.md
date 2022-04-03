@@ -38,7 +38,7 @@ curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrapp
 
 **Windows**
 ```powershell
-(Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip).Content | Expand-Archive -DestinationPath .
+Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
 ```
 
 ## Project initialization
