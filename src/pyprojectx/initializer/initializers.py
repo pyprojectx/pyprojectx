@@ -19,7 +19,7 @@ from pyprojectx.wrapper.pw import (
 )
 
 SCRIPT_EXTENSION = ".bat" if sys.platform.startswith("win") else ""
-SCRIPT_PREFIX = "" if sys.platform.startswith("win") else "./"
+SCRIPT_PREFIX = ".\\" if sys.platform.startswith("win") else "./"
 
 HOME_DIR = Path(os.environ.get("PYPROJECTX_HOME_DIR", Path.home()))
 
