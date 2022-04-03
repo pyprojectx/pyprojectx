@@ -48,7 +48,10 @@ def test_initialize_build_tool(tmp_project, tool):
     copy_px(cwd)
 
     cmd = f"{SCRIPT_PREFIX}px --verbose --verbose --init {tool} -n"
-    subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=True)
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=False)
+    print(f"### {tool} init stdout:", proc_result.stdout)
+    print(f"### {tool} init stderr:", proc_result.stderr)
+    assert not proc_result.returncode
 
     assert cwd.joinpath(PYPROJECT_TOML).exists()
     assert cwd.joinpath("pw").exists()
