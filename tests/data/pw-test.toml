@@ -18,3 +18,4 @@ create-file = "touch post-install-file.txt"
 
 [tool.pyprojectx.os.win.aliases]
 list-files = "dir /b"
+create-file = "echo '' > post-install-file.txt"
