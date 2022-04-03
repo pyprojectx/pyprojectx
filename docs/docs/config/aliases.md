@@ -5,7 +5,7 @@ Tools that expose multiple scripts, also require aliases to make all scripts ava
 
 !!! info "`px` or `pw`?"
     This section assumes that you installed the [px utility script](/usage/#install-the-global-px-script).
-    Otherwise, you need to replace `px` with `./pw` (Linux, Mac) or `pw` (Windows).
+    Otherwise, you need to replace `px` with `./pw` (Linux, Mac) or `.\pw` (Windows PowerShell).
 
 ## Defining shortcuts
 You can avoid a lot of typing by aliasing commands that you use a lot. Example:

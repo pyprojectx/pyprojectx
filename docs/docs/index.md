@@ -26,7 +26,7 @@ Projects can be build/tested/used immediately without explicit installation nor 
     ```powershell
     git clone https://github.com/pyprojectx/px-demo.git
     cd px-demo
-    pw build
+    .\pw build
     ```
 ![Clone and Build](assets/build.png)
 
@@ -61,11 +61,11 @@ With the wrapper scripts in place, you can generate example configuration (see [
 === "Windows"
     ```powershell
     # initialize a plain Python project
-    pw --init project
+    .\pw --init project
     # initialize a project with poetry's init command
-    pw --init poetry
+    .\pw --init poetry
     # initialize a project with pdm's init command
-    pw --init pdm
+    .\pw --init pdm
     ```
 
 !!! tip "Tip: Add the wrapper scripts to version control"
@@ -88,5 +88,5 @@ With the wrapper scripts in place, you can generate example configuration (see [
 
     === "Windows"
         ```powershell
-        pw --init global
+        .\pw --init global
         ```

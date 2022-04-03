@@ -6,7 +6,7 @@ Adding a tool to the `[tool.pyprojectx]` section in `pyproject.toml` makes it av
 
 !!! info "`px` or `pw`?"
     This section assumes that you installed the [px utility script](/usage/#install-the-global-px-script).
-    Otherwise, you need to replace `px` with `./pw` (Linux, Mac) or `pw` (Windows).
+    Otherwise, you need to replace `px` with `./pw` (Linux, Mac) or `.\pw` (Windows PowerShell).
 
 ## Tool configuration
 
@@ -43,8 +43,8 @@ You only need to prefix them with the`px` or `pw` wrapper script:
 === "Windows"
 
     ```powershell
-    pw poetry --help
-    pw black my_package --diff
+    .\pw poetry --help
+    .\pw black my_package --diff
     ```
 
 ## Specifying requirements

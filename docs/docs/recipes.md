@@ -66,7 +66,7 @@ By using the `pw` wrapper script, you can simplify your github actions:
 * use the same commands and scripts in github actions as on your laptop
 
 Some tips:
-* Use the same scripts on Windows and Linux by replacing `.pw` with `python pw`
+* Use the same scripts on Linux and Windows by replacing `./pw` (resp. `.\pw`) with `python pw`
 * Speed up builds by caching `.pyprojectx`
 
 Example:

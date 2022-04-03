@@ -88,7 +88,7 @@ To install:
 
 === "Windows"
     ```powershell
-    pw --init global
+    .\pw --init global
     ```
 
 ## Global tools
