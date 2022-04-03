@@ -2,6 +2,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -43,15 +44,15 @@ def test_initialize_project(tmp_project):
 
 @pytest.mark.parametrize("tool", ["poetry", "pdm"])
 def test_initialize_build_tool(tmp_project, tool):
+    if os.environ.get("GITHUB_ACTIONS") and tool == "pdm" and sys.platform.startswith("win"):
+        pytest.skip("skipping pdm init on windows in github workflow")
+
     project_dir, env = tmp_project
     cwd = project_dir.joinpath(tool)
     copy_px(cwd)
 
     cmd = f"{SCRIPT_PREFIX}px --verbose --verbose --init {tool} -n"
-    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=False)
-    print(f"### {tool} init stdout:", proc_result.stdout)
-    print(f"### {tool} init stderr:", proc_result.stderr)
-    assert not proc_result.returncode
+    subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=True)
 
     assert cwd.joinpath(PYPROJECT_TOML).exists()
     assert cwd.joinpath("pw").exists()
