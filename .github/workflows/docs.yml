@@ -24,8 +24,7 @@ jobs:
           key: pyprojectx
 
       - name: Build docs
-        shell: python
-        run: pw generate-docs
+        run: python pw generate-docs
 
       - name: Deploy docs
         uses: JamesIves/github-pages-deploy-action@v4.2.5
