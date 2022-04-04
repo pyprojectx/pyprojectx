@@ -6,8 +6,8 @@
 ```
 
 ## Initialize a new or existing project
-Pyprojectx can create or update a `pyproject.toml` file for either a plain, a [Poetry](https://python-poetry.org/)
-or a [PDM](https://pdm.fming.dev/) project.
+Pyprojectx can create or update a `pyproject.toml` file for either a plain, a [PDM](https://pdm.fming.dev/)
+or a [Poetry](https://python-poetry.org/) project.
 
 Cd into your existing project directory (or create a new empty directory), download the wrapper scripts,
 and run the init command.
@@ -35,6 +35,24 @@ and run the init command.
 
 Now you can use the [`px`](/usage/#install-the-global-px-script) or `pw` script to show available tools and commands: `px -i`.
 
+### PDM project
+Start the interactive PDM initializer:
+=== "Linux/Mac"
+    ```bash
+    curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip wrappers.zip && rm -f wrappers.zip
+    ./pw --init pdm
+    ```
+
+=== "Windows"
+    ```powershell
+    Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
+    .\pw --init pdm
+    ```
+
+Now you can run any pdm command with the [`px`](/usage/#install-the-global-px-script) or `pw` script, f.e. `px pdm install`
+
+Any extra arguments are passed to the PDM init command, f.e. `./pw --init pdm --non-interactive`.
+
 ### Poetry project
 Start the interactive poetry initializer:
 === "Linux/Mac"
@@ -51,6 +69,8 @@ Start the interactive poetry initializer:
 
 Now you can run any Poetry command with the [`px`](/usage/#install-the-global-px-script) or `pw` script, f.e. `px poetry install`
 
+Any extra arguments are passed to the Poetry init command, f.e. `./pw --init poetry --no-interaction`.
+
 !!! info "In-project virtual environment"
     `--init poetry` will also copy a `poetry.toml` to your project directory:
     ```toml
@@ -59,21 +79,6 @@ Now you can run any Poetry command with the [`px`](/usage/#install-the-global-px
     ```
     This makes Poetry create a `.venv` in your project directory instead of somewhere in your home directory.
     It makes it easier to locate files and to keep your system clean when removing the project.
-
-## PDM project
-Start the interactive PDM initializer:
-=== "Linux/Mac"
-    ```bash
-    curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip wrappers.zip && rm -f wrappers.zip
-    ./pw --init pdm
-    ```
-
-=== "Windows"
-    ```powershell
-    Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
-    .\pw --init pdm
-    ```
-Now you can run any pdm command with the [`px`](/usage/#install-the-global-px-script) or `pw` script, f.e. `px pdm install`
 
 ## Install the global `px` script
 Pyprojectx provides a small `px` script that delegates everything to the `pw` wrapper script.
