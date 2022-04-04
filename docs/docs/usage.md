@@ -9,8 +9,16 @@
 Pyprojectx can create or update a `pyproject.toml` file for either a plain, a [Poetry](https://python-poetry.org/)
 or a [PDM](https://pdm.fming.dev/) project.
 
-Cd into your existing project directory (or create a new empty directory), download the wrapper scripts
+Cd into your existing project directory (or create a new empty directory), download the wrapper scripts,
 and run the init command.
+
+!!! tip "Tip: Add the wrapper scripts to version control"
+When using Git:
+```shell
+git add pw pw.bat
+git update-index --chmod=+x pw
+echo .pyprojectx/ >> .gitignore
+```
 
 ### Plain Python project
 === "Linux/Mac"
