@@ -13,12 +13,12 @@ Cd into your existing project directory (or create a new empty directory), downl
 and run the init command.
 
 !!! tip "Tip: Add the wrapper scripts to version control"
-When using Git:
-```shell
-git add pw pw.bat
-git update-index --chmod=+x pw
-echo .pyprojectx/ >> .gitignore
-```
+    When using Git:
+    ```shell
+    git add pw pw.bat
+    git update-index --chmod=+x pw
+    echo .pyprojectx/ >> .gitignore
+    ```
 
 ### Plain Python project
 === "Linux/Mac"
