@@ -33,7 +33,7 @@ and run the init command.
     .\pw --init project
     ```
 
-Now you can use the [`px`](/usage/#install-the-global-px-script) or `pw` script to show available tools and commands: `px -i`.
+Now you can use the `pw` or [`px`](/usage/#install-the-global-px-script) script to show available tools and commands: `./pw -i`.
 
 ### PDM project
 Start the interactive PDM initializer:
@@ -49,9 +49,9 @@ Start the interactive PDM initializer:
     .\pw --init pdm
     ```
 
-Now you can run any pdm command with the [`px`](/usage/#install-the-global-px-script) or `pw` script, f.e. `px pdm install`
+Any extra arguments are passed to PDM's init command, f.e. `./pw --init pdm --non-interactive`.
 
-Any extra arguments are passed to the PDM init command, f.e. `./pw --init pdm --non-interactive`.
+Now you can run any PDM command with the `pw` or [`px`](/usage/#install-the-global-px-script) script, f.e. `./pw pdm install`
 
 ### Poetry project
 Start the interactive poetry initializer:
@@ -67,9 +67,9 @@ Start the interactive poetry initializer:
     .\pw --init poetry
     ```
 
-Now you can run any Poetry command with the [`px`](/usage/#install-the-global-px-script) or `pw` script, f.e. `px poetry install`
+Any extra arguments are passed to Poetry's init command, f.e. `./pw --init poetry --no-interaction`.
 
-Any extra arguments are passed to the Poetry init command, f.e. `./pw --init poetry --no-interaction`.
+Now you can run any Poetry command with the `pw` or [`px`](/usage/#install-the-global-px-script) script, f.e. `./pw poetry install`
 
 !!! info "In-project virtual environment"
     `--init poetry` will also copy a `poetry.toml` to your project directory:

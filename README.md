@@ -44,8 +44,8 @@ Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/downl
 ## Project initialization
 Initialize a new or existing project with the _--init_ option (on Windows, replace `./pw` with `pw`):
 * `./pw --init project`: add pyprojectx example sections to an existing or new _pyproject.toml_ in the current directory.
-* `./pw --init poetry`: initialize a [Poetry](https://python-poetry.org/) project and add pyprojectx example sections to _pyproject.toml_.
 * `./pw --init pdm`: initialize a [PDM](https://pdm.fming.dev/) project and add pyprojectx example sections to _pyproject.toml_.
+* `./pw --init poetry`: initialize a [Poetry](https://python-poetry.org/) project and add pyprojectx example sections to _pyproject.toml_.
 
 ## Configuration
 Add the _tool.pyprojectx_ section inside _pyproject.toml_ in your project's root directory.
@@ -112,7 +112,7 @@ Aliases can be invoked as is or with extra arguments:
 ## Why yet another tool?
 * As Python noob I had hard times setting up a project and building existing projects
 * There is always someone in the team having issues with his setup, either with a specific tool, with Homebrew, pipx, ...
-* Using (Poetry) dev-dependencies to install tools, impacts your production dependencies and can even lead to dependency conflicts
+* Using (PDM or Poetry) dev-dependencies to install tools, impacts your production dependencies and can even lead to dependency conflicts
 * Different projects often require different versions of the same tool
 
 ## Example projects
