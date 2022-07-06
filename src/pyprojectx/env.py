@@ -136,7 +136,7 @@ class IsolatedVirtualEnv:
 
     def run(self, cmd: Union[str, List[str]]) -> subprocess.CompletedProcess:
         """
-        Run a command inside the virual environment.
+        Run a command inside the virtual environment.
         :param cmd: The command string to run
         :return: The subprocess.CompletedProcess instance
         """
