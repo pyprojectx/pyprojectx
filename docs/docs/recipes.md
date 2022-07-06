@@ -103,7 +103,7 @@ jupyter = ["jupyter", "."]
 
 [tool.pyprojectx.aliases]
 # the notebook-dir is optional
-# -y is there to automatically answer 'yes' after quiting with ctrl+c
+# -y is there to automatically answer 'yes' after quitting with ctrl+c
 notebook = "jupyter notebook --notebook-dir docs -y"
 ```
 Just run `px notebook` or even `px n`
