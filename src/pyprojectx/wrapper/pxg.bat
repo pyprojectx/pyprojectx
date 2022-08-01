@@ -1,11 +1,12 @@
+@echo off
 if defined UserProfile (
-    set h = %UserProfile%
+    set "h=%UserProfile%"
 ) else (
-    set h = %HomeDrive%%HomePath%
+    set "h=%HomeDrive%%HomePath%"
 )
-if exist %~fh\.pyprojectx\global\pw (
-  python %~fh\.pyprojectx\global\pw %*
+if exist "%h%\.pyprojectx\global\pw" (
+  python "%h%\.pyprojectx\global\pw" %*
 ) else (
-     echo "ERROR: no pw script found in %~fh\.pyprojectx\global\pw"
+     echo ERROR: no pw script found in %h%\.pyprojectx\global
      exit 1
 )
