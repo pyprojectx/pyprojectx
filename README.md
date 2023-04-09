@@ -70,7 +70,7 @@ The _tool.pyprojectx.aliases_ section can contain optional commandline aliases i
 
 Example:
 ```toml
-[tool.pyprojectx.alias]
+[tool.pyprojectx.aliases]
 # convenience shortcuts
 run = "poetry run"
 test = "poetry run pytest"
