@@ -141,7 +141,7 @@ def test_post_install(tmp_project):
 
 def test_alias_with_quoted_args(tmp_project):
     project_dir, env = tmp_project
-    cmd = f"{SCRIPT_PREFIX}pw -q pycowsay 'quoted    arguments are preserved'"
+    cmd = f'{SCRIPT_PREFIX}pw -q pycowsay "quoted    arguments are preserved"'
     assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
 
