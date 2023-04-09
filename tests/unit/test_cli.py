@@ -119,7 +119,7 @@ def test_run_tool_alias_with_args(tmp_dir, mocker):
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "alias-1", "alias-arg1", "alias-arg2"])
 
-    run_mock.assert_called_with("tool-1 arg alias-arg1 alias-arg2", shell=True, check=True, env=ANY)
+    run_mock.assert_called_with("tool-1 arg 'alias-arg1' 'alias-arg2'", shell=True, check=True, env=ANY)
 
 
 def test_run_explicit_tool_alias_with_arg(tmp_dir, mocker):
@@ -128,7 +128,7 @@ def test_run_explicit_tool_alias_with_arg(tmp_dir, mocker):
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "alias-3", "alias-arg"])
 
-    run_mock.assert_called_with("command arg alias-arg", shell=True, check=True, env=ANY)
+    run_mock.assert_called_with("command arg 'alias-arg'", shell=True, check=True, env=ANY)
     assert (
         f"{tmp_dir.name}{os.sep}venvs{os.sep}"
         f"tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.path.pathsep}"
@@ -144,7 +144,7 @@ def test_combined_alias_with_arg(tmp_dir, mocker):
 
     run_mock.assert_called_with(
         f"path/to/pyprojectx --install-dir {tmp_dir} -t {toml} alias-1 && path/to/pyprojectx --install-dir {tmp_dir} "
-        f"-t {toml} alias-2 path/to/pyprojectx --install-dir {tmp_dir} -t {toml} shell-command alias-arg",
+        f"-t {toml} alias-2 path/to/pyprojectx --install-dir {tmp_dir} -t {toml} shell-command 'alias-arg'",
         shell=True,
         check=True,
     )
@@ -167,7 +167,7 @@ def test_shell_command_alias(tmp_dir, mocker):
     )
 
     run_mock.assert_called_with(
-        "ls -al alias-arg",
+        "ls -al 'alias-arg'",
         shell=True,
         check=True,
     )

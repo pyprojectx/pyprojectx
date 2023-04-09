@@ -1,3 +1,8 @@
+Release v1.0.0b1 (2023-04-09)
+----------------------------
+### Bug Fixes
+- Preserve quotes around command arguments when running an alias.
+
 Release v0.9.9 (2022-03-14)
 ----------------------------
 ### Features & Improvements

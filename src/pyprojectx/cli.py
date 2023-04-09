@@ -75,7 +75,8 @@ def _run_alias(
     options,
 ) -> None:
     logger.debug("Running alias command, tool: %s, command: %s, arguments: %s", tool, alias_cmd, options.cmd_args)
-    full_cmd = " ".join([_replace_pw_references(alias_cmd, pw_args)] + options.cmd_args)
+    quoted_args = [f"'{a}'" for a in options.cmd_args]
+    full_cmd = " ".join([_replace_pw_references(alias_cmd, pw_args)] + quoted_args)
     if tool:
         _run_in_tool_venv(tool, full_cmd, requirements=requirements, options=options, pw_args=pw_args)
     else:

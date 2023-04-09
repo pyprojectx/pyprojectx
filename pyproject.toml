@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyprojectx"
-version = "0.9.9"
+version = "1.0.0b1"
 description = "Execute scripts from pyproject.toml, installing tools on-the-fly"
 license = "MIT"
 authors = ["Houbie <ivo@houbrechts-it.be>"]
@@ -18,13 +18,13 @@ pyprojectx = "pyprojectx.cli:main"
 
 [tool.poetry.dependencies]
 python = ">=3.7"
-tomli = "^2.0.1"
-virtualenv = "^20.13.3"
-userpath = "^1.8.0"
+tomli = ">=2.0"
+virtualenv = ">=20.21"
+userpath = ">=1.8"
 
 [tool.poetry.dev-dependencies]
-pytest = "^7.0.1"
-pytest-mock = "^3.7.0"
+pytest = ">=7.3"
+pytest-mock = ">=3.10"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -54,10 +54,10 @@ disable = [
 ]
 
 [tool.pyprojectx]
-poetry = { requirements = "poetry==1.1.13", post-install = "pw@pre-commit install" }
-black = "black==22.3.0"
-isort = "isort==5.10.1"
-pylint = "pylint==2.12.2"
+poetry = { requirements = "poetry==1.4.2", post-install = "pw@pre-commit install" }
+black = "black==23.3.0"
+isort = "isort==5.12.0"
+pylint = "pylint==2.17.2"
 pre-commit = "pre-commit"
 mkdocs = ["mkdocs ~=1.2", "mkdocs-material ~=8.2", "mkdocstrings[python] ~=0.18", "markdown-include ~=0.6", ]
 
