@@ -63,7 +63,7 @@ pdm = { requirements = "pdm==2.5.2", post-install = "pw@pre-commit install" }
 black = "black==23.3.0"
 isort = "isort==5.12.0"
 pylint = "pylint==2.17.2"
-pre-commit = "pre-commit==3.2.2"
+pre-commit = "pre-commit"
 mkdocs = ["mkdocs ~=1.4", "mkdocs-material ~=9.1", "mkdocstrings[python] ~=0.21", "markdown-include ~=0.8", ]
 
 [tool.pyprojectx.aliases]
