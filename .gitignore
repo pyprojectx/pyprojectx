@@ -136,3 +136,4 @@ dmypy.json
 .pyprojectx/
 /docs/docs/usage.txt
 /docs/site/
+/.pdm-python

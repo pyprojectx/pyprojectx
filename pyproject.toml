@@ -1,34 +1,39 @@
-[tool.poetry]
+[project]
 name = "pyprojectx"
-version = "1.0.0b1"
+dynamic = ["version", ]
 description = "Execute scripts from pyproject.toml, installing tools on-the-fly"
-license = "MIT"
-authors = ["Houbie <ivo@houbrechts-it.be>"]
+license = { text = "MIT" }
+authors = [{ name = "Houbie", email = "ivo@houbrechts-it.be" }]
 readme = "README.md"
-homepage = "https://github.com/pyprojectx/pyprojectx"
-documentation = "https://pyprojectx.github.io"
+urls = { homepage = "https://github.com/pyprojectx/pyprojectx", documentation = "https://pyprojectx.github.io" }
+
 keywords = ["build", "dependency", "pyprojectx"]
 classifiers = [
     "Topic :: Software Development :: Build Tools",
     "Topic :: Software Development :: Libraries :: Python Modules"
 ]
+requires-python = ">=3.7"
 
-[tool.poetry.scripts]
+dependencies = [
+    "tomli>=2.0.1",
+    "virtualenv>=20.21.0",
+    "userpath>=1.8.0",
+]
+[tool.pdm.version]
+source = "scm"
+
+[tool.pdm.dev-dependencies]
+test = [
+    "pytest>=7.3.0",
+    "pytest-mock>=3.10.0",
+]
+
+[project.scripts]
 pyprojectx = "pyprojectx.cli:main"
 
-[tool.poetry.dependencies]
-python = ">=3.7"
-tomli = ">=2.0"
-virtualenv = ">=20.21"
-userpath = ">=1.8"
-
-[tool.poetry.dev-dependencies]
-pytest = ">=7.3"
-pytest-mock = ">=3.10"
-
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
 [tool.black]
 line-length = 120
@@ -40,7 +45,7 @@ profile = "black"
 max-line-length = 120
 variable-rgx = '^[a-z_][a-z0-9_]*$'
 [tool.pylint.similarities]
-ignore-imports= true
+ignore-imports = true
 [tool.pylint.master]
 init-hook = """
 import sys
@@ -54,39 +59,38 @@ disable = [
 ]
 
 [tool.pyprojectx]
-poetry = { requirements = "poetry==1.4.2", post-install = "pw@pre-commit install" }
+pdm = { requirements = "pdm==2.5.2", post-install = "pw@pre-commit install" }
 black = "black==23.3.0"
 isort = "isort==5.12.0"
 pylint = "pylint==2.17.2"
-pre-commit = "pre-commit"
-mkdocs = ["mkdocs ~=1.2", "mkdocs-material ~=8.2", "mkdocstrings[python] ~=0.18", "markdown-include ~=0.6", ]
+pre-commit = "pre-commit==3.2.2"
+mkdocs = ["mkdocs ~=1.4", "mkdocs-material ~=9.1", "mkdocstrings[python] ~=0.21", "markdown-include ~=0.8", ]
 
 [tool.pyprojectx.aliases]
-install = "poetry install"
-run = "poetry run pyprojectx -t pyproject.toml "
-outdated = "poetry show --outdated"
+install = "pdm install"
+run = "pdm run pyprojectx -t pyproject.toml "
+outdated = "pdm update --outdated"
 clean = "rm -r .venv .pytest_cache dist"
 clean-all = """\
 pw@clean
 rm -r .pyprojectx"""
 black = "black src tests"
 isort = "isort src tests"
-unit-test = "poetry run pytest tests/unit"
-integration-test = "poetry run pytest tests/integration"
+unit-test = "pdm run pytest tests/unit"
+integration-test = "pdm run pytest tests/integration"
 test = "pw@unit-test && pw@integration-test"
 check-pylint = "pylint src tests"
 check-black = "black src tests --check"
 check = "pw@check-black && pw@check-pylint && pw@test"
-build = "pw@install && pw@check && pw@poetry build"
+build = "pw@install && pw@check && pw@pdm build"
 
 # used in github actions:
-publish = "poetry publish --username __token__"
+publish = "pdm publish --username __token__"
 prep-release = """\
 # cleanup
 rm -f wrappers.zip .changelog.md
 # extract version from tag
 RELEASE_VERSION="${GITHUB_REF##*/v}"
-pw@poetry version $RELEASE_VERSION
 # replace __version__ in wrapper
 sed -i -e "s/__version__/${RELEASE_VERSION}/g" src/pyprojectx/wrapper/pw.py
 # cleanup sed backup
