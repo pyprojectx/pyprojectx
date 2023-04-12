@@ -8,8 +8,6 @@ import pytest
 
 from pyprojectx.initializer.initializers import SCRIPT_PREFIX
 
-# pylint: disable=redefined-outer-name
-
 
 def test_logs_and_stdout_with_quiet(tmp_project):
     project_dir, env = tmp_project
@@ -34,7 +32,7 @@ def test_logs_and_stdout_with_quiet(tmp_project):
         )
     )
     if not sys.platform.startswith("win"):
-        assert proc_result.stderr.decode("utf-8") == ""
+        assert not proc_result.stderr.decode("utf-8")
 
     cmd = f"{SCRIPT_PREFIX}pw -q list-files *.toml"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
@@ -44,7 +42,7 @@ def test_logs_and_stdout_with_quiet(tmp_project):
 def test_logs_and_stdout_when_alias_invoked_from_sub_directory_with_verbose(tmp_project):
     project_dir, env = tmp_project
     cwd = project_dir.joinpath("subdir")
-    os.makedirs(cwd, exist_ok=True)
+    cwd.mkdir(parents=True, exist_ok=True)
     cmd = f"..{os.sep}pw --verbose --verbose combine-pw-scripts"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=True)
 
@@ -65,7 +63,7 @@ def test_alias_abbreviations(tmp_project):
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
     assert "< hello >" in proc_result.stdout.decode("utf-8")
     if not sys.platform.startswith("win"):
-        assert proc_result.stderr.decode("utf-8") == ""
+        assert not proc_result.stderr.decode("utf-8")
 
     cmd = f"{SCRIPT_PREFIX}pw -q pycow"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
@@ -73,11 +71,11 @@ def test_alias_abbreviations(tmp_project):
     assert "'pycow' is ambiguous" in proc_result.stderr.decode("utf-8")
     assert "pycowsay, pycowsay-hi, pycowsay-hello" in proc_result.stderr.decode("utf-8")
     if not sys.platform.startswith("win"):
-        assert proc_result.stdout.decode("utf-8") == ""
+        assert not proc_result.stdout.decode("utf-8")
 
 
 @pytest.mark.parametrize(
-    "cmd, stderr",
+    ("cmd", "stderr"),
     [
         (
             f"{SCRIPT_PREFIX}pw -q failing-install",
@@ -95,7 +93,7 @@ def test_output_with_errors(cmd, stderr, tmp_project):
     project_dir, env = tmp_project
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
     assert proc_result.returncode
-    assert proc_result.stdout.decode("utf-8") == ""
+    assert not proc_result.stdout.decode("utf-8")
     assert re.search(stderr, proc_result.stderr.decode("utf-8"))
 
 
@@ -132,7 +130,7 @@ def test_post_install(tmp_project):
         )
     )
     if not sys.platform.startswith("win"):
-        assert proc_result.stderr.decode("utf-8") == ""
+        assert not proc_result.stderr.decode("utf-8")
 
     cmd = f"{SCRIPT_PREFIX}pw -q list-files *.txt"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)

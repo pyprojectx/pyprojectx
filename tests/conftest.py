@@ -9,7 +9,7 @@ import pytest
 from pyprojectx.wrapper import pw
 
 
-@pytest.fixture
+@pytest.fixture()
 def tmp_dir():
     path = tempfile.mkdtemp(prefix="build-env-")
     yield Path(path)
@@ -24,7 +24,7 @@ def tmp_project():
     pw_copy = Path(tmp, "pw")
     project_dir = Path(__file__).parent.parent
     shutil.copyfile(project_dir.joinpath("src/pyprojectx/wrapper/pw.py"), pw_copy)
-    os.chmod(pw_copy, stat.S_IRWXU | stat.S_IRWXG)
+    pw_copy.chmod(stat.S_IRWXU | stat.S_IRWXG)
     shutil.copy(project_dir.joinpath("src/pyprojectx/wrapper/pw.bat"), tmp)
     env = os.environ.copy()
     env["PYPROJECTX_PACKAGE"] = str(project_dir.absolute())

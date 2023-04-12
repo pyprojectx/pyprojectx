@@ -41,28 +41,19 @@ line-length = 120
 [tool.isort]
 profile = "black"
 
-[tool.pylint.format]
-max-line-length = 120
-variable-rgx = '^[a-z_][a-z0-9_]*$'
-[tool.pylint.similarities]
-ignore-imports = true
-[tool.pylint.master]
-init-hook = """
-import sys
-sys.path.append(f".venv/lib/python{sys.version_info.major}.{sys.version_info.minor}/site-packages")
-sys.path.append(f".venv/Lib/site-packages")
-"""
-[tool.pylint.messages_control]
-disable = [
-    "missing-docstring",
-    "unspecified-encoding"
-]
+[tool.ruff]
+line-length = 120
+select = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "ICN", "INP", "ISC", "NPY", "PD", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
+fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "ICN", "INP", "ISC", "NPY", "PD", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
+ignore = ["D100", "D102", "D103", "D104", "D105","D213","D203", "T201", "TRY003", "EM102", "COM812"]
+[tool.ruff.per-file-ignores]
+"tests/*"= ["S101", "I001"]
 
 [tool.pyprojectx]
 pdm = { requirements = "pdm==2.5.2", post-install = "pw@pre-commit install" }
 black = "black==23.3.0"
 isort = "isort==5.12.0"
-pylint = "pylint==2.17.2"
+ruff = "ruff"
 pre-commit = "pre-commit"
 mkdocs = ["mkdocs ~=1.4", "mkdocs-material ~=9.1", "mkdocstrings[python] ~=0.21", "markdown-include ~=0.8", ]
 
@@ -79,9 +70,9 @@ isort = "isort src tests"
 unit-test = "pdm run pytest tests/unit"
 integration-test = "pdm run pytest tests/integration"
 test = "pw@unit-test && pw@integration-test"
-check-pylint = "pylint src tests"
+check-ruff = "ruff check src tests"
 check-black = "black src tests --check"
-check = "pw@check-black && pw@check-pylint && pw@test"
+check = "pw@check-black && pw@check-ruff && pw@test"
 build = "pw@install && pw@check && pw@pdm build"
 
 # used in github actions:

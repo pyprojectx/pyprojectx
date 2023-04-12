@@ -10,23 +10,19 @@ from pyprojectx.wrapper.pw import BLUE, CYAN, RESET
 
 
 class Config:
-    """
-    Encapsulates the PyprojectX config inside a toml file
-    """
+    """Encapsulates the PyprojectX config inside a toml file."""
 
     def __init__(self, toml_path: Path) -> None:
-        """
-        :param toml_path: The toml config file
-        """
+        """:param toml_path: The toml config file"""
         self._toml_path = toml_path
         try:
-            with open(self._toml_path, "rb") as f:
+            with toml_path.open("rb") as f:
                 toml_dict = tomli.load(f)
                 self._tools = toml_dict.get("tool", {}).get("pyprojectx", {})
                 self._aliases = self._tools.get("aliases", {})
                 self._os_aliases = self._merge_os_aliases()
-        except Exception as e:
-            raise Warning(f"Could not parse {self._toml_path}: {e}") from e
+        except Exception as e:  # noqa: BLE001
+            raise Warning(f"Could not parse {toml_path}: {e}") from e
 
     def show_info(self, cmd, error=False):
         tool, alias = self.get_alias(cmd)
@@ -53,8 +49,8 @@ class Config:
             print("\n".join(self._tools.keys() - ["aliases", "os"]), file=out)
 
     def get_tool_requirements(self, key) -> dict:
-        """
-        Get the requirements (dependencies) for a configured tool in the [tool.pyprojectx] section.
+        """Get the requirements (dependencies) for a configured tool in the [tool.pyprojectx] section.
+
         The requirements can either be specified as a string, a list of strings or an object with requirements and
         post-install as keys.
         A multiline string is treated as one requirement per line.
@@ -78,18 +74,18 @@ class Config:
         return {"requirements": requirements, "post-install": post_install}
 
     def is_tool(self, key) -> bool:
-        """
-        Check whether a key (tool name) exists in the [tool.pyprojectx] section.
+        """Check whether a key (tool name) exists in the [tool.pyprojectx] section.
+
         :param key: The key (tool name) to look for
         :return: True if the key exists in the [tool.pyprojectx] section.
         """
         return self._tools.get(key) is not None
 
     def get_alias(self, key) -> Tuple[Optional[str], Optional[str]]:
-        """
-        Get an alias command configured in the [tool.pyprojectx.alias] section.
+        """Get an alias command configured in the [tool.pyprojectx.alias] section.
+
         The alias is considered to be part of a tool if its command starts with the name of the tool
-        or if the the command starts with '@tool-name:'.
+        or if the command starts with '@tool-name:'.
         :param key: The key (name) of the alias
         :return: A tuple containing the corresponding tool (or None) and
          the alias command (without the optional @tool-name part), or None if there is no alias with the given key.
@@ -110,8 +106,8 @@ class Config:
         return None, alias_cmd
 
     def find_aliases(self, abbrev: str) -> List[str]:
-        """
-        Find all alias keys that match the abbreviation.
+        """Find all alias keys that match the abbreviation.
+
         The abbreviation can use camel case patterns that are expanded to match camel case and kebab case names.
         For example the pattern foBa (or even fB) matches fooBar and foo-bar.
         If the abbreviation is exactly equal to an alias key, only that key is returned, even if the abbreviation
@@ -119,10 +115,10 @@ class Config:
         :param abbrev: abbreviated or full alias key to search for
         :return: a list of matching alias keys
         """
-        if abbrev in self._aliases.keys():
+        if abbrev in self._aliases:
             return [abbrev]
 
-        return [key for key in self._aliases.keys() if camel_match(abbrev, key)]
+        return [key for key in self._aliases if camel_match(abbrev, key)]
 
     def __repr__(self):
         return str(self._tools)
@@ -145,7 +141,7 @@ def camel_match(abbrev, key):
 def to_camel_parts(key):
     if not key:
         return []
-    if len(key) < 2:
+    if len(key) < 2:  # noqa PLR2004
         return [key]
     camel = re.sub(r"(-\w)", lambda m: m.group(0)[1].upper(), key)
     return filter(len, re.split("([A-Z][^A-Z]*)", camel[0].lower() + camel[1:]))
