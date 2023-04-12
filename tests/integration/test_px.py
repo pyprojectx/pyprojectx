@@ -8,8 +8,6 @@ from pathlib import Path
 import pytest
 
 from pyprojectx.initializer.initializers import SCRIPT_EXTENSION, SCRIPT_PREFIX
-
-# pylint: disable=redefined-outer-name
 from pyprojectx.wrapper.pw import PYPROJECT_TOML
 
 
@@ -77,7 +75,7 @@ def test_initialize_build_tool(tmp_project, tool):
         f"{SCRIPT_PREFIX}px {tool} --version", shell=True, capture_output=True, cwd=cwd, env=env, check=False
     )
     version = re.search(r"(\d+\.)+(\d+)", proc_result.stdout.decode("utf-8"))[0]
-    with open(cwd.joinpath(PYPROJECT_TOML), "rt") as f:
+    with cwd.joinpath(PYPROJECT_TOML).open() as f:
         assert f'{tool} = "{tool}=={version}"' in f.read()
 
 
@@ -97,5 +95,5 @@ def test_initialize_global(tmp_project):
 
 
 def copy_px(dir_name):
-    os.makedirs(dir_name, exist_ok=True)
+    dir_name.mkdir(parents=True, exist_ok=True)
     shutil.copy(Path(__file__).parent.parent.joinpath(f"../src/pyprojectx/wrapper/px{SCRIPT_EXTENSION}"), dir_name)

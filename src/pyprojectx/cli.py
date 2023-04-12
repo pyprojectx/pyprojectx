@@ -76,7 +76,7 @@ def _run_alias(
 ) -> None:
     logger.debug("Running alias command, tool: %s, command: %s, arguments: %s", tool, alias_cmd, options.cmd_args)
     quoted_args = [f'"{a}"' for a in options.cmd_args]
-    full_cmd = " ".join([_replace_pw_references(alias_cmd, pw_args)] + quoted_args)
+    full_cmd = " ".join([_replace_pw_references(alias_cmd, pw_args), *quoted_args])
     if tool:
         _run_in_tool_venv(tool, full_cmd, requirements=requirements, options=options, pw_args=pw_args)
     else:
@@ -115,7 +115,7 @@ def _run_in_tool_venv(
 
 
 def _replace_pw_references(alias_cmd: str, pw_args: List[str]) -> str:
-    """Replace all occurrences of pw@ with the path to the pw script (argv[0]) plus all pw options"""
+    """Replace all occurrences of pw@ with the path to the pw script (argv[0]) plus all pw options."""
     replacement = " ".join(pw_args) + " "
     return alias_cmd.replace("pw@", replacement)
 

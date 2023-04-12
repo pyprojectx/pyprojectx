@@ -141,7 +141,7 @@ def ensure_pyprojectx(options):
             print(f"{CYAN}creating pyprojectx venv in {BLUE}{venv_dir}{RESET}", file=sys.stderr)
         env_builder.create(venv_dir)
         subprocess.run(
-            pip_cmd + ["--upgrade", "pip"],
+            [*pip_cmd, "--upgrade", "pip"],
             stdout=out,
             check=True,
         )
@@ -151,7 +151,7 @@ def ensure_pyprojectx(options):
                 f"{CYAN}installing pyprojectx {BLUE}{options.version}: {options.pyprojectx_package} {RESET}",
                 file=sys.stderr,
             )
-        subprocess.run(pip_cmd + [options.pyprojectx_package], stdout=out, check=True)
+        subprocess.run([*pip_cmd, options.pyprojectx_package], stdout=out, check=True)
     return pyprojectx_script
 
 

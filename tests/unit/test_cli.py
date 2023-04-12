@@ -1,3 +1,4 @@
+# ruff: noqa: PLR2004
 import os.path
 import sys
 from pathlib import Path
@@ -7,8 +8,6 @@ import pytest
 
 from pyprojectx.cli import _get_options, _run
 from pyprojectx.wrapper import pw
-
-# pylint: disable=protected-access, no-member
 
 PY_VER = f"py{sys.version_info.major}.{sys.version_info.minor}"
 SCRIPTS_DIR = "Scripts" if sys.platform.startswith("win") else "bin"
@@ -51,7 +50,7 @@ def test_run_tool(tmp_dir, mocker):
         f"tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.sep}python" in first_arg
     )
     assert pip_install_args[1:-1] == ["-Im", "pip", "install", "--use-pep517", "--no-warn-script-location", "-r"]
-    assert "build-reqs-" in pip_install_args[-1]
+    assert "build-reqs-" in str(pip_install_args[-1])
 
     run_args = _get_call_args(run_mock.mock_calls[1])
     run_kwargs = _get_call_kwargs(run_mock.mock_calls[1])

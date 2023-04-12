@@ -77,7 +77,7 @@ def test_unexisting_toml():
 
 
 @pytest.mark.parametrize(
-    "shorcut, aliases",
+    ("shorcut", "aliases"),
     [
         ("aaa-bbb-ccc", ["aaa-bbb-ccc"]),
         ("aaaBbbDdd", ["aaaBbbDdd"]),

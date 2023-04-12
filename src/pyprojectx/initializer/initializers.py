@@ -37,6 +37,7 @@ def show_help(_):
 
 def initialize_project(_):
     """Initialize pyprojectx setup in the current working directory.
+
     If pyproject.toml already exists and doesn't yet contain a tool.pyprojectx section,
     an example section will be appended.
     """
@@ -62,7 +63,10 @@ def _initialize_build_tool(tool, options):
 
     logger.info("installing %s...", tool)
     proc = subprocess.run(
-        f"{SCRIPT_PREFIX}pw --toml {template} {tool} --version", shell=True, check=True, capture_output=True
+        f"{SCRIPT_PREFIX}pw --toml {template} {tool} --version",
+        shell=True,
+        check=True,
+        capture_output=True,
     )
     version = re.search(r"(\d+\.)+(\d+)", proc.stdout.decode("utf-8"))[0]
     old_requirement = f"{tool}>=1.1"
@@ -73,11 +77,10 @@ def _initialize_build_tool(tool, options):
         f"{SCRIPT_PREFIX}pw --toml {template} {tool} init " + " ".join(options.cmd_args), shell=True, check=True
     )
     logger.debug("appending template to %s...", PYPROJECT_TOML)
-    with open(template, "rt") as src:
-        with open(PYPROJECT_TOML, "at") as dest:
-            dest.write(src.read())
+    with open(template) as src, open(PYPROJECT_TOML, "a") as dest:  # noqa PTH123
+        dest.write(src.read())
     _print_usage()
-    os.remove(template)
+    os.remove(template)  # noqa PTH123
     print(
         f"\n{BLUE}You can run all {CYAN}{tool}{BLUE} commands by typing {RESET}{SCRIPT_PREFIX}pw {BLUE} in front",
         file=sys.stderr,
@@ -105,18 +108,18 @@ def _initialize_template(template_name, toml_file=PYPROJECT_TOML):
         logger.info("copying %s template", template_name)
         shutil.copy2(template, target_toml)
     else:
-        with open(target_toml, "a+") as dst:
+        with target_toml.open("a+") as dst:
             toml_dict = tomli.load(dst)
             if not toml_dict.get("tool", {}).get("pyprojectx"):
-                with open(template, "rt") as src:
+                with template.open() as src:
                     logger.info("appending template to %s", toml_file)
                     dst.write(src.read())
 
 
 def _replace_in_file(old, new, file):
-    with open(file, "rt") as f:
+    with open(file) as f:  # noqa PTH123
         text = f.read().replace(old, new)
-    with open(file, "wt") as f:
+    with open(file, "w") as f:  # noqa PTH123
         f.write(text)
 
 
@@ -134,12 +137,13 @@ def _print_usage():
 
 def initialize_global(options):
     """Initialize the global pyprojectx setup in your home directory.
+
     Use '--init global --force' to overwrite.
     """
     global_dir = HOME_DIR.joinpath(DEFAULT_INSTALL_DIR, "global")
     wrapper_dir = Path(__file__).parent.parent.joinpath("wrapper")
     logger.debug("creating global directory %s", global_dir)
-    os.makedirs(global_dir, exist_ok=True)
+    global_dir.mkdir(parents=True, exist_ok=True)
 
     target_pw = global_dir.joinpath("pw")
     if target_pw.exists() and "--force" not in options.cmd_args:
@@ -168,7 +172,6 @@ def initialize_global(options):
 
 def ensure_path(location: Path):
     global_path = str(location.parent.absolute())
-    # pylint: disable=broad-except
     try:
         if userpath.in_current_path(global_path):
             print(f"{global_path} is already in PATH.", file=sys.stderr)
@@ -179,7 +182,7 @@ def ensure_path(location: Path):
             print(
                 " but you need to open a new terminal or re-login for this PATH change to take effect.", file=sys.stderr
             )
-    except Exception:
+    except Exception:  # noqa BLE001
         print(
             f"{global_path} {RED} could not be added automatically to PATH. You will need to add it manually{RESET}",
             file=sys.stderr,

@@ -1,3 +1,4 @@
+# ruff: noqa: PLR2004
 import os
 import subprocess
 import sys
@@ -7,8 +8,6 @@ from packaging.version import Version
 
 from pyprojectx.env import IsolatedVirtualEnv
 from pyprojectx.log import set_verbosity
-
-# pylint: disable=no-member
 
 
 def test_isolated_env_path(tmp_dir):
@@ -50,9 +49,9 @@ def test_isolation(tmp_dir):
     subprocess.check_call([sys.executable, "-c", "import pyprojectx.env"])
     env = IsolatedVirtualEnv(tmp_dir, "env-name", {})
     env.install()
+    debug_import = "import sys; import os; print(os.linesep.join(sys.path));"
     with pytest.raises(subprocess.CalledProcessError):
-        debug = "import sys; import os; print(os.linesep.join(sys.path));"
-        subprocess.check_call([str(env.executable), "-c", f"{debug} import pyprojectx.env"])
+        subprocess.check_call([str(env.executable), "-c", f"{debug_import} import pyprojectx.env"])
 
 
 def test_isolated_env_install_arguments(mocker, tmp_dir):
