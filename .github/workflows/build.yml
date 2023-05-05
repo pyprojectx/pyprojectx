@@ -5,6 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -20,20 +21,26 @@ jobs:
             image: ubuntu-latest
           - os: Windows
             image: windows-latest
+        exclude:
+          - os: Windows
+            python-version: "3.7"
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Cache .pyprojectx
-        uses: actions/cache@v2
-        env:
-          cache-name: .pyprojectx
+      - name: Cache pyprojectx
+        uses: actions/cache@v3
         with:
           path: .pyprojectx
-          key: ${{ runner.os }}-pyprojectx
+          key: ${{ hashFiles('pyproject.toml') }}-${{ runner.os }}-${{ matrix.python-version }}-pyprojectx
+      - name: Cache venv
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: ${{ hashFiles('pdm.lock') }}-${{ runner.os }}-${{ matrix.python-version }}-venv
 
       - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 

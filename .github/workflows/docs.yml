@@ -10,24 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
-
-      - name: Cache .pyprojectx
-        uses: actions/cache@v2
-        env:
-          cache-name: .pyprojectx
-        with:
-          path: .pyprojectx
-          key: pyprojectx
+          python-version: '3.11'
 
       - name: Build docs
-        run: python pw generate-docs
+        run: ./pw generate-docs
 
       - name: Deploy docs
-        uses: JamesIves/github-pages-deploy-action@v4.2.5
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
           repository-name: pyprojectx/pyprojectx.github.io
           branch: main
