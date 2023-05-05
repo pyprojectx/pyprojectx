@@ -21,6 +21,9 @@ jobs:
             image: ubuntu-latest
           - os: Windows
             image: windows-latest
+        exclude:
+          - os: Windows
+            python-version: "3.7"
 
     steps:
       - uses: actions/checkout@v3
