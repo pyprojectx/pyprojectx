@@ -2,7 +2,9 @@ name: Deploy documentation
 
 on:
   push:
-    branches: [ main ]
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+*"
+  workflow_dispatch:
 
 jobs:
   build:
