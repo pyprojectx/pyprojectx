@@ -8,6 +8,17 @@ from pyprojectx.initializer.initializers import initialize
 from pyprojectx.log import logger, set_verbosity
 from pyprojectx.wrapper import pw
 
+UPGRADE_INSTRUCTIONS = (
+    "curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip"
+    " && unzip -o wrappers.zip && rm -f wrappers.zip"
+)
+UPGRADE_INSTRUCTIONS_WIN = (
+    "Invoke-WebRequest"
+    " https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip"
+    " -OutFile wrappers.zip; Expand-Archive -Force -Path wrappers.zip -DestinationPath .;"
+    " Remove-Item -Path wrappers.zip"
+)
+
 
 def main() -> None:
     _run(sys.argv)
@@ -17,6 +28,10 @@ def _run(argv: List[str]) -> None:
     options = _get_options(argv[1:])
     if options.init:
         initialize(options)
+        return
+
+    if options.upgrade:
+        _show_upgrade_instructions()
         return
 
     config = Config(options.toml_path)
@@ -131,3 +146,13 @@ def _get_options(args):
     set_verbosity(options.verbosity)
     logger.debug("Parsed cli arguments: %s", options)
     return options
+
+
+def _show_upgrade_instructions():
+    print(
+        f"{pw.BLUE}Upgrade to the latest version of Pyprojectx by executing following command in a terminal:{pw.RESET}",
+    )
+    if sys.platform.startswith("win"):
+        print(UPGRADE_INSTRUCTIONS_WIN)
+    else:
+        print(UPGRADE_INSTRUCTIONS)

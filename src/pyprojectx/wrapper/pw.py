@@ -115,6 +115,11 @@ def arg_parser():
         "Run with '--init help' to show available init options",
     )
     parser.add_argument(
+        "--upgrade",
+        action="store_true",
+        help="Download the latest pyprojectx wrapper scripts.",
+    )
+    parser.add_argument(
         "command", nargs=argparse.REMAINDER, help="The command/alias with optional arguments to execute."
     )
     return parser
