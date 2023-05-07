@@ -1,3 +1,10 @@
+Release v1.0.0b4 (2023-05-07)
+----------------------------
+### Features & Improvements
+- Add CLI option that prints upgrade instructions
+- Lock all dependencies in pyproject.toml to ensure that all future installs from pypi.org won't be broken by a dependency release
+- Switch to PDM as build backend
+
 Release v1.0.0b1 (2023-04-09)
 ----------------------------
 ### Bug Fixes
