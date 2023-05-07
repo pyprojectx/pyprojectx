@@ -36,6 +36,8 @@ def test_parse_args():
     assert _get_options(["my-cmd", "--in"]).cmd == "my-cmd"
     assert not _get_options(["my-cmd", "--init"]).init
 
+    assert _get_options(["--upgrade"]).upgrade
+
 
 def test_run_tool(tmp_dir, mocker):
     toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
