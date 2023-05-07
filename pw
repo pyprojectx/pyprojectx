@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 from venv import EnvBuilder
 
-VERSION = "0.9.9"
+VERSION = "1.0.0b4"
 
 PYPROJECTX_INSTALL_DIR_ENV_VAR = "PYPROJECTX_INSTALL_DIR"
 PYPROJECTX_PACKAGE_ENV_VAR = "PYPROJECTX_PACKAGE"
@@ -115,6 +115,11 @@ def arg_parser():
         "Run with '--init help' to show available init options",
     )
     parser.add_argument(
+        "--upgrade",
+        action="store_true",
+        help="Download the latest pyprojectx wrapper scripts.",
+    )
+    parser.add_argument(
         "command", nargs=argparse.REMAINDER, help="The command/alias with optional arguments to execute."
     )
     return parser
@@ -141,7 +146,7 @@ def ensure_pyprojectx(options):
             print(f"{CYAN}creating pyprojectx venv in {BLUE}{venv_dir}{RESET}", file=sys.stderr)
         env_builder.create(venv_dir)
         subprocess.run(
-            pip_cmd + ["--upgrade", "pip"],
+            [*pip_cmd, "--upgrade", "pip"],
             stdout=out,
             check=True,
         )
@@ -151,7 +156,7 @@ def ensure_pyprojectx(options):
                 f"{CYAN}installing pyprojectx {BLUE}{options.version}: {options.pyprojectx_package} {RESET}",
                 file=sys.stderr,
             )
-        subprocess.run(pip_cmd + [options.pyprojectx_package], stdout=out, check=True)
+        subprocess.run([*pip_cmd, options.pyprojectx_package], stdout=out, check=True)
     return pyprojectx_script
 
 
