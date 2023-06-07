@@ -100,6 +100,7 @@ To install:
 
 ## Global tools
 Besides the `px` script, `pw --init global` also copies other files:
+
 * `pxg` script in `~/.pyprojectx`
 * `pw` script and example `pyproject.toml` in `~/.pyprojectx/global`
 
