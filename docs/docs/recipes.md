@@ -62,10 +62,12 @@ with Poetry, or [px-demo](https://github.com/pyprojectx/px-demo) for an example 
 
 ## Github actions
 By using the `pw` wrapper script, you can simplify your github actions:
+
 * no explicitly tool installations or docker images (for Python tools)
 * use the same commands and scripts in github actions as on your laptop
 
 Some tips:
+
 * Use the same scripts on Linux and Windows by replacing `./pw` (resp. `.\pw`) with `python pw`
 * Speed up builds by caching `.pyprojectx`
 

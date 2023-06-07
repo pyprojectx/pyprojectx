@@ -43,6 +43,7 @@ Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/downl
 
 ## Project initialization
 Initialize a new or existing project with the _--init_ option (on Windows, replace `./pw` with `pw`):
+
 * `./pw --init project`: add pyprojectx example sections to an existing or new _pyproject.toml_ in the current directory.
 * `./pw --init pdm`: initialize a [PDM](https://pdm.fming.dev/) project and add pyprojectx example sections to _pyproject.toml_.
 * `./pw --init poetry`: initialize a [Poetry](https://python-poetry.org/) project and add pyprojectx example sections to _pyproject.toml_.
