@@ -21,6 +21,11 @@ alias-3 = '@tool-1:command arg'
 alias-4 = '@tool-2 : command --default @arg:x'
 
 combined-alias = 'pw@alias-1 && pw@alias-2 pw@shell-command'
+alias-list = [
+    'pw@alias-1',
+    'pw@alias-2',
+    'pw@shell-command'
+]
 
 shell-command = "ls -al"
 

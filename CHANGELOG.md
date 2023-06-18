@@ -1,3 +1,8 @@
+Release v1.0.0b5 (2023-06-19)
+----------------------------
+### Features & Improvements
+- Make aliases more readable by supporting lists of commands
+
 Release v1.0.0b4 (2023-05-07)
 ----------------------------
 ### Features & Improvements

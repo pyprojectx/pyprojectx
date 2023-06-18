@@ -48,9 +48,15 @@ Use the `pw@` prefix to call alias from another alias.
 
 ```toml
 [tool.pyprojectx.aliases]
-unit-test = "poetry run pytest tests/unit"
-integration-test = "poetry run pytest tests/integration"
+unit-test = "pdm run pytest tests/unit"
+integration-test = "pdm run pytest tests/integration"
 test = "pw@unit-test && pw@integration-test"
+# a list of commands behaves the same as when combined with '&&'
+build = [
+    "pw@install",
+    "pw@test",
+    "pw@pdm build",
+]
 ```
 
 `pw@` is substituted with the initial wrapper command + arguments.
@@ -59,6 +65,7 @@ So running `px -v test` will expand to
 ```
 px -v poetry run pytest tests/unit && px -v  poetry run pytest tests/integration
 ```
+
 
 ## Tools and packages with multiple scripts
 When installing multiple tools/packages together, or when using a tool that installs multiple scripts,

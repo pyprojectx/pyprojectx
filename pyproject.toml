@@ -52,7 +52,7 @@ ignore = ["D100", "D102", "D103", "D104", "D105", "D213", "D203", "T201", "TRY00
 "tests/*" = ["S101", "I001"]
 
 [tool.pyprojectx]
-pdm = { requirements = ["pdm==2.5.5", "requests<2.30.0"], post-install = "pw@pre-commit install" }
+pdm = { requirements = ["pdm==2.7.4", "requests<2.30.0"], post-install = "pw@pre-commit install" }
 black = "black==23.3.0"
 isort = "isort==5.12.0"
 ruff = "ruff"
@@ -62,6 +62,7 @@ mkdocs = ["mkdocs ~=1.4", "mkdocs-material ~=9.1", "mkdocstrings[python] ~=0.21"
 [tool.pyprojectx.aliases]
 install = "pdm install"
 run = "pdm run pyprojectx -t pyproject.toml "
+update = "pdm update"
 outdated = "pdm update --outdated"
 clean = "rm -r .venv .pytest_cache dist"
 clean-all = """\
