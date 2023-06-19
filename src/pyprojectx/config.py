@@ -25,14 +25,15 @@ class Config:
             raise Warning(f"Could not parse {toml_path}: {e}") from e
 
     def show_info(self, cmd, error=False):
-        tool, alias = self.get_alias(cmd)
+        alias_cmds = self.get_alias(cmd)
         out = sys.stderr if error else sys.stdout
-        if alias:
+        if alias_cmds:
             print(f"{cmd}{BLUE} is an alias in {CYAN}{self._toml_path.absolute()}", file=sys.stderr)
-            if tool:
-                print(f"{BLUE}and runs in the {CYAN}{tool}{BLUE} tool context", file=sys.stderr)
-            print(f"{BLUE}command:{RESET}", file=sys.stderr)
-            print(alias, file=out)
+            for tool, alias in alias_cmds:
+                if tool:
+                    print(f"{BLUE}and runs in the {CYAN}{tool}{BLUE} tool context", file=sys.stderr)
+                print(f"{BLUE}command:{RESET}", file=sys.stderr)
+                print(alias, file=out)
         elif self.is_tool(cmd):
             print(f"{cmd}{BLUE} is a tool in {CYAN}{self._toml_path.absolute()}", file=sys.stderr)
             print(f"{BLUE}requirements:{RESET}", file=sys.stderr)
@@ -81,18 +82,24 @@ class Config:
         """
         return self._tools.get(key) is not None
 
-    def get_alias(self, key) -> Tuple[Optional[str], Optional[str]]:
+    def get_alias(self, key) -> List[Tuple[Optional[str], Optional[str]]]:
         """Get an alias command configured in the [tool.pyprojectx.alias] section.
 
         The alias is considered to be part of a tool if its command starts with the name of the tool
         or if the command starts with '@tool-name:'.
         :param key: The key (name) of the alias
-        :return: A tuple containing the corresponding tool (or None) and
+        :return: A list of tuples containing the corresponding tool (or None) and
          the alias command (without the optional @tool-name part), or None if there is no alias with the given key.
         """
-        alias_cmd = self._aliases.get(key)
-        if not alias_cmd:
-            return None, None
+        alias_cmds = self._aliases.get(key)
+        if not alias_cmds:
+            return []
+        if isinstance(alias_cmds, str):
+            alias_cmds = [alias_cmds]
+
+        return [self.parse_alias(cmd, key) for cmd in alias_cmds]
+
+    def parse_alias(self, alias_cmd, key) -> Tuple[Optional[str], Optional[str]]:
         if re.match(r"^@?[\w|-]+\s*:\s*", alias_cmd):
             tool, alias_cmd = re.split(r"\s*:\s*", alias_cmd, maxsplit=1)
             if tool.startswith("@"):

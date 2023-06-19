@@ -60,15 +60,16 @@ def _run(argv: List[str]) -> None:
             )
             print(", ".join(aliases), file=sys.stderr)
             raise SystemExit(1)
-        tool, alias_cmd = config.get_alias(aliases[0])
-        if alias_cmd:
-            _run_alias(
-                tool,
-                alias_cmd,
-                pw_args,
-                requirements=config.get_tool_requirements(tool),
-                options=options,
-            )
+        alias_cmds = config.get_alias(aliases[0])
+        if alias_cmds:
+            for tool, alias_cmd in alias_cmds:
+                _run_alias(
+                    tool,
+                    alias_cmd,
+                    pw_args,
+                    requirements=config.get_tool_requirements(tool),
+                    options=options,
+                )
     elif config.is_tool(cmd):
         _run_in_tool_venv(
             cmd,

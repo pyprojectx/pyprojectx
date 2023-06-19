@@ -9,12 +9,12 @@ def test_no_config():
     config = Config(Path(__file__).parent.with_name("data").joinpath("test-no-config.toml"))
     assert config.get_tool_requirements("tool") == {"requirements": [], "post-install": None}
     assert not config.is_tool("tool")
-    assert config.get_alias("alias") == (None, None)
+    assert config.get_alias("alias") == []
 
 
 def test_no_tool_config():
     config = Config(Path(__file__).parent.with_name("data").joinpath("test-no-tool-config.toml"))
-    assert config.get_alias("run") == (None, "run command")
+    assert config.get_alias("run") == [(None, "run command")]
     with pytest.raises(
         Warning, match=r"Invalid alias wrong-tool-alias: 'wrong-tool' is not defined in \[tool.pyprojectx\]"
     ):
@@ -48,22 +48,23 @@ def test_tool_config():
 
 def test_alias_config():
     config = Config(Path(__file__).parent.with_name("data").joinpath("test.toml"))
-    assert config.get_alias("alias-1") == ("tool-1", "tool-1 arg")
-    assert config.get_alias("alias-2") == ("tool-2", "tool-2 arg1 arg2")
-    assert config.get_alias("alias-3") == ("tool-1", "command arg")
-    assert config.get_alias("alias-4") == ("tool-2", "command --default @arg:x")
-    assert config.get_alias("combined-alias") == (None, "pw@alias-1 && pw@alias-2 pw@shell-command")
-    assert config.get_alias("shell-command") == (None, "ls -al")
-    assert config.get_alias("backward-compatible-tool-ref") == ("tool-1", "command arg")
+    assert config.get_alias("alias-1") == [("tool-1", "tool-1 arg")]
+    assert config.get_alias("alias-2") == [("tool-2", "tool-2 arg1 arg2")]
+    assert config.get_alias("alias-3") == [("tool-1", "command arg")]
+    assert config.get_alias("alias-4") == [("tool-2", "command --default @arg:x")]
+    assert config.get_alias("combined-alias") == [(None, "pw@alias-1 && pw@alias-2 pw@shell-command")]
+    assert config.get_alias("alias-list") == [(None, "pw@alias-1"), (None, "pw@alias-2"), (None, "pw@shell-command")]
+    assert config.get_alias("shell-command") == [(None, "ls -al")]
+    assert config.get_alias("backward-compatible-tool-ref") == [("tool-1", "command arg")]
 
 
 def test_os_specific_alias_config(mocker):
     config = Config(Path(__file__).parent.with_name("data").joinpath("test.toml"))
-    assert config.get_alias("os-specific") == (None, "cmd")
+    assert config.get_alias("os-specific") == [(None, "cmd")]
 
     mocker.patch("sys.platform", "my-os")
     config = Config(Path(__file__).parent.with_name("data").joinpath("test.toml"))
-    assert config.get_alias("os-specific") == (None, "my-os-cmd")
+    assert config.get_alias("os-specific") == [(None, "my-os-cmd")]
 
 
 def test_invalid_toml():
