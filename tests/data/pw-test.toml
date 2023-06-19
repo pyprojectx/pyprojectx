@@ -16,7 +16,7 @@ combine-pw-scripts-list = [
     "pw@pycowsay-hello",
 ]
 failing-list = [
-    "echo 'success!!!'",
+    "echo first-cmd-output-ok",
     "go-foo-bar",
     "echo 'should not get here'",
 ]

@@ -90,7 +90,7 @@ def test_alias_abbreviations(tmp_project):
             "",
             "usage: pyprojectx",
         ),
-        (f"{SCRIPT_PREFIX}pw -q failing-list", "success!!!", "go-foo-bar"),
+        (f"{SCRIPT_PREFIX}pw -q failing-list", "first-cmd-output-ok", "go-foo-bar"),
     ],
 )
 def test_output_with_errors(cmd, stdout, stderr, tmp_project):
