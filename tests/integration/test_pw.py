@@ -90,14 +90,14 @@ def test_alias_abbreviations(tmp_project):
             "",
             "usage: pyprojectx",
         ),
-        (f"{SCRIPT_PREFIX}pw -q failing-list", "success!!!\n", "go-foo-bar"),
+        (f"{SCRIPT_PREFIX}pw -q failing-list", "success!!!", "go-foo-bar"),
     ],
 )
 def test_output_with_errors(cmd, stdout, stderr, tmp_project):
     project_dir, env = tmp_project
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
     assert proc_result.returncode
-    assert proc_result.stdout.decode("utf-8") == stdout
+    assert proc_result.stdout.decode("utf-8").strip() == stdout
     assert re.search(stderr, proc_result.stderr.decode("utf-8"))
 
 
