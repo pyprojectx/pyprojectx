@@ -72,11 +72,22 @@ black = "black src tests"
 isort = "isort src tests"
 unit-test = "pdm run pytest tests/unit"
 integration-test = "pdm run pytest tests/integration"
-test = "pw@unit-test && pw@integration-test"
+test = [
+    "pw@unit-test",
+    "pw@integration-test"
+]
 check-ruff = "ruff check src tests"
 check-black = "black src tests --check"
-check = "pw@check-black && pw@check-ruff && pw@test"
-build = "pw@install && pw@check && pw@pdm build"
+check = [
+    "pw@check-black",
+    "pw@check-ruff",
+    "pw@test"
+]
+build = [
+    "pw@install",
+    "pw@check",
+    "pw@pdm build"
+]
 
 # used in github actions:
 publish = "pdm publish --username __token__"
