@@ -40,9 +40,6 @@ build-backend = "pdm.backend"
 [tool.black]
 line-length = 120
 
-[tool.isort]
-profile = "black"
-
 [tool.ruff]
 line-length = 120
 select = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "ICN", "INP", "ISC", "NPY", "PD", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
@@ -53,9 +50,8 @@ ignore = ["D100", "D102", "D103", "D104", "D105", "D213", "D203", "T201", "TRY00
 
 [tool.pyprojectx]
 pdm = { requirements = ["pdm==2.7.4", "requests<2.30.0"], post-install = "pw@pre-commit install" }
-black = "black==23.3.0"
-isort = "isort==5.12.0"
-ruff = "ruff"
+black = "black==23.9.1"
+ruff = "ruff==0.0.291"
 pre-commit = "pre-commit"
 mkdocs = ["mkdocs ~=1.4", "mkdocs-material ~=9.1", "mkdocstrings[python] ~=0.21", "markdown-include ~=0.8", ]
 
@@ -68,15 +64,15 @@ clean = "rm -r .venv .pytest_cache dist"
 clean-all = """\
 pw@clean
 rm -r .pyprojectx"""
+ruff = "ruff src tests --fix"
 black = "black src tests"
-isort = "isort src tests"
 unit-test = "pdm run pytest tests/unit"
 integration-test = "pdm run pytest tests/integration"
 test = [
     "pw@unit-test",
     "pw@integration-test"
 ]
-check-ruff = "ruff check src tests"
+check-ruff = "ruff src tests"
 check-black = "black src tests --check"
 check = [
     "pw@check-black",

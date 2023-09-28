@@ -4,8 +4,7 @@ pdm = "pdm>=1.1"
 
 # commonly used tools
 #black = "black"
-#isort = "isort"
-#pylint = "pylint"
+#ruff = "ruff
 #pre-commit = "pre-commit"
 #jupyter = ["jupyter", "."]
 
@@ -19,10 +18,10 @@ test = "pdm run pytest"
 #clean = "rm -rf .venv .pytest_cache dist"
 #clean-all = "pw@ clean && rm -rf .pyprojectx"
 #black = "black src tests"
-#isort = "isort src tests"
-#check-pylint = "pylint src tests"
+#ruff = "ruff src tests --fix"
 #check-black = "black src tests --check"
-#check = "pw@ check-black && pw@ check-pylint && pw@ test"
+#check-ruff = "ruff src tests --fix"
+#check = "pw@ check-black && pw@ check-ruff && pw@ test"
 #build = "pw@ install && pw@ check && pw@ pdm build"
 #notebook = "jupyter notebook -y"
 

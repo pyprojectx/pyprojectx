@@ -22,8 +22,7 @@ Example:
 # the first time that a poetry command is invoked, we make sure that pre-commit hooks are installed, so we can't forget it
 poetry = { requirements = "poetry==1.1.13", post-install = "pw@pre-commit install" }
 black = "black==22.1.0"
-isort = "isort==5.10.1"
-pylint = "pylint==2.12.2"
+ruff = "ruff==0.0.291"
 pre-commit = "pre-commit"
 mkdocs = ["mkdocs ~=1.2", "mkdocs-material ~=8.2", "mkdocstrings[python] ~=0.18", "markdown-include ~=0.6", ]
 
@@ -33,14 +32,14 @@ run = "poetry run pyprojectx -t pyproject.toml "
 outdated = "poetry show --outdated"
 clean = "rm -r .venv .pytest_cache dist"
 black = "black src tests"
-isort = "isort src tests"
+ruff = "ruff src tests --fix"
 unit-test = "poetry run pytest tests/unit"
 integration-test = "poetry run pytest tests/integration"
 test = "pw@unit-test && pw@integration-test"
-check-pylint = "pylint src tests"
+check-ruff = "ruff src tests"
 check-black = "black src tests --check"
 # run check before pushing to git and your build will never break
-check = "pw@check-black && pw@check-pylint && pw@test"
+check = "pw@check-black && pw@check-ruff && pw@test"
 # run the same build command on your laptop or CI/CD server
 build = "pw@install && pw@check && pw@poetry build"
 

@@ -70,7 +70,7 @@ Example:
 # require a specific poetry version
 poetry = "poetry==1.1.13"
 # use the latest black
-isort = "isort"
+black = "black"
 # install flake8 in combination with plugins
 flake8 = ["flake8", "flake8-black"]
 ```
