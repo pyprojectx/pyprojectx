@@ -10,6 +10,16 @@ Execute scripts from pyproject.toml, installing tools on-the-fly
 Pyprojectx makes it easy to create all-inclusive Python projects; no need to install any tools upfront,
 not even Pyprojectx itself!
 
+Tools that are specified within your pyproject.toml file will be installed on demand when invoked from Pyprojectx: 
+```shell
+> ./pw black src
+Collecting black ...
+Successfully installed black-23.9.1 ...
+
+All done! ✨ 🍰 ✨
+18 files left unchanged.
+```
+
 ## Feature highlights
 * Reproducible builds by treating tools and utilities as (versioned) dev-dependencies
 * No global installs, everything is stored inside your project directory (like npm's _node_modules_)
