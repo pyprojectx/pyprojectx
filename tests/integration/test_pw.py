@@ -8,6 +8,8 @@ import pytest
 
 from pyprojectx.initializer.initializers import SCRIPT_PREFIX
 
+pip_upgrade_regex = re.compile(r"\s*\[notice] A new release of pip.+upgrade pip\s*", re.DOTALL)
+
 
 def test_logs_and_stdout_with_quiet(tmp_project):
     project_dir, env = tmp_project
@@ -32,7 +34,7 @@ def test_logs_and_stdout_with_quiet(tmp_project):
         )
     )
     if not sys.platform.startswith("win"):
-        assert not proc_result.stderr.decode("utf-8")
+        assert not pip_upgrade_regex.sub("", proc_result.stderr.decode("utf-8"))
 
     cmd = f"{SCRIPT_PREFIX}pw -q list-files *.toml"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
@@ -134,7 +136,7 @@ def test_post_install(tmp_project):
         )
     )
     if not sys.platform.startswith("win"):
-        assert not proc_result.stderr.decode("utf-8")
+        assert not pip_upgrade_regex.sub("", proc_result.stderr.decode("utf-8"))
 
     cmd = f"{SCRIPT_PREFIX}pw -q list-files *.txt"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
