@@ -32,7 +32,7 @@ clean = "rm -rf build generated"
 You can override aliases for a specific OS:
 ```toml
 [tool.pyprojectx.os.win.aliases]
-clean = "rd/s /q build generated"
+clean = "rd /s /q build generated"
 ```
 
 Above `clean` alias will override the default one on Windows
@@ -84,7 +84,7 @@ flake8 = ["flake8 ~=4.0", "flake8-black ~=0.3"]
 black = "@flake8: black"
 ```
 
-Now you can run black as usual:
+Now you can run `black` as usual:
 ```shell
 px black --version
 # black, 22.1.0 (compiled: yes)

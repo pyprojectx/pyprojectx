@@ -57,7 +57,7 @@ deploy-docs = "@mkdocs: cd docs && mkdocs gh-deploy"
 ```
 
 See Pyprojectx own [pyproject.toml](https://github.com/pyprojectx/pyprojectx/blob/main/pyproject.toml) for a full example
-with Poetry, or [px-demo](https://github.com/pyprojectx/px-demo) for an example project with PDM.
+with PDM, or [px-demo](https://github.com/pyprojectx/px-demo) for another example project with PDM.
 
 
 ## Github actions

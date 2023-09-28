@@ -82,7 +82,7 @@ Now you can run any Poetry command with the `pw` or [`px`](/usage/#install-the-g
 
 ## Install the global `px` script
 Pyprojectx provides a small `px` script that delegates everything to the `pw` wrapper script.
-The `pw` script is searched in the current working directory and its parents.
+The `pw` script is searched for in the current working directory and its parents.
 
 When added to your _PATH_, you can replace `./pw` with the shorter `px`.
 This also works from subdirectories: `../../pw` can also be replaced with `px`
@@ -104,7 +104,7 @@ Besides the `px` script, `pw --init global` also copies other files:
 * `pxg` script in `~/.pyprojectx`
 * `pw` script and example `pyproject.toml` in `~/.pyprojectx/global`
 
-`pxg` can be uses as a lightweight [pipx](https://pypa.github.io/pipx/) to install tools globally.
+`pxg` can be used as a lightweight [pipx](https://pypa.github.io/pipx/) to install tools globally.
 
 Example usage: `pyproject.toml` contains by default [httpie](https://httpie.io/) so you can make http requests:
 ```shell
