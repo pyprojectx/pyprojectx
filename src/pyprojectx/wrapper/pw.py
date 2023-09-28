@@ -105,7 +105,7 @@ def arg_parser():
         "--info",
         "-i",
         action="store_true",
-        help="Show the configuration details of a command in stead of running it. "
+        help="Show the configuration details of a command instead of running it. "
         "If the command is not configured as tool or alias, a list with all available tools and aliases is shown.",
     )
     parser.add_argument(

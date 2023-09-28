@@ -117,7 +117,7 @@ Aliases can be invoked as is or with extra arguments:
 * Different projects often require different versions of the same tool
 
 ## Example projects
-* This project (using Poetry)
+* This project (using PDM)
 * [px-demo](https://github.com/pyprojectx/px-demo) (using PDM)
 
 ## Development
