@@ -36,7 +36,7 @@ cd px-demo
 ![Clone and Build](https://raw.githubusercontent.com/pyprojectx/pyprojectx/main/docs/docs/assets/build.png)
 
 ## Installation
-One of the key features is that there is no need to install anything explicitly (except a Python 3.7+ interpreter).
+One of the key features is that there is no need to install anything explicitly (except a Python 3.8+ interpreter).
 
 `cd` into your project directory and download the
 [wrapper scripts](https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip):
@@ -70,7 +70,7 @@ Example:
 # require a specific poetry version
 poetry = "poetry==1.1.13"
 # use the latest black
-isort = "isort"
+black = "black"
 # install flake8 in combination with plugins
 flake8 = ["flake8", "flake8-black"]
 ```

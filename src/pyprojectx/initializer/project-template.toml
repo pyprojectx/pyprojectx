@@ -2,26 +2,25 @@
 [tool.pyprojectx]
 # commonly used tools
 black = "black"
-isort = "isort"
 #poetry = "poetry"
 #pdm = "pdm"
-#pylint = "pylint"
+#ruff = "ruff"
 #pre-commit = "pre-commit"
 #jupyter = ["jupyter", "."]
 
 [tool.pyprojectx.aliases]
 # example aliases
 black = "black src tests"
-isort = "isort src tests"
+ruff = "ruff src tests --fix"
 #install = "poetry install"
 #run = "poetry run"
 #outdated = "poetry show --outdated"
 clean = "rm -rf .venv .pytest_cache dist"
 #clean-all = "pw@ clean && rm -rf .pyprojectx"
 #test = "poetry run pytest"
-#check-pylint = "pylint src tests"
+#check-ruff = "ruff src tests"
 #check-black = "black src tests --check"
-#check = "pw@ check-black && pw@ check-pylint && pw@ test"
+#check = "pw@ check-black && pw@ check-ruff && pw@ test"
 #build = "pw@ install && pw@ check && pw@ poetry build"
 #notebook = "jupyter notebook -y"
 
