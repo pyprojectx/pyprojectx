@@ -15,15 +15,12 @@ jobs:
       fail-fast: false
       matrix:
         os: [ Ubuntu, Windows ]
-        python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
+        python-version: [ "3.8", "3.9", "3.10", "3.11" ]
         include:
           - os: Ubuntu
             image: ubuntu-latest
           - os: Windows
             image: windows-latest
-        exclude:
-          - os: Windows
-            python-version: "3.7"
 
     steps:
       - uses: actions/checkout@v3

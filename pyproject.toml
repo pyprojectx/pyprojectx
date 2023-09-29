@@ -12,7 +12,7 @@ classifiers = [
     "Topic :: Software Development :: Build Tools",
     "Topic :: Software Development :: Libraries :: Python Modules"
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 
 dependencies = [
     "click==8.1.3",
