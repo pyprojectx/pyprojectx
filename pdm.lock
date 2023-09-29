@@ -110,7 +110,7 @@ dependencies = [
 lock_version = "4.2"
 cross_platform = true
 groups = ["default", "test"]
-content_hash = "sha256:0bcc6fcf233f52563f0b334f8c7561a84c8220c308736f92408c4a0ee778aab7"
+content_hash = "sha256:5841dd0e39ba998898ebd616b80ac70828b97bff84ef74bb18b9f4c43fa0ebad"
 
 [metadata.files]
 "click 8.1.3" = [

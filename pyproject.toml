@@ -19,7 +19,7 @@ dependencies = [
     "distlib==0.3.6",
     "filelock==3.11.0",
     "platformdirs==3.2.0",
-    "tomli==2.0.1",
+    "tomli==2.0.1; python_version<'3.11'",
     "userpath==1.8.0",
     "virtualenv==20.23.0",
 ]

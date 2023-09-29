@@ -4,7 +4,10 @@ from itertools import zip_longest
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-import tomli
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
 
 from pyprojectx.wrapper.pw import BLUE, CYAN, RESET
 
@@ -17,7 +20,7 @@ class Config:
         self._toml_path = toml_path
         try:
             with toml_path.open("rb") as f:
-                toml_dict = tomli.load(f)
+                toml_dict = tomllib.load(f)
                 self._tools = toml_dict.get("tool", {}).get("pyprojectx", {})
                 self._aliases = self._tools.get("aliases", {})
                 self._os_aliases = self._merge_os_aliases()
