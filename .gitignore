@@ -137,3 +137,5 @@ dmypy.json
 /docs/docs/usage.txt
 /docs/site/
 /.pdm-python
+/.pdm-build/
+/.ruff_cache/
