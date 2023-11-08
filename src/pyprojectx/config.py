@@ -92,7 +92,7 @@ class Config:
         or if the command starts with '@tool-name:'.
         :param key: The key (name) of the alias
         :return: A list of tuples containing the corresponding tool (or None) and
-         the alias command (without the optional @tool-name part), or None if there is no alias with the given key.
+         the alias command (without the optional @tool-name), or an empty list if there is no alias with the given key.
         """
         alias_cmds = self._aliases.get(key)
         if not alias_cmds:
@@ -101,6 +101,14 @@ class Config:
             alias_cmds = [alias_cmds]
 
         return [self.parse_alias(cmd, key) for cmd in alias_cmds]
+
+    def is_alias(self, key) -> bool:
+        """Check whether a key (alias name) exists in the [tool.pyprojectx.alias] section.
+
+        :param key: The key (alias name) to look for
+        :return: True if the key exists in the [tool.pyprojectx.alias] section.
+        """
+        return bool(self.get_alias(key))
 
     def parse_alias(self, alias_cmd, key) -> Tuple[Optional[str], Optional[str]]:
         if re.match(r"^@?[\w|-]+\s*:\s*", alias_cmd):

@@ -141,11 +141,12 @@ def test_combined_alias_with_arg(tmp_dir, mocker):
     toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
     run_mock = mocker.patch("subprocess.run")
 
-    _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "combined-alias", "alias-arg"])
+    _run(["path to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "combined-alias", "alias-arg"])
 
     run_mock.assert_called_with(
-        f"path/to/pyprojectx --install-dir {tmp_dir} -t {toml} alias-1 && path/to/pyprojectx --install-dir {tmp_dir} "
-        f'-t {toml} alias-2 path/to/pyprojectx --install-dir {tmp_dir} -t {toml} shell-command "alias-arg"',
+        f'"path to/pyprojectx" --install-dir "{tmp_dir}" -t {toml} alias-1 && "path to/pyprojectx"'
+        f' --install-dir "{tmp_dir}" '
+        f'-t {toml} alias-2 "path to/pyprojectx" --install-dir "{tmp_dir}" -t {toml} shell-command "alias-arg"',
         shell=True,
         check=True,
     )
