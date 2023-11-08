@@ -11,14 +11,14 @@ from pyprojectx.wrapper import pw
 
 @pytest.fixture()
 def tmp_dir():
-    path = tempfile.mkdtemp(prefix="build-env-")
+    path = tempfile.mkdtemp(prefix="build env")
     yield Path(path)
     shutil.rmtree(path)
 
 
 @pytest.fixture(scope="session")
 def tmp_project():
-    tmp = Path(tempfile.mkdtemp(prefix="build-env-"))
+    tmp = Path(tempfile.mkdtemp(prefix="build env"))
     toml = Path(__file__).with_name("data").joinpath("pw-test.toml")
     shutil.copyfile(toml, tmp.joinpath(pw.PYPROJECT_TOML))
     pw_copy = Path(tmp, "pw")
