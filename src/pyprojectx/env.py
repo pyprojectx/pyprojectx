@@ -8,7 +8,7 @@ import sys
 import tempfile
 from collections import OrderedDict
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Union
+from typing import Dict, Iterable, List, Optional
 
 import virtualenv
 
@@ -121,7 +121,7 @@ class IsolatedVirtualEnv:
         logger.info("Removing isolated environment in %s", self.path)
         shutil.rmtree(self.path)
 
-    def run(self, cmd: Union[str, List[str]]) -> subprocess.CompletedProcess:
+    def run(self, cmd: str | List[str]) -> subprocess.CompletedProcess:
         """Run a command inside the virtual environment.
 
         :param cmd: The command string to run

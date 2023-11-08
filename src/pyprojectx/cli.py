@@ -1,7 +1,7 @@
 import re
 import subprocess
 import sys
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from pyprojectx.config import Config
 from pyprojectx.env import IsolatedVirtualEnv
@@ -104,7 +104,7 @@ def _run_alias(tool: Optional[str], alias_cmd: str, pw_args: List[str], requirem
 
 
 # ruff: noqa: PLR0913
-def _run_in_tool_venv(tool: str, full_cmd: Union[str, List[str]], requirements: dict, options, pw_args, config) -> None:
+def _run_in_tool_venv(tool: str, full_cmd: str | List[str], requirements: dict, options, pw_args, config) -> None:
     logger.debug("Running tool command in virtual environment, tool: %s, full command: %s", tool, full_cmd)
     venv = IsolatedVirtualEnv(options.venvs_dir, tool, requirements)
     if not venv.is_installed or options.force_install:
