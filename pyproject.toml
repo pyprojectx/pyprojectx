@@ -35,6 +35,9 @@ pyprojectx = "pyprojectx.cli:main"
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
 [tool.black]
 line-length = 120
 

@@ -10,9 +10,9 @@ post-install = "pycowsay post-install-action && pw@create-file"
 pycowsay = "pycowsay"
 pycowsay-hi = "pycowsay hi"
 pycowsay-hello = "@pycowsay: pycowsay hello"
-combine-pw-scripts = "pw@pycowsay-hi && pw@pycowsay-hello"
+combine-pw-scripts = "pw@pycowsay-hi && @pycowsay-hello"
 combine-pw-scripts-list = [
-    "pw@pycowsay-hi",
+    "pw@ pycowsay-hi",
     "pw@pycowsay-hello",
 ]
 failing-list = [

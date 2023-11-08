@@ -1,3 +1,4 @@
+import re
 import subprocess
 import sys
 from typing import List, Optional, Union
@@ -18,6 +19,8 @@ UPGRADE_INSTRUCTIONS_WIN = (
     " -OutFile wrappers.zip; Expand-Archive -Force -Path wrappers.zip -DestinationPath .;"
     " Remove-Item -Path wrappers.zip"
 )
+
+alias_regex = re.compile(r"(pw)?@([\w-]+)")
 
 
 def main() -> None:
@@ -69,6 +72,7 @@ def _run(argv: List[str]) -> None:
                     pw_args,
                     requirements=config.get_tool_requirements(tool),
                     options=options,
+                    config=config,
                 )
     elif config.is_tool(cmd):
         _run_in_tool_venv(
@@ -77,24 +81,21 @@ def _run(argv: List[str]) -> None:
             requirements=config.get_tool_requirements(cmd),
             options=options,
             pw_args=pw_args,
+            config=config,
         )
     else:
         config.show_info(cmd, error=True)
         raise SystemExit(1)
 
 
-def _run_alias(
-    tool: Optional[str],
-    alias_cmd: str,
-    pw_args: List[str],
-    requirements: dict,
-    options,
-) -> None:
+# ruff: noqa: PLR0913
+def _run_alias(tool: Optional[str], alias_cmd: str, pw_args: List[str], requirements: dict, options, config) -> None:
     logger.debug("Running alias command, tool: %s, command: %s, arguments: %s", tool, alias_cmd, options.cmd_args)
     quoted_args = [f'"{a}"' for a in options.cmd_args]
-    full_cmd = " ".join([_replace_pw_references(alias_cmd, pw_args), *quoted_args])
+    full_cmd = " ".join([_resolve_references(alias_cmd, pw_args, config), *quoted_args])
+
     if tool:
-        _run_in_tool_venv(tool, full_cmd, requirements=requirements, options=options, pw_args=pw_args)
+        _run_in_tool_venv(tool, full_cmd, requirements=requirements, options=options, pw_args=pw_args, config=config)
     else:
         try:
             subprocess.run(full_cmd, shell=True, check=True)
@@ -102,20 +103,15 @@ def _run_alias(
             raise SystemExit(e.returncode) from e
 
 
-def _run_in_tool_venv(
-    tool: str,
-    full_cmd: Union[str, List[str]],
-    requirements: dict,
-    options,
-    pw_args,
-) -> None:
+# ruff: noqa: PLR0913
+def _run_in_tool_venv(tool: str, full_cmd: Union[str, List[str]], requirements: dict, options, pw_args, config) -> None:
     logger.debug("Running tool command in virtual environment, tool: %s, full command: %s", tool, full_cmd)
     venv = IsolatedVirtualEnv(options.venvs_dir, tool, requirements)
     if not venv.is_installed or options.force_install:
         try:
             venv.install(quiet=options.quiet)
             if requirements["post-install"]:
-                post_install_cmd = _replace_pw_references(requirements["post-install"], pw_args)
+                post_install_cmd = _resolve_references(requirements["post-install"], pw_args, config=config)
                 venv.run(post_install_cmd)
         except subprocess.CalledProcessError as e:
             print(
@@ -130,10 +126,20 @@ def _run_in_tool_venv(
         raise SystemExit(e.returncode) from e
 
 
-def _replace_pw_references(alias_cmd: str, pw_args: List[str]) -> str:
-    """Replace all occurrences of pw@ with the path to the pw script (argv[0]) plus all pw options."""
-    replacement = " ".join(pw_args) + " "
+def _resolve_references(alias_cmd: str, pw_args: List[str], config) -> str:
+    """Resolve all @alias and pw@ references."""
+    alias_refs = alias_regex.findall(alias_cmd)
+    for optional_pw, alias in alias_refs:
+        if config.is_alias(alias):
+            alias_cmd = alias_cmd.replace(f"{optional_pw}@{alias}", f"pw@{alias}")
+    replacement = " ".join([_quote(arg) for arg in pw_args]) + " "
     return alias_cmd.replace("pw@", replacement)
+
+
+def _quote(arg):
+    if " " in arg:
+        return f'"{arg}"'
+    return arg
 
 
 def _get_options(args):
