@@ -2,6 +2,7 @@ import os
 import re
 import subprocess
 import sys
+from pathlib import Path
 from typing import List, Union
 
 from pyprojectx.config import AliasCommand, Config
@@ -78,6 +79,7 @@ def _run(argv: List[str]) -> None:
             pw_args=pw_args,
             config=config,
             env=config.env,
+            cwd=config.get_cwd(),
         )
     else:
         config.show_info(cmd, error=True)
@@ -115,17 +117,19 @@ def _run_alias(alias_cmd: AliasCommand, pw_args: List[str], requirements: dict, 
             pw_args=pw_args,
             config=config,
             env=alias_env,
+            cwd=alias_cmd.cwd,
         )
     else:
         try:
-            subprocess.run(full_cmd, shell=True, check=True, env={**os.environ, **alias_env})
+            logger.debug("Running command without venv, full command: %s, in %s", full_cmd, alias_cmd.cwd)
+            subprocess.run(full_cmd, shell=True, check=True, env={**os.environ, **alias_env}, cwd=alias_cmd.cwd)
         except subprocess.CalledProcessError as e:
             raise SystemExit(e.returncode) from e
 
 
 # ruff: noqa: PLR0913
 def _run_in_tool_venv(
-    tool: str, full_cmd: Union[str, List[str]], requirements: dict, options, pw_args, config, env
+    tool: str, full_cmd: Union[str, List[str]], requirements: dict, options, pw_args, config, env, cwd
 ) -> None:
     logger.debug("Running tool command in virtual environment, tool: %s, full command: %s", tool, full_cmd)
     venv = IsolatedVirtualEnv(options.venvs_dir, tool, requirements)
@@ -134,7 +138,7 @@ def _run_in_tool_venv(
             venv.install(quiet=options.quiet)
             if requirements["post-install"]:
                 post_install_cmd = _resolve_references(requirements["post-install"], pw_args, config=config)
-                venv.run(post_install_cmd, env)
+                venv.run(post_install_cmd, env, cwd)
         except subprocess.CalledProcessError as e:
             print(
                 f"{pw.RED}PYPROJECTX ERROR: installation of '{tool}' failed with exit code {e.returncode}{pw.RESET}",
@@ -143,7 +147,7 @@ def _run_in_tool_venv(
             raise SystemExit(e.returncode) from e
 
     try:
-        venv.run(full_cmd, env)
+        venv.run(full_cmd, env, cwd)
     except subprocess.CalledProcessError as e:
         raise SystemExit(e.returncode) from e
 
@@ -154,7 +158,17 @@ def _resolve_references(alias_cmd: str, pw_args: List[str], config) -> str:
     for optional_pw, alias in alias_refs:
         if config.is_alias(alias):
             alias_cmd = alias_cmd.replace(f"{optional_pw}@{alias}", f"pw@{alias}")
-    replacement = " ".join([_quote(arg) for arg in pw_args]) + " "
+    is_path = True
+    absolute_pw_args = []
+    for arg in pw_args:
+        if is_path:
+            absolute_pw_args.append(str(Path(arg).absolute()))
+            is_path = False
+        else:
+            absolute_pw_args.append(arg)
+        if arg in ["-t", "--toml", "-i", "--install-dir"]:
+            is_path = True
+    replacement = " ".join([_quote(arg) for arg in absolute_pw_args]) + " "
     return alias_cmd.replace("pw@", replacement)
 
 
@@ -199,4 +213,5 @@ def _install_tool(options, config):
         pw_args=[],
         config=config,
         env={},
+        cwd=".",
     )

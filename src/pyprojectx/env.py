@@ -121,11 +121,12 @@ class IsolatedVirtualEnv:
         logger.info("Removing isolated environment in %s", self.path)
         shutil.rmtree(self.path)
 
-    def run(self, cmd: Union[str, List[str]], env: dict) -> subprocess.CompletedProcess:
+    def run(self, cmd: Union[str, List[str]], env: dict, cwd: str) -> subprocess.CompletedProcess:
         """Run a command inside the virtual environment.
 
         :param cmd: The command string to run
         :param env: additional environment variables
+        :param cwd: current working directory
         :return: The subprocess.CompletedProcess instance
         """
         logger.info("Running command in isolated venv %s: %s", self.name, cmd)
@@ -144,4 +145,5 @@ class IsolatedVirtualEnv:
         env = {**os.environ, **extra_environ, **env}
         logger.debug("Final command to run: %s", cmd)
         logger.debug("Environment for running command: %s", env)
-        return subprocess.run(cmd, env=env, shell=shell, check=True)
+        logger.debug("Cwd for running command: %s", cwd)
+        return subprocess.run(cmd, env=env, shell=shell, check=True, cwd=cwd)

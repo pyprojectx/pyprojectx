@@ -13,6 +13,7 @@ except ImportError:
 from pyprojectx.wrapper.pw import BLUE, CYAN, RESET
 
 DEFAULT_TOOL = "DEFAULT_TOOL"
+PROJECT_DIR = "$PROJECT_DIR"
 
 
 @dataclass
@@ -20,8 +21,9 @@ class AliasCommand:
     """Encapsulates an alias command configured in the [tool.pyprojectx.alias] section."""
 
     cmd: str
-    tool: Optional[str] = None
+    cwd: Optional[str] = None
     env: Dict[str, str] = field(default_factory=dict)
+    tool: Optional[str] = None
 
 
 class Config:
@@ -36,10 +38,15 @@ class Config:
                 self._tools = toml_dict.get("tool", {}).get("pyprojectx", {})
                 self._aliases = self._merge_os_aliases()
                 self.env = self._tools.get("env", {})
+                self.project_dir = str(toml_path.parent.absolute())
+                self.cwd = self._tools.get("cwd", self.project_dir)
         except Exception as e:  # noqa: BLE001
             raise Warning(f"Could not parse {toml_path}: {e}") from e
         if not isinstance(self.env, dict):
             msg = "Invalid config: 'env' must be a dictionary"
+            raise Warning(msg)
+        if not isinstance(self.cwd, str):
+            msg = "Invalid config: 'cwd' must be a string"
             raise Warning(msg)
 
     def show_info(self, cmd, error=False):
@@ -113,35 +120,42 @@ class Config:
         alias = self._aliases.get(key)
         if not alias:
             return []
-        alias_config = {"tool": None, "env": {}}
+        alias_config = {"tool": None, "env": {}, "cwd": self.cwd}
         if isinstance(alias, dict):
             alias_config.update(alias)
             if alias_config.get("tool") and not isinstance(alias_config["tool"], str):
                 raise Warning(f"Invalid alias {key}: 'tool' must be a string")
-            if alias_config.get("env") and not isinstance(alias_config["env"], dict):
+            if not isinstance(alias_config["env"], dict):
                 raise Warning(f"Invalid alias {key}: 'env' must be a dictionary")
-            alias = alias_config.get("cmd")
-        if isinstance(alias, str):
-            alias_config["cmd"] = [alias]
-        elif isinstance(alias, list):
-            alias_config["cmd"] = alias
+            if not isinstance(alias_config["cwd"], str):
+                raise Warning(f"Invalid alias {key}: 'cwd' must be a string")
+            alias_cmd = alias_config.get("cmd")
+        else:
+            alias_cmd = alias
+        if isinstance(alias_cmd, str):
+            alias_config["cmd"] = [alias_cmd]
+        elif isinstance(alias_cmd, list):
+            alias_config["cmd"] = alias_cmd
 
         return [self._build_alias_command(cmd, alias_config, key) for cmd in alias_config.get("cmd", [])]
 
     def _build_alias_command(self, cmd, alias_config, key) -> AliasCommand:
+        tool = None
+        alias_cmd = cmd
         if re.match(r"^@?[\w|-]+\s*:\s*", cmd):
             tool, alias_cmd = re.split(r"\s*:\s*", cmd, maxsplit=1)
             if tool.startswith("@"):
                 tool = tool[1:]
-            if not self.is_tool(tool):
-                raise Warning(f"Invalid alias {key}: '{tool}' is not defined in [tool.pyprojectx]")
-            return AliasCommand(alias_cmd, tool=tool, env=alias_config["env"])
-        if alias_config.get("tool"):
-            return AliasCommand(cmd, tool=alias_config["tool"], env=alias_config["env"])
-        tool = cmd.split()[0]
-        if self.is_tool(tool):
-            return AliasCommand(cmd, tool=tool, env=alias_config["env"])
-        return AliasCommand(cmd, env=alias_config["env"])
+        elif alias_config.get("tool"):
+            tool = alias_config["tool"]
+        else:
+            candidate = cmd.split()[0]
+            if self.is_tool(candidate):
+                tool = candidate
+        if tool and not self.is_tool(tool):
+            raise Warning(f"Invalid alias {key}: '{tool}' is not defined in [tool.pyprojectx]")
+
+        return AliasCommand(alias_cmd, tool=tool, env=alias_config["env"], cwd=self.get_cwd(alias_config["cwd"]))
 
     def is_alias(self, key) -> bool:
         """Check whether a key (alias name) exists in the [tool.pyprojectx.alias] section.
@@ -165,6 +179,10 @@ class Config:
             return [abbrev]
 
         return [key for key in self._aliases if camel_match(abbrev, key)]
+
+    def get_cwd(self, cwd=None):
+        _cwd = cwd or self.cwd
+        return _cwd.replace(PROJECT_DIR, self.project_dir)
 
     def __repr__(self):
         return str(self._tools)
