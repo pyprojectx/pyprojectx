@@ -31,5 +31,5 @@ ls-pyprojectx = {cwd = "$PROJECT_DIR/.pyprojectx", cmd = "ls -al"}
 [tool.pyprojectx.os.win.aliases]
 list-files = "dir /b"
 create-file = "echo '' > post-install-file.txt"
-ls-projectdir = {cwd = "$PROJECT_DIR", cmd = "dir ."}
-ls-pyprojectx = {cwd = "$PROJECT_DIR/../integration", cmd = "dir ."}
+ls-projectdir = {cwd = "$PROJECT_DIR", cmd = "dir"}
+ls-pyprojectx = {cwd = "$PROJECT_DIR/.pyprojectx", cmd = "dir"}
