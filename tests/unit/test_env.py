@@ -99,20 +99,20 @@ def test_run(tmp_dir, capfd):
     captured = capfd.readouterr()
     assert captured.err.startswith("Collecting virtualenv")
 
-    env.run("virtualenv --version", env={})
+    env.run("virtualenv --version", env={}, cwd=".")
     captured = capfd.readouterr()
     assert captured.out.startswith("virtualenv")
 
-    env.run(["virtualenv", "--version"], env={})
+    env.run(["virtualenv", "--version"], env={}, cwd=".")
     captured = capfd.readouterr()
     assert captured.out.startswith("virtualenv")
 
-    env.run("echo hello world", env={})
+    env.run("echo hello world", env={}, cwd=".")
     captured = capfd.readouterr()
     assert captured.out.strip() == "hello world"
 
     set_verbosity(1)
     path = "%PATH%" if sys.platform == "win32" else "$PATH"
-    env.run(f"echo {path}", env={})
+    env.run(f"echo {path}", env={}, cwd=".")
     captured = capfd.readouterr()
     assert str(env.scripts_path.name) in captured.out

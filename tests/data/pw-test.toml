@@ -25,6 +25,11 @@ list-files = "ls"
 say-post-install = "@post-install-pycowsay: pycowsay after-post-install"
 create-file = "touch post-install-file.txt"
 
+ls-projectdir = {cwd = "$PROJECT_DIR", cmd = "ls -al"}
+ls-pyprojectx = {cwd = "$PROJECT_DIR/.pyprojectx", cmd = "ls -al"}
+
 [tool.pyprojectx.os.win.aliases]
 list-files = "dir /b"
 create-file = "echo '' > post-install-file.txt"
+ls-projectdir = {cwd = "$PROJECT_DIR", cmd = "dir"}
+ls-pyprojectx = {cwd = "$PROJECT_DIR/../integration", cmd = "dir"}

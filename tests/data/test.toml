@@ -1,5 +1,6 @@
 [tool.pyprojectx]
-env = { ENV_VAR1="ENV_VAR1"}
+env = { ENV_VAR1 = "ENV_VAR1" }
+cwd = "/cwd"
 tool-1 = ["req1", "req2"]
 tool-2 = 'tool2 requirement'
 
@@ -27,13 +28,14 @@ alias-list = [
     'pw@alias-2',
     'pw@shell-command'
 ]
-alias-dict = { tool = 'tool-1', cmd = 'alias-dict', env = { ENV_VAR2="ENV_VAR2"}}
+alias-dict = { tool = 'tool-1', cmd = 'alias-dict', env = { ENV_VAR2 = "ENV_VAR2" }, cwd = "$PROJECT_DIR" }
 alias-dict-list = { tool = 'tool-1', cmd = [
     'alias-dict-list-1',
     '@tool-2: alias-dict-list-2',
 ] }
 
 shell-command = "ls -al"
+
 
 backward-compatible-tool-ref = 'tool-1: command arg'
 

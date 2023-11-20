@@ -78,6 +78,7 @@ def _run(argv: List[str]) -> None:
             pw_args=pw_args,
             config=config,
             env=config.env,
+            cwd=config.get_cwd(),
         )
     else:
         config.show_info(cmd, error=True)
@@ -115,17 +116,18 @@ def _run_alias(alias_cmd: AliasCommand, pw_args: List[str], requirements: dict, 
             pw_args=pw_args,
             config=config,
             env=alias_env,
+            cwd=alias_cmd.cwd,
         )
     else:
         try:
-            subprocess.run(full_cmd, shell=True, check=True, env={**os.environ, **alias_env})
+            subprocess.run(full_cmd, shell=True, check=True, env={**os.environ, **alias_env}, cwd=alias_cmd.cwd)
         except subprocess.CalledProcessError as e:
             raise SystemExit(e.returncode) from e
 
 
 # ruff: noqa: PLR0913
 def _run_in_tool_venv(
-    tool: str, full_cmd: Union[str, List[str]], requirements: dict, options, pw_args, config, env
+    tool: str, full_cmd: Union[str, List[str]], requirements: dict, options, pw_args, config, env, cwd
 ) -> None:
     logger.debug("Running tool command in virtual environment, tool: %s, full command: %s", tool, full_cmd)
     venv = IsolatedVirtualEnv(options.venvs_dir, tool, requirements)
@@ -134,7 +136,7 @@ def _run_in_tool_venv(
             venv.install(quiet=options.quiet)
             if requirements["post-install"]:
                 post_install_cmd = _resolve_references(requirements["post-install"], pw_args, config=config)
-                venv.run(post_install_cmd, env)
+                venv.run(post_install_cmd, env, cwd)
         except subprocess.CalledProcessError as e:
             print(
                 f"{pw.RED}PYPROJECTX ERROR: installation of '{tool}' failed with exit code {e.returncode}{pw.RESET}",
@@ -143,7 +145,7 @@ def _run_in_tool_venv(
             raise SystemExit(e.returncode) from e
 
     try:
-        venv.run(full_cmd, env)
+        venv.run(full_cmd, env, cwd)
     except subprocess.CalledProcessError as e:
         raise SystemExit(e.returncode) from e
 
@@ -199,4 +201,5 @@ def _install_tool(options, config):
         pw_args=[],
         config=config,
         env={},
+        cwd=".",
     )

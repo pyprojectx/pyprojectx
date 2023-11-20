@@ -173,3 +173,15 @@ def test_alias_with_quoted_args(tmp_project):
             "\n", os.linesep
         )
     )
+
+
+def test_cwd(tmp_project):
+    project_dir, env = tmp_project
+    assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
+    cmd = f"{SCRIPT_PREFIX}pw -q ls-projectdir"
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
+    assert "pw.bat" in proc_result.stdout.decode("utf-8")
+
+    cmd = f"{SCRIPT_PREFIX}pw -q ls-pyprojectx"
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
+    assert "pyprojectx" in proc_result.stdout.decode("utf-8")
