@@ -39,6 +39,11 @@ def _run(argv: List[str]) -> None:
         return
 
     config = Config(options.toml_path)
+
+    if options.install:
+        _install_tool(options, config)
+        return
+
     cmd = options.cmd
     if options.info:
         config.show_info(cmd)
@@ -180,3 +185,18 @@ def _show_upgrade_instructions():
         print(UPGRADE_INSTRUCTIONS_WIN)
     else:
         print(UPGRADE_INSTRUCTIONS)
+
+
+def _install_tool(options, config):
+    tool = options.install
+    if not config.is_tool(tool):
+        raise Warning(f"Invalid tool: '{options.install}' is not defined in [tool.pyprojectx]")
+    _run_in_tool_venv(
+        tool,
+        "cd .",  # noop command
+        requirements=config.get_tool_requirements(tool),
+        options=options,
+        pw_args=[],
+        config=config,
+        env={},
+    )

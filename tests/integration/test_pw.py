@@ -11,6 +11,14 @@ from pyprojectx.initializer.initializers import SCRIPT_PREFIX
 pip_upgrade_regex = re.compile(r"\s*\[notice] A new release of pip.+upgrade pip\s*", re.DOTALL)
 
 
+def test_install_tool(tmp_project):
+    project_dir, env = tmp_project
+    cmd = f"{SCRIPT_PREFIX}pw --install pycowsay"
+    assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
+    assert "Successfully installed pycowsay-0.0.0.1" in proc_result.stderr.decode("utf-8")
+
+
 def test_logs_and_stdout_with_quiet(tmp_project):
     project_dir, env = tmp_project
     cmd = f"{SCRIPT_PREFIX}pw -q pycowsay Hello px!"
