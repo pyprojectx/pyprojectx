@@ -12,7 +12,7 @@ except ImportError:
 
 from pyprojectx.wrapper.pw import BLUE, CYAN, RESET
 
-DEFAULT_TOOL = "default"
+DEFAULT_TOOL = "DEFAULT_TOOL"
 
 
 @dataclass
@@ -95,7 +95,7 @@ class Config:
         """
         return self._tools.get(key) is not None
 
-    def get_alias(self, key) -> list[AliasCommand]:
+    def get_alias(self, key) -> List[AliasCommand]:
         """Get an alias command configured in the [tool.pyprojectx.alias] section.
 
         The alias is considered to be part of a tool if:
