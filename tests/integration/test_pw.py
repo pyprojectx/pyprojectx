@@ -56,7 +56,6 @@ def test_logs_and_stdout_when_alias_invoked_from_sub_directory_with_verbose(alia
     cwd.mkdir(parents=True, exist_ok=True)
     cmd = f"..{os.sep}pw --verbose --verbose {alias}"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=False)
-    print(proc_result.stderr.decode("utf-8"))
 
     assert "< hi >" in proc_result.stdout.decode("utf-8")
     assert "< hello >" in proc_result.stdout.decode("utf-8")
@@ -181,7 +180,6 @@ def test_cwd(tmp_project):
     assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
     cmd = f"{SCRIPT_PREFIX}pw -q ls-projectdir"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
-    print(proc_result.stderr.decode("utf-8"))
     assert "pw.bat" in proc_result.stdout.decode("utf-8")
 
     cmd = f"{SCRIPT_PREFIX}pw -q ls-pyprojectx"

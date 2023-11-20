@@ -144,9 +144,10 @@ def test_combined_alias_with_arg(tmp_dir, mocker):
     _run(["path to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "combined-alias", "alias-arg"])
 
     run_mock.assert_called_with(
-        f'"path to/pyprojectx" --install-dir "{tmp_dir}" -t {toml} alias-1 && "path to/pyprojectx"'
-        f' --install-dir "{tmp_dir}" '
-        f'-t {toml} alias-2 "path to/pyprojectx" --install-dir "{tmp_dir}" -t {toml} shell-command "alias-arg"',
+        f'"{Path("path to/pyprojectx").absolute()}" --install-dir "{tmp_dir.absolute()}" -t {toml.absolute()} '
+        f'alias-1 && "{Path("path to/pyprojectx").absolute()}"'
+        f' --install-dir "{tmp_dir.absolute()}" -t {toml.absolute()} alias-2 "{Path("path to/pyprojectx").absolute()}"'
+        f' --install-dir "{tmp_dir.absolute()}" -t {toml.absolute()} shell-command "alias-arg"',
         shell=True,
         check=True,
         env=ANY,

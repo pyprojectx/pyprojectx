@@ -145,4 +145,5 @@ class IsolatedVirtualEnv:
         env = {**os.environ, **extra_environ, **env}
         logger.debug("Final command to run: %s", cmd)
         logger.debug("Environment for running command: %s", env)
+        logger.debug("Cwd for running command: %s", cwd)
         return subprocess.run(cmd, env=env, shell=shell, check=True, cwd=cwd)

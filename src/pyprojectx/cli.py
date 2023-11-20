@@ -2,6 +2,7 @@ import os
 import re
 import subprocess
 import sys
+from pathlib import Path
 from typing import List, Union
 
 from pyprojectx.config import AliasCommand, Config
@@ -120,6 +121,7 @@ def _run_alias(alias_cmd: AliasCommand, pw_args: List[str], requirements: dict, 
         )
     else:
         try:
+            logger.debug("Running command without venv, full command: %s, in %s", full_cmd, alias_cmd.cwd)
             subprocess.run(full_cmd, shell=True, check=True, env={**os.environ, **alias_env}, cwd=alias_cmd.cwd)
         except subprocess.CalledProcessError as e:
             raise SystemExit(e.returncode) from e
@@ -156,7 +158,17 @@ def _resolve_references(alias_cmd: str, pw_args: List[str], config) -> str:
     for optional_pw, alias in alias_refs:
         if config.is_alias(alias):
             alias_cmd = alias_cmd.replace(f"{optional_pw}@{alias}", f"pw@{alias}")
-    replacement = " ".join([_quote(arg) for arg in pw_args]) + " "
+    is_path = True
+    absolute_pw_args = []
+    for arg in pw_args:
+        if is_path:
+            absolute_pw_args.append(str(Path(arg).absolute()))
+            is_path = False
+        else:
+            absolute_pw_args.append(arg)
+        if arg in ["-t", "--toml", "-i", "--install-dir"]:
+            is_path = True
+    replacement = " ".join([_quote(arg) for arg in absolute_pw_args]) + " "
     return alias_cmd.replace("pw@", replacement)
 
 

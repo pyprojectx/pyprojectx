@@ -129,11 +129,13 @@ class Config:
                 raise Warning(f"Invalid alias {key}: 'env' must be a dictionary")
             if not isinstance(alias_config["cwd"], str):
                 raise Warning(f"Invalid alias {key}: 'cwd' must be a string")
-            alias = alias_config.get("cmd")
-        if isinstance(alias, str):
-            alias_config["cmd"] = [alias]
-        elif isinstance(alias, list):
-            alias_config["cmd"] = alias
+            alias_cmd = alias_config.get("cmd")
+        else:
+            alias_cmd = alias
+        if isinstance(alias_cmd, str):
+            alias_config["cmd"] = [alias_cmd]
+        elif isinstance(alias_cmd, list):
+            alias_config["cmd"] = alias_cmd
 
         return [self._build_alias_command(cmd, alias_config, key) for cmd in alias_config.get("cmd", [])]
 
