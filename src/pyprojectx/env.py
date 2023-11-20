@@ -61,7 +61,7 @@ class IsolatedVirtualEnv:
 
     @property
     def scripts_path(self) -> Optional[Path]:
-        """The location of the scripts directory."""
+        """The location of the venv's scripts directory."""
         if self._scripts_path_file.exists():
             with self._scripts_path_file.open() as sf:
                 return Path(sf.readline())
@@ -121,10 +121,11 @@ class IsolatedVirtualEnv:
         logger.info("Removing isolated environment in %s", self.path)
         shutil.rmtree(self.path)
 
-    def run(self, cmd: Union[str, List[str]]) -> subprocess.CompletedProcess:
+    def run(self, cmd: Union[str, List[str]], env: dict) -> subprocess.CompletedProcess:
         """Run a command inside the virtual environment.
 
         :param cmd: The command string to run
+        :param env: additional environment variables
         :return: The subprocess.CompletedProcess instance
         """
         logger.info("Running command in isolated venv %s: %s", self.name, cmd)
@@ -140,8 +141,7 @@ class IsolatedVirtualEnv:
         if "PATH" in os.environ:
             paths.update((i, None) for i in os.environ["PATH"].split(os.pathsep))
         extra_environ = {"PATH": os.pathsep.join(paths)}
-        env = os.environ.copy()
-        env.update(extra_environ)
+        env = {**os.environ, **extra_environ, **env}
         logger.debug("Final command to run: %s", cmd)
         logger.debug("Environment for running command: %s", env)
         return subprocess.run(cmd, env=env, shell=shell, check=True)

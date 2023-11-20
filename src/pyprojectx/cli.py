@@ -1,9 +1,10 @@
+import os
 import re
 import subprocess
 import sys
-from typing import List, Optional, Union
+from typing import List, Union
 
-from pyprojectx.config import Config
+from pyprojectx.config import AliasCommand, Config
 from pyprojectx.env import IsolatedVirtualEnv
 from pyprojectx.initializer.initializers import initialize
 from pyprojectx.log import logger, set_verbosity
@@ -57,8 +58,7 @@ def _run(argv: List[str]) -> None:
         if alias_cmds:
             for alias_cmd in alias_cmds:
                 _run_alias(
-                    alias_cmd.tool,
-                    alias_cmd.cmd,
+                    alias_cmd,
                     pw_args,
                     requirements=config.get_tool_requirements(alias_cmd.tool),
                     options=options,
@@ -72,6 +72,7 @@ def _run(argv: List[str]) -> None:
             options=options,
             pw_args=pw_args,
             config=config,
+            env=config.env,
         )
     else:
         config.show_info(cmd, error=True)
@@ -92,23 +93,35 @@ def verify_ambiguity(aliases, cmd):
         raise SystemExit(1)
 
 
-# ruff: noqa: PLR0913
-def _run_alias(tool: Optional[str], alias_cmd: str, pw_args: List[str], requirements: dict, options, config) -> None:
-    logger.debug("Running alias command, tool: %s, command: %s, arguments: %s", tool, alias_cmd, options.cmd_args)
+def _run_alias(alias_cmd: AliasCommand, pw_args: List[str], requirements: dict, options, config) -> None:
+    logger.debug(
+        "Running alias command, tool: %s, command: %s, arguments: %s", alias_cmd.tool, alias_cmd, options.cmd_args
+    )
     quoted_args = [f'"{a}"' for a in options.cmd_args]
-    full_cmd = " ".join([_resolve_references(alias_cmd, pw_args, config), *quoted_args])
+    full_cmd = " ".join([_resolve_references(alias_cmd.cmd, pw_args, config), *quoted_args])
 
-    if tool:
-        _run_in_tool_venv(tool, full_cmd, requirements=requirements, options=options, pw_args=pw_args, config=config)
+    alias_env = {**config.env, **alias_cmd.env}
+    if alias_cmd.tool:
+        _run_in_tool_venv(
+            alias_cmd.tool,
+            full_cmd,
+            requirements=requirements,
+            options=options,
+            pw_args=pw_args,
+            config=config,
+            env=alias_env,
+        )
     else:
         try:
-            subprocess.run(full_cmd, shell=True, check=True)
+            subprocess.run(full_cmd, shell=True, check=True, env={**os.environ, **alias_env})
         except subprocess.CalledProcessError as e:
             raise SystemExit(e.returncode) from e
 
 
 # ruff: noqa: PLR0913
-def _run_in_tool_venv(tool: str, full_cmd: Union[str, List[str]], requirements: dict, options, pw_args, config) -> None:
+def _run_in_tool_venv(
+    tool: str, full_cmd: Union[str, List[str]], requirements: dict, options, pw_args, config, env
+) -> None:
     logger.debug("Running tool command in virtual environment, tool: %s, full command: %s", tool, full_cmd)
     venv = IsolatedVirtualEnv(options.venvs_dir, tool, requirements)
     if not venv.is_installed or options.force_install:
@@ -116,7 +129,7 @@ def _run_in_tool_venv(tool: str, full_cmd: Union[str, List[str]], requirements: 
             venv.install(quiet=options.quiet)
             if requirements["post-install"]:
                 post_install_cmd = _resolve_references(requirements["post-install"], pw_args, config=config)
-                venv.run(post_install_cmd)
+                venv.run(post_install_cmd, env)
         except subprocess.CalledProcessError as e:
             print(
                 f"{pw.RED}PYPROJECTX ERROR: installation of '{tool}' failed with exit code {e.returncode}{pw.RESET}",
@@ -125,7 +138,7 @@ def _run_in_tool_venv(tool: str, full_cmd: Union[str, List[str]], requirements: 
             raise SystemExit(e.returncode) from e
 
     try:
-        venv.run(full_cmd)
+        venv.run(full_cmd, env)
     except subprocess.CalledProcessError as e:
         raise SystemExit(e.returncode) from e
 

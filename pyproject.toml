@@ -50,7 +50,7 @@ ignore = ["D100", "D102", "D103", "D104", "D105", "D213", "D203", "T201", "TRY00
 "tests/*" = ["S101", "I001"]
 
 [tool.pyprojectx]
-pdm = { requirements = ["pdm==2.10.0"], post-install = "pw@pdm plugin add pdm-buildlocked && pw@pre-commit install" }
+pdm = { requirements = ["pdm==2.10.3"], post-install = "pw@pdm plugin add pdm-buildlocked && pw@pre-commit install" }
 black = "black==23.11.0"
 ruff = "ruff==0.1.4"
 pre-commit = "pre-commit==3.5.0"

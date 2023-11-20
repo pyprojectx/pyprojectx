@@ -58,7 +58,7 @@ def test_alias_config():
         AliasCommand("pw@alias-2"),
         AliasCommand("pw@shell-command"),
     ]
-    assert config.get_alias("alias-dict") == [AliasCommand("alias-dict", "tool-1")]
+    assert config.get_alias("alias-dict") == [AliasCommand("alias-dict", "tool-1", env={"ENV_VAR2": "ENV_VAR2"})]
     assert config.get_alias("alias-dict-list") == [
         AliasCommand("alias-dict-list-1", "tool-1"),
         AliasCommand("alias-dict-list-2", "tool-2"),
