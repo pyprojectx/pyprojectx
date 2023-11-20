@@ -52,25 +52,15 @@ def _run(argv: List[str]) -> None:
     aliases = config.find_aliases(cmd)
     logger.debug("Matching aliases for %s: %s", cmd, ", ".join(aliases))
     if aliases:
-        if len(aliases) > 1:
-            print(
-                f"{pw.RED}'{cmd}' is ambiguous",
-                file=sys.stderr,
-            )
-            print(
-                f"{pw.BLUE}Candidates are:{pw.RESET}",
-                file=sys.stderr,
-            )
-            print(", ".join(aliases), file=sys.stderr)
-            raise SystemExit(1)
+        verify_ambiguity(aliases, cmd)
         alias_cmds = config.get_alias(aliases[0])
         if alias_cmds:
-            for tool, alias_cmd in alias_cmds:
+            for alias_cmd in alias_cmds:
                 _run_alias(
-                    tool,
-                    alias_cmd,
+                    alias_cmd.tool,
+                    alias_cmd.cmd,
                     pw_args,
-                    requirements=config.get_tool_requirements(tool),
+                    requirements=config.get_tool_requirements(alias_cmd.tool),
                     options=options,
                     config=config,
                 )
@@ -85,6 +75,20 @@ def _run(argv: List[str]) -> None:
         )
     else:
         config.show_info(cmd, error=True)
+        raise SystemExit(1)
+
+
+def verify_ambiguity(aliases, cmd):
+    if len(aliases) > 1:
+        print(
+            f"{pw.RED}'{cmd}' is ambiguous",
+            file=sys.stderr,
+        )
+        print(
+            f"{pw.BLUE}Candidates are:{pw.RESET}",
+            file=sys.stderr,
+        )
+        print(", ".join(aliases), file=sys.stderr)
         raise SystemExit(1)
 
 
