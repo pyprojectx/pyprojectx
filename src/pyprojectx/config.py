@@ -1,8 +1,9 @@
 import re
 import sys
+from dataclasses import dataclass
 from itertools import zip_longest
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 try:
     import tomllib
@@ -10,6 +11,16 @@ except ImportError:
     import tomli as tomllib
 
 from pyprojectx.wrapper.pw import BLUE, CYAN, RESET
+
+DEFAULT_TOOL = "DEFAULT_TOOL"
+
+
+@dataclass
+class AliasCommand:
+    """Encapsulates an alias command configured in the [tool.pyprojectx.alias] section."""
+
+    cmd: str
+    tool: Optional[str] = None
 
 
 class Config:
@@ -22,8 +33,7 @@ class Config:
             with toml_path.open("rb") as f:
                 toml_dict = tomllib.load(f)
                 self._tools = toml_dict.get("tool", {}).get("pyprojectx", {})
-                self._aliases = self._tools.get("aliases", {})
-                self._os_aliases = self._merge_os_aliases()
+                self._aliases = self._merge_os_aliases()
         except Exception as e:  # noqa: BLE001
             raise Warning(f"Could not parse {toml_path}: {e}") from e
 
@@ -32,11 +42,11 @@ class Config:
         out = sys.stderr if error else sys.stdout
         if alias_cmds:
             print(f"{cmd}{BLUE} is an alias in {CYAN}{self._toml_path.absolute()}", file=sys.stderr)
-            for tool, alias in alias_cmds:
-                if tool:
-                    print(f"{BLUE}and runs in the {CYAN}{tool}{BLUE} tool context", file=sys.stderr)
+            for alias_cmd in alias_cmds:
+                if alias_cmd.tool:
+                    print(f"{BLUE}and runs in the {CYAN}{alias_cmd.tool}{BLUE} tool context", file=sys.stderr)
                 print(f"{BLUE}command:{RESET}", file=sys.stderr)
-                print(alias, file=out)
+                print(alias_cmd.cmd, file=out)
         elif self.is_tool(cmd):
             print(f"{cmd}{BLUE} is a tool in {CYAN}{self._toml_path.absolute()}", file=sys.stderr)
             print(f"{BLUE}requirements:{RESET}", file=sys.stderr)
@@ -85,22 +95,44 @@ class Config:
         """
         return self._tools.get(key) is not None
 
-    def get_alias(self, key) -> List[Tuple[Optional[str], Optional[str]]]:
+    def get_alias(self, key) -> List[AliasCommand]:
         """Get an alias command configured in the [tool.pyprojectx.alias] section.
 
-        The alias is considered to be part of a tool if its command starts with the name of the tool
-        or if the command starts with '@tool-name:'.
+        The alias is considered to be part of a tool if:
+         * its command starts with the name of the tool
+         * the command starts with '@tool-name:'
+         * the alias
         :param key: The key (name) of the alias
-        :return: A list of tuples containing the corresponding tool (or None) and
-         the alias command (without the optional @tool-name), or an empty list if there is no alias with the given key.
+        :return: A list of aliases or an empty list if there is no alias with the given key.
         """
-        alias_cmds = self._aliases.get(key)
-        if not alias_cmds:
+        alias = self._aliases.get(key)
+        if not alias:
             return []
-        if isinstance(alias_cmds, str):
-            alias_cmds = [alias_cmds]
+        alias_config = {}
+        if isinstance(alias, dict):
+            alias_config = alias
+            alias = alias_config.get("cmd")
+        if isinstance(alias, str):
+            alias_config["cmd"] = [alias]
+        elif isinstance(alias, list):
+            alias_config["cmd"] = alias
 
-        return [self.parse_alias(cmd, key) for cmd in alias_cmds]
+        return [self._build_alias_command(cmd, alias_config, key) for cmd in alias_config.get("cmd", [])]
+
+    def _build_alias_command(self, cmd, alias_config, key) -> AliasCommand:
+        if re.match(r"^@?[\w|-]+\s*:\s*", cmd):
+            tool, alias_cmd = re.split(r"\s*:\s*", cmd, maxsplit=1)
+            if tool.startswith("@"):
+                tool = tool[1:]
+            if not self.is_tool(tool):
+                raise Warning(f"Invalid alias {key}: '{tool}' is not defined in [tool.pyprojectx]")
+            return AliasCommand(alias_cmd, tool)
+        if alias_config.get("tool"):
+            return AliasCommand(cmd, alias_config["tool"])
+        tool = cmd.split()[0]
+        if self.is_tool(tool):
+            return AliasCommand(cmd, tool)
+        return AliasCommand(cmd)
 
     def is_alias(self, key) -> bool:
         """Check whether a key (alias name) exists in the [tool.pyprojectx.alias] section.
@@ -108,20 +140,7 @@ class Config:
         :param key: The key (alias name) to look for
         :return: True if the key exists in the [tool.pyprojectx.alias] section.
         """
-        return bool(self.get_alias(key))
-
-    def parse_alias(self, alias_cmd, key) -> Tuple[Optional[str], Optional[str]]:
-        if re.match(r"^@?[\w|-]+\s*:\s*", alias_cmd):
-            tool, alias_cmd = re.split(r"\s*:\s*", alias_cmd, maxsplit=1)
-            if tool.startswith("@"):
-                tool = tool[1:]
-            if not self.is_tool(tool):
-                raise Warning(f"Invalid alias {key}: '{tool}' is not defined in [tool.pyprojectx]")
-            return tool, alias_cmd
-        tool = alias_cmd.split()[0]
-        if self.is_tool(tool):
-            return tool, alias_cmd
-        return None, alias_cmd
+        return bool(self._aliases.get(key))
 
     def find_aliases(self, abbrev: str) -> List[str]:
         """Find all alias keys that match the abbreviation.

@@ -26,6 +26,11 @@ alias-list = [
     'pw@alias-2',
     'pw@shell-command'
 ]
+alias-dict = { tool = 'tool-1', cmd = 'alias-dict' }
+alias-dict-list = { tool = 'tool-1', cmd = [
+    'alias-dict-list-1',
+    '@tool-2: alias-dict-list-2',
+] }
 
 shell-command = "ls -al"
 

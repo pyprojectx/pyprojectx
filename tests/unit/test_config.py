@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from pyprojectx.config import Config
+from pyprojectx.config import Config, AliasCommand
 
 
 def test_no_config():
@@ -14,7 +14,7 @@ def test_no_config():
 
 def test_no_tool_config():
     config = Config(Path(__file__).parent.with_name("data").joinpath("test-no-tool-config.toml"))
-    assert config.get_alias("run") == [(None, "run command")]
+    assert config.get_alias("run") == [AliasCommand("run command")]
     with pytest.raises(
         Warning, match=r"Invalid alias wrong-tool-alias: 'wrong-tool' is not defined in \[tool.pyprojectx\]"
     ):
@@ -48,23 +48,32 @@ def test_tool_config():
 
 def test_alias_config():
     config = Config(Path(__file__).parent.with_name("data").joinpath("test.toml"))
-    assert config.get_alias("alias-1") == [("tool-1", "tool-1 arg")]
-    assert config.get_alias("alias-2") == [("tool-2", "tool-2 arg1 arg2")]
-    assert config.get_alias("alias-3") == [("tool-1", "command arg")]
-    assert config.get_alias("alias-4") == [("tool-2", "command --default @arg:x")]
-    assert config.get_alias("combined-alias") == [(None, "pw@alias-1 && pw@alias-2 pw@shell-command")]
-    assert config.get_alias("alias-list") == [(None, "pw@alias-1"), (None, "pw@alias-2"), (None, "pw@shell-command")]
-    assert config.get_alias("shell-command") == [(None, "ls -al")]
-    assert config.get_alias("backward-compatible-tool-ref") == [("tool-1", "command arg")]
+    assert config.get_alias("alias-1") == [AliasCommand("tool-1 arg", "tool-1")]
+    assert config.get_alias("alias-2") == [AliasCommand("tool-2 arg1 arg2", "tool-2")]
+    assert config.get_alias("alias-3") == [AliasCommand("command arg", "tool-1")]
+    assert config.get_alias("alias-4") == [AliasCommand("command --default @arg:x", "tool-2")]
+    assert config.get_alias("combined-alias") == [AliasCommand("pw@alias-1 && pw@alias-2 pw@shell-command")]
+    assert config.get_alias("alias-list") == [
+        AliasCommand("pw@alias-1"),
+        AliasCommand("pw@alias-2"),
+        AliasCommand("pw@shell-command"),
+    ]
+    assert config.get_alias("alias-dict") == [AliasCommand("alias-dict", "tool-1")]
+    assert config.get_alias("alias-dict-list") == [
+        AliasCommand("alias-dict-list-1", "tool-1"),
+        AliasCommand("alias-dict-list-2", "tool-2"),
+    ]
+    assert config.get_alias("shell-command") == [AliasCommand("ls -al")]
+    assert config.get_alias("backward-compatible-tool-ref") == [AliasCommand("command arg", "tool-1")]
 
 
 def test_os_specific_alias_config(mocker):
     config = Config(Path(__file__).parent.with_name("data").joinpath("test.toml"))
-    assert config.get_alias("os-specific") == [(None, "cmd")]
+    assert config.get_alias("os-specific") == [AliasCommand("cmd")]
 
     mocker.patch("sys.platform", "my-os")
     config = Config(Path(__file__).parent.with_name("data").joinpath("test.toml"))
-    assert config.get_alias("os-specific") == [(None, "my-os-cmd")]
+    assert config.get_alias("os-specific") == [AliasCommand("my-os-cmd")]
 
 
 def test_invalid_toml():
