@@ -149,7 +149,23 @@ def test_combined_alias_with_arg(tmp_dir, mocker):
         f'-t {toml} alias-2 "path to/pyprojectx" --install-dir "{tmp_dir}" -t {toml} shell-command "alias-arg"',
         shell=True,
         check=True,
+        env=ANY,
     )
+
+
+@pytest.mark.parametrize("cmd", ["tool-1", "alias-1", "alias-dict"])
+def test_run_with_env(tmp_dir, mocker, cmd):
+    toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
+    run_mock = mocker.patch("subprocess.run")
+
+    _run(["path to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), cmd])
+
+    args = run_mock.call_args
+    assert args.kwargs["env"]["ENV_VAR1"] == "ENV_VAR1"
+    if cmd == "alias-dict":
+        assert args.kwargs["env"].get("ENV_VAR2") == "ENV_VAR2"
+    else:
+        assert args.kwargs["env"].get("ENV_VAR2") is None
 
 
 def test_shell_command_alias(tmp_dir, mocker):
@@ -172,6 +188,7 @@ def test_shell_command_alias(tmp_dir, mocker):
         'ls -al "alias-arg"',
         shell=True,
         check=True,
+        env=ANY,
     )
 
 

@@ -1,9 +1,9 @@
 import re
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from itertools import zip_longest
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 try:
     import tomllib
@@ -21,6 +21,7 @@ class AliasCommand:
 
     cmd: str
     tool: Optional[str] = None
+    env: Dict[str, str] = field(default_factory=dict)
 
 
 class Config:
@@ -34,8 +35,12 @@ class Config:
                 toml_dict = tomllib.load(f)
                 self._tools = toml_dict.get("tool", {}).get("pyprojectx", {})
                 self._aliases = self._merge_os_aliases()
+                self.env = self._tools.get("env", {})
         except Exception as e:  # noqa: BLE001
             raise Warning(f"Could not parse {toml_path}: {e}") from e
+        if not isinstance(self.env, dict):
+            msg = "Invalid config: 'env' must be a dictionary"
+            raise Warning(msg)
 
     def show_info(self, cmd, error=False):
         alias_cmds = self.get_alias(cmd)
@@ -108,9 +113,13 @@ class Config:
         alias = self._aliases.get(key)
         if not alias:
             return []
-        alias_config = {}
+        alias_config = {"tool": None, "env": {}}
         if isinstance(alias, dict):
-            alias_config = alias
+            alias_config.update(alias)
+            if alias_config.get("tool") and not isinstance(alias_config["tool"], str):
+                raise Warning(f"Invalid alias {key}: 'tool' must be a string")
+            if alias_config.get("env") and not isinstance(alias_config["env"], dict):
+                raise Warning(f"Invalid alias {key}: 'env' must be a dictionary")
             alias = alias_config.get("cmd")
         if isinstance(alias, str):
             alias_config["cmd"] = [alias]
@@ -126,13 +135,13 @@ class Config:
                 tool = tool[1:]
             if not self.is_tool(tool):
                 raise Warning(f"Invalid alias {key}: '{tool}' is not defined in [tool.pyprojectx]")
-            return AliasCommand(alias_cmd, tool)
+            return AliasCommand(alias_cmd, tool=tool, env=alias_config["env"])
         if alias_config.get("tool"):
-            return AliasCommand(cmd, alias_config["tool"])
+            return AliasCommand(cmd, tool=alias_config["tool"], env=alias_config["env"])
         tool = cmd.split()[0]
         if self.is_tool(tool):
-            return AliasCommand(cmd, tool)
-        return AliasCommand(cmd)
+            return AliasCommand(cmd, tool=tool, env=alias_config["env"])
+        return AliasCommand(cmd, env=alias_config["env"])
 
     def is_alias(self, key) -> bool:
         """Check whether a key (alias name) exists in the [tool.pyprojectx.alias] section.
