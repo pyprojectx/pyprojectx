@@ -14,6 +14,7 @@ from pyprojectx.wrapper.pw import BLUE, CYAN, RESET
 
 MAIN = "main"
 PROJECT_DIR = "@PROJECT_DIR"
+DEFAULT_SCRIPTS_DIR = "bin"
 
 
 @dataclass
@@ -35,19 +36,26 @@ class Config:
         try:
             with toml_path.open("rb") as f:
                 toml_dict = tomllib.load(f)
-                self._contexts = toml_dict.get("tool", {}).get("pyprojectx", {})
-                self._aliases = self._merge_os_aliases()
-                self.env = self._contexts.get("env", {})
-                self.project_dir = str(toml_path.parent.absolute())
-                self.cwd = self._contexts.get("cwd", self.project_dir)
         except Exception as e:  # noqa: BLE001
             raise Warning(f"Could not parse {toml_path}: {e}") from e
+
+        project_path = toml_path.parent.absolute()
+        self._contexts = toml_dict.get("tool", {}).get("pyprojectx", {}).copy()
+        self._aliases = self._merge_os_aliases()
+        self.env = self._contexts.pop("env", {})
         if not isinstance(self.env, dict):
             msg = "Invalid config: 'env' must be a dictionary"
             raise Warning(msg)
+        self.project_dir = str(project_path)
+        self.cwd = self._contexts.pop("cwd", self.project_dir)
         if not isinstance(self.cwd, str):
             msg = "Invalid config: 'cwd' must be a string"
             raise Warning(msg)
+        scripts_dir = self._contexts.pop("scripts_dir", DEFAULT_SCRIPTS_DIR)
+        if not isinstance(scripts_dir, str):
+            msg = "Invalid config: 'scripts_dir' must be a string"
+            raise Warning(msg)
+        self.scripts_path = project_path / scripts_dir
 
     def show_info(self, cmd, error=False):
         alias_cmds = self.get_alias(cmd)
@@ -180,20 +188,24 @@ class Config:
         """
         return bool(self._aliases.get(key))
 
-    def find_aliases(self, abbrev: str) -> List[str]:
-        """Find all alias keys that match the abbreviation.
+    def get_script_path(self, script):
+        return str((self.scripts_path / f"{script}.py").absolute())
+
+    def find_aliases_or_scripts(self, abbrev: str) -> List[str]:
+        """Find all alias keys and/or scripts in scripts_dir that match the abbreviation.
 
         The abbreviation can use camel case patterns that are expanded to match camel case and kebab case names.
         For example the pattern foBa (or even fB) matches fooBar and foo-bar.
-        If the abbreviation is exactly equal to an alias key, only that key is returned, even if the abbreviation
-        matches other alias keys.
+        If the abbreviation is exactly equal to an alias key or script name, only that key is returned, even if the
+        abbreviation matches other alias keys.
         :param abbrev: abbreviated or full alias key to search for
-        :return: a list of matching alias keys
+        :return: a list of matching alias keys and/or scripts
         """
-        if abbrev in self._aliases:
+        aliases_and_scripts = [*self._aliases.keys(), *self._get_scripts()]
+        if abbrev in aliases_and_scripts:
             return [abbrev]
 
-        return [key for key in self._aliases if camel_match(abbrev, key)]
+        return [name for name in aliases_and_scripts if camel_match(abbrev, name)]
 
     def get_cwd(self, cwd=None):
         _cwd = cwd or self.cwd
@@ -209,6 +221,9 @@ class Config:
             if sys.platform.startswith(os_key) and isinstance(os_dict[os_key], dict):
                 aliases.update(os_dict[os_key].get("aliases", {}))
         return aliases
+
+    def _get_scripts(self):
+        return sorted([f.name.replace(".py", "") for f in self.scripts_path.glob("*.py") if f.is_file()])
 
 
 def camel_match(abbrev, key):

@@ -93,7 +93,7 @@ def test_unexisting_toml():
 
 
 @pytest.mark.parametrize(
-    ("shorcut", "aliases"),
+    ("shortcut", "candidates"),
     [
         ("aaa-bbb-ccc", ["aaa-bbb-ccc"]),
         ("aaaBbbDdd", ["aaaBbbDdd"]),
@@ -112,8 +112,10 @@ def test_unexisting_toml():
         ("bCD", ["b123-c123-d123"]),
         ("c1D1", ["c123D123"]),
         ("dE", ["d123-E123"]),
+        ("s", ["script-a", "script-b"]),
+        ("script-a", ["script-a"]),
     ],
 )
-def test_find_aliases(shorcut, aliases):
+def test_find_aliases_or_scripts(shortcut, candidates):
     config = Config(Path(__file__).parent.with_name("data").joinpath("alias-abbreviations.toml"))
-    assert config.find_aliases(shorcut) == aliases
+    assert config.find_aliases_or_scripts(shortcut) == candidates

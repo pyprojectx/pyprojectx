@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 from typing import List, Union
 
-from pyprojectx.config import AliasCommand, Config
+from pyprojectx.config import MAIN, AliasCommand, Config
 from pyprojectx.env import IsolatedVirtualEnv
 from pyprojectx.initializer.initializers import initialize
 from pyprojectx.log import logger, set_verbosity
@@ -56,11 +56,11 @@ def _run(argv: List[str]) -> None:
 
     cmd_index = argv.index(cmd)
     pw_args = argv[:cmd_index]
-    aliases = config.find_aliases(cmd)
-    logger.debug("Matching aliases for %s: %s", cmd, ", ".join(aliases))
-    if aliases:
-        verify_ambiguity(aliases, cmd)
-        alias_cmds = config.get_alias(aliases[0])
+    candidates = config.find_aliases_or_scripts(cmd)
+    logger.debug("Matching aliases/scripts for %s: %s", cmd, ", ".join(candidates))
+    if candidates:
+        verify_ambiguity(candidates, cmd)
+        alias_cmds = config.get_alias(candidates[0])
         if alias_cmds:
             for alias_cmd in alias_cmds:
                 _run_alias(
@@ -69,6 +69,8 @@ def _run(argv: List[str]) -> None:
                     options=options,
                     config=config,
                 )
+        else:
+            _run_script(candidates[0], options, config)
         return
     ctx = config.get_ctx_or_main(cmd)
     if ctx:
@@ -87,8 +89,8 @@ def _run(argv: List[str]) -> None:
     raise SystemExit(1)
 
 
-def verify_ambiguity(aliases, cmd):
-    if len(aliases) > 1:
+def verify_ambiguity(candidates, cmd):
+    if len(candidates) > 1:
         print(
             f"{pw.RED}'{cmd}' is ambiguous",
             file=sys.stderr,
@@ -97,7 +99,7 @@ def verify_ambiguity(aliases, cmd):
             f"{pw.BLUE}Candidates are:{pw.RESET}",
             file=sys.stderr,
         )
-        print(", ".join(aliases), file=sys.stderr)
+        print(", ".join(candidates), file=sys.stderr)
         raise SystemExit(1)
 
 
@@ -123,6 +125,28 @@ def _run_alias(alias_cmd: AliasCommand, pw_args: List[str], options, config) -> 
         try:
             logger.debug("Running command without venv, full command: %s, in %s", full_cmd, alias_cmd.cwd)
             subprocess.run(full_cmd, shell=True, check=True, env={**os.environ, **alias_env}, cwd=alias_cmd.cwd)
+        except subprocess.CalledProcessError as e:
+            raise SystemExit(e.returncode) from e
+
+
+def _run_script(script: str, options, config) -> None:
+    file = config.get_script_path(script)
+    logger.debug("Running script: %s, arguments: %s", file, options.cmd_args)
+    full_cmd = ["python", file, *options.cmd_args]
+    if config.is_ctx(MAIN):
+        _run_in_ctx(
+            MAIN,
+            full_cmd,
+            options=options,
+            pw_args=[],
+            config=config,
+            env=config.env,
+            cwd=config.cwd,
+        )
+    else:
+        try:
+            logger.debug("Running script without venv, full command: %s, in %s", full_cmd, config.cwd)
+            subprocess.run(full_cmd, shell=True, check=True, env={**os.environ, **config.env}, cwd=config.cwd)
         except subprocess.CalledProcessError as e:
             raise SystemExit(e.returncode) from e
 

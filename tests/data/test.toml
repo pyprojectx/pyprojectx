@@ -1,6 +1,7 @@
 [tool.pyprojectx]
 env = { ENV_VAR1 = "ENV_VAR1" }
 cwd = "/cwd"
+scripts_dir = "scripts"
 
 main = { requirements = "main-requirement", post-install = "main-post-install" }
 
