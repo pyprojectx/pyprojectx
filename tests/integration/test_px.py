@@ -37,7 +37,7 @@ def test_initialize_project(tmp_project):
     cmd = f"{SCRIPT_PREFIX}px -i -"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=True)
     assert set(proc_result.stdout.decode("utf-8").split()) == {"clean", "ruff", "black"}
-    assert "is not configured as tool or alias" in proc_result.stderr.decode("utf-8")
+    assert "is not configured as tool context or alias" in proc_result.stderr.decode("utf-8")
 
 
 @pytest.mark.parametrize("tool", ["poetry", "pdm"])

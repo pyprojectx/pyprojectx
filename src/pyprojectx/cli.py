@@ -42,7 +42,7 @@ def _run(argv: List[str]) -> None:
     config = Config(options.toml_path)
 
     if options.install:
-        _install_tool(options, config)
+        _install_ctx(options, config)
         return
 
     cmd = options.cmd
@@ -66,24 +66,25 @@ def _run(argv: List[str]) -> None:
                 _run_alias(
                     alias_cmd,
                     pw_args,
-                    requirements=config.get_tool_requirements(alias_cmd.tool),
                     options=options,
                     config=config,
                 )
-    elif config.is_tool(cmd):
-        _run_in_tool_venv(
-            cmd,
+        return
+    ctx = config.get_ctx_or_main(cmd)
+    if ctx:
+        _run_in_ctx(
+            ctx,
             [cmd, *options.cmd_args],
-            requirements=config.get_tool_requirements(cmd),
             options=options,
             pw_args=pw_args,
             config=config,
             env=config.env,
             cwd=config.get_cwd(),
         )
-    else:
-        config.show_info(cmd, error=True)
-        raise SystemExit(1)
+        return
+
+    config.show_info(cmd, error=True)
+    raise SystemExit(1)
 
 
 def verify_ambiguity(aliases, cmd):
@@ -100,19 +101,18 @@ def verify_ambiguity(aliases, cmd):
         raise SystemExit(1)
 
 
-def _run_alias(alias_cmd: AliasCommand, pw_args: List[str], requirements: dict, options, config) -> None:
+def _run_alias(alias_cmd: AliasCommand, pw_args: List[str], options, config) -> None:
     logger.debug(
-        "Running alias command, tool: %s, command: %s, arguments: %s", alias_cmd.tool, alias_cmd, options.cmd_args
+        "Running alias command, ctx: %s, command: %s, arguments: %s", alias_cmd.ctx, alias_cmd, options.cmd_args
     )
     quoted_args = [f'"{a}"' for a in options.cmd_args]
     full_cmd = " ".join([_resolve_references(alias_cmd.cmd, pw_args, config), *quoted_args])
 
     alias_env = {**config.env, **alias_cmd.env}
-    if alias_cmd.tool:
-        _run_in_tool_venv(
-            alias_cmd.tool,
+    if alias_cmd.ctx:
+        _run_in_ctx(
+            alias_cmd.ctx,
             full_cmd,
-            requirements=requirements,
             options=options,
             pw_args=pw_args,
             config=config,
@@ -128,11 +128,10 @@ def _run_alias(alias_cmd: AliasCommand, pw_args: List[str], requirements: dict, 
 
 
 # ruff: noqa: PLR0913
-def _run_in_tool_venv(
-    tool: str, full_cmd: Union[str, List[str]], requirements: dict, options, pw_args, config, env, cwd
-) -> None:
-    logger.debug("Running tool command in virtual environment, tool: %s, full command: %s", tool, full_cmd)
-    venv = IsolatedVirtualEnv(options.venvs_dir, tool, requirements)
+def _run_in_ctx(ctx: str, full_cmd: Union[str, List[str]], options, pw_args, config, env, cwd) -> None:
+    logger.debug("Running command in virtual environment, ctx: %s, full command: %s", ctx, full_cmd)
+    requirements = config.get_ctx_requirements(ctx)
+    venv = IsolatedVirtualEnv(options.venvs_dir, ctx, requirements)
     if not venv.is_installed or options.force_install:
         try:
             venv.install(quiet=options.quiet)
@@ -141,7 +140,7 @@ def _run_in_tool_venv(
                 venv.run(post_install_cmd, env, cwd)
         except subprocess.CalledProcessError as e:
             print(
-                f"{pw.RED}PYPROJECTX ERROR: installation of '{tool}' failed with exit code {e.returncode}{pw.RESET}",
+                f"{pw.RED}PYPROJECTX ERROR: installation of '{ctx}' failed with exit code {e.returncode}{pw.RESET}",
                 file=sys.stderr,
             )
             raise SystemExit(e.returncode) from e
@@ -201,14 +200,13 @@ def _show_upgrade_instructions():
         print(UPGRADE_INSTRUCTIONS)
 
 
-def _install_tool(options, config):
-    tool = options.install
-    if not config.is_tool(tool):
-        raise Warning(f"Invalid tool: '{options.install}' is not defined in [tool.pyprojectx]")
-    _run_in_tool_venv(
-        tool,
+def _install_ctx(options, config):
+    ctx = options.install
+    if not config.is_ctx(ctx):
+        raise Warning(f"Invalid ctx: '{options.install}' is not defined in [tool.pyprojectx]")
+    _run_in_ctx(
+        ctx,
         "cd .",  # noop command
-        requirements=config.get_tool_requirements(tool),
         options=options,
         pw_args=[],
         config=config,
