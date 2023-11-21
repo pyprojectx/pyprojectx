@@ -11,7 +11,7 @@ from pyprojectx.initializer.initializers import SCRIPT_PREFIX
 pip_upgrade_regex = re.compile(r"\s*\[notice] A new release of pip.+upgrade pip\s*", re.DOTALL)
 
 
-def test_install_tool(tmp_project):
+def test_install_ctx(tmp_project):
     project_dir, env = tmp_project
     cmd = f"{SCRIPT_PREFIX}pw --install pycowsay"
     assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
@@ -55,7 +55,7 @@ def test_logs_and_stdout_when_alias_invoked_from_sub_directory_with_verbose(alia
     cwd = project_dir.joinpath("subdir")
     cwd.mkdir(parents=True, exist_ok=True)
     cmd = f"..{os.sep}pw --verbose --verbose {alias}"
-    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=False)
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=cwd, env=env, check=True)
 
     assert "< hi >" in proc_result.stdout.decode("utf-8")
     assert "< hello >" in proc_result.stdout.decode("utf-8")
@@ -63,7 +63,7 @@ def test_logs_and_stdout_when_alias_invoked_from_sub_directory_with_verbose(alia
         "utf-8"
     )
     assert (
-        "DEBUG:pyprojectx.log:Running tool command in virtual environment, tool: pycowsay, full command: pycowsay hello"
+        "DEBUG:pyprojectx.log:Running command in virtual environment, ctx: pycowsay, full command: pycowsay hello"
         in proc_result.stderr.decode("utf-8")
     )
 
@@ -94,7 +94,6 @@ def test_alias_abbreviations(tmp_project):
             "PYPROJECTX ERROR: installation of 'failing-install' failed with exit code",
         ),
         (f"{SCRIPT_PREFIX}pw -q failing-shell", "", "go-foo-bar"),
-        (f"{SCRIPT_PREFIX}pw -q foo-bar", "", "foo-bar.+is not configured as tool or alias in.+pyproject.toml"),
         (
             f"{SCRIPT_PREFIX}pw",
             "",
@@ -179,9 +178,25 @@ def test_cwd(tmp_project):
     project_dir, env = tmp_project
     assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
     cmd = f"{SCRIPT_PREFIX}pw -q ls-projectdir"
-    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
     assert "pw.bat" in proc_result.stdout.decode("utf-8")
 
     cmd = f"{SCRIPT_PREFIX}pw -q ls-pyprojectx"
-    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
     assert "pyprojectx" in proc_result.stdout.decode("utf-8")
+
+
+def test_default_ctx(tmp_project):
+    project_dir, env = tmp_project
+    assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
+
+    cmd = f"{SCRIPT_PREFIX}pw -q ls-projectdir"
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
+    assert "post-install-dir" in proc_result.stdout.decode(
+        "utf-8"
+    ), "the cmd did not run in the main ctx or the main post-install did not run"
+    assert (project_dir / "post-install-dir").exists()
+
+    cmd = f"{SCRIPT_PREFIX}pw -vvv prm post-install-dir"
+    subprocess.run(cmd, shell=True, cwd=project_dir, env=env, check=True)
+    assert not (project_dir / "post-install-dir").exists()

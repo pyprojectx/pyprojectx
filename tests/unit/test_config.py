@@ -2,17 +2,17 @@ from pathlib import Path
 
 import pytest
 
-from pyprojectx.config import Config, AliasCommand
+from pyprojectx.config import Config, AliasCommand, MAIN
 
 
 def test_no_config():
     config = Config(Path(__file__).parent.with_name("data").joinpath("test-no-config.toml"))
-    assert config.get_tool_requirements("tool") == {"requirements": [], "post-install": None}
-    assert not config.is_tool("tool")
+    assert config.get_ctx_requirements("tool") == {"requirements": [], "post-install": None}
+    assert not config.is_ctx("tool")
     assert config.get_alias("alias") == []
 
 
-def test_no_tool_config():
+def test_no_ctx_config():
     data_dir = Path(__file__).parent.with_name("data")
     config = Config(data_dir / "test-no-tool-config.toml")
     assert config.get_alias("run") == [AliasCommand("run command", cwd=str(data_dir.absolute()))]
@@ -22,62 +22,64 @@ def test_no_tool_config():
         config.get_alias("wrong-tool-alias")
 
 
-def test_tool_config():
+def test_ctx_config():
     config = Config(Path(__file__).parent.with_name("data").joinpath("test.toml"))
 
-    assert config.is_tool("tool-1")
-    assert config.get_tool_requirements("tool-1") == {"requirements": ["req1", "req2"], "post-install": None}
+    assert config.is_ctx("tool-1")
+    assert config.get_ctx_requirements("tool-1") == {"requirements": ["req1", "req2"], "post-install": None}
 
-    assert config.is_tool("tool-2")
-    assert config.get_tool_requirements("tool-2") == {"requirements": ["tool2 requirement"], "post-install": None}
+    assert config.is_ctx("tool-2")
+    assert config.get_ctx_requirements("tool-2") == {"requirements": ["tool2 requirement"], "post-install": None}
 
-    assert config.is_tool("tool-3")
-    assert config.get_tool_requirements("tool-3") == {"requirements": ["req1", "req2", "req3"], "post-install": None}
+    assert config.is_ctx("tool-3")
+    assert config.get_ctx_requirements("tool-3") == {"requirements": ["req1", "req2", "req3"], "post-install": None}
 
-    assert config.is_tool("tool-4")
-    assert config.get_tool_requirements("tool-4") == {"requirements": ["tool-4-req1"], "post-install": None}
+    assert config.is_ctx("tool-4")
+    assert config.get_ctx_requirements("tool-4") == {"requirements": ["tool-4-req1"], "post-install": None}
 
-    assert config.is_tool("tool-5")
-    assert config.get_tool_requirements("tool-5") == {
+    assert config.is_ctx("tool-5")
+    assert config.get_ctx_requirements("tool-5") == {
         "requirements": ["tool-5-req1", "tool-5-req2"],
         "post-install": "tool-5 && pw@alias-1",
     }
 
-    assert not config.is_tool("nope")
-    assert config.get_tool_requirements("nope") == {"requirements": [], "post-install": None}
+    assert not config.is_ctx("nope")
+    assert config.get_ctx_requirements("nope") == {"requirements": [], "post-install": None}
 
 
 def test_alias_config():
     data_dir = Path(__file__).parent.with_name("data")
     config = Config(data_dir / "test.toml")
-    assert config.get_alias("alias-1") == [AliasCommand("tool-1 arg", tool="tool-1", cwd="/cwd")]
-    assert config.get_alias("alias-2") == [AliasCommand("tool-2 arg1 arg2", tool="tool-2", cwd="/cwd")]
-    assert config.get_alias("alias-3") == [AliasCommand("command arg", tool="tool-1", cwd="/cwd")]
-    assert config.get_alias("alias-4") == [AliasCommand("command --default @arg:x", tool="tool-2", cwd="/cwd")]
-    assert config.get_alias("combined-alias") == [AliasCommand("pw@alias-1 && pw@alias-2 pw@shell-command", cwd="/cwd")]
+    assert config.get_alias("alias-1") == [AliasCommand("tool-1 arg", ctx="tool-1", cwd="/cwd")]
+    assert config.get_alias("alias-2") == [AliasCommand("tool-2 arg1 arg2", ctx="tool-2", cwd="/cwd")]
+    assert config.get_alias("alias-3") == [AliasCommand("command arg", ctx="tool-1", cwd="/cwd")]
+    assert config.get_alias("alias-4") == [AliasCommand("command --default @arg:x", ctx="tool-2", cwd="/cwd")]
+    assert config.get_alias("combined-alias") == [
+        AliasCommand("pw@alias-1 && pw@alias-2 pw@shell-command", cwd="/cwd", ctx=MAIN)
+    ]
     assert config.get_alias("alias-list") == [
-        AliasCommand("pw@alias-1", cwd="/cwd"),
-        AliasCommand("pw@alias-2", cwd="/cwd"),
-        AliasCommand("pw@shell-command", cwd="/cwd"),
+        AliasCommand("pw@alias-1", cwd="/cwd", ctx=MAIN),
+        AliasCommand("pw@alias-2", cwd="/cwd", ctx=MAIN),
+        AliasCommand("pw@shell-command", cwd="/cwd", ctx=MAIN),
     ]
     assert config.get_alias("alias-dict") == [
-        AliasCommand("alias-dict", tool="tool-1", env={"ENV_VAR2": "ENV_VAR2"}, cwd=str(data_dir.absolute()))
+        AliasCommand("alias-dict", ctx="tool-1", env={"ENV_VAR2": "ENV_VAR2"}, cwd=str(data_dir.absolute()))
     ]
     assert config.get_alias("alias-dict-list") == [
-        AliasCommand("alias-dict-list-1", tool="tool-1", cwd="/cwd"),
-        AliasCommand("alias-dict-list-2", tool="tool-2", cwd="/cwd"),
+        AliasCommand("alias-dict-list-1", ctx="tool-1", cwd="/cwd"),
+        AliasCommand("alias-dict-list-2", ctx="tool-2", cwd="/cwd"),
     ]
-    assert config.get_alias("shell-command") == [AliasCommand("ls -al", cwd="/cwd")]
-    assert config.get_alias("backward-compatible-tool-ref") == [AliasCommand("command arg", tool="tool-1", cwd="/cwd")]
+    assert config.get_alias("shell-command") == [AliasCommand("ls -al", cwd="/cwd", ctx=MAIN)]
+    assert config.get_alias("backward-compatible-tool-ref") == [AliasCommand("command arg", ctx="tool-1", cwd="/cwd")]
 
 
 def test_os_specific_alias_config(mocker):
     config = Config(Path(__file__).parent.with_name("data").joinpath("test.toml"))
-    assert config.get_alias("os-specific") == [AliasCommand("cmd", cwd="/cwd")]
+    assert config.get_alias("os-specific") == [AliasCommand("cmd", cwd="/cwd", ctx=MAIN)]
 
     mocker.patch("sys.platform", "my-os")
     config = Config(Path(__file__).parent.with_name("data").joinpath("test.toml"))
-    assert config.get_alias("os-specific") == [AliasCommand("my-os-cmd", cwd="/cwd")]
+    assert config.get_alias("os-specific") == [AliasCommand("my-os-cmd", cwd="/cwd", ctx=MAIN)]
 
 
 def test_invalid_toml():

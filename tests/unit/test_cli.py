@@ -84,16 +84,7 @@ def test_run_no_cmd(tmp_dir):
         _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml)])
 
 
-def test_run_unknown_tool(tmp_dir):
-    toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
-    with pytest.raises(
-        SystemExit,
-        match="1",
-    ):
-        _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "foo"])
-
-
-def test_run_tool_alias(tmp_dir, mocker):
+def test_run_alias_with_ctx(tmp_dir, mocker):
     toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
     run_mock = mocker.patch("subprocess.run")
 
@@ -107,7 +98,7 @@ def test_run_tool_alias(tmp_dir, mocker):
     )
 
 
-def test_run_tool_alias_with_args(tmp_dir, mocker):
+def test_run_alias_with_ctx_with_args(tmp_dir, mocker):
     toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
     run_mock = mocker.patch("subprocess.run")
 
@@ -116,7 +107,7 @@ def test_run_tool_alias_with_args(tmp_dir, mocker):
     run_mock.assert_called_with('tool-1 arg "alias-arg1" "alias-arg2"', shell=True, check=True, env=ANY, cwd=ANY)
 
 
-def test_run_explicit_tool_alias_with_arg(tmp_dir, mocker):
+def test_run_explicit_alias_with_ctx_with_arg(tmp_dir, mocker):
     toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
     run_mock = mocker.patch("subprocess.run")
 

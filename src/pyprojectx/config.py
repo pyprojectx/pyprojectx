@@ -12,8 +12,8 @@ except ImportError:
 
 from pyprojectx.wrapper.pw import BLUE, CYAN, RESET
 
-DEFAULT_TOOL = "DEFAULT_TOOL"
-PROJECT_DIR = "$PROJECT_DIR"
+MAIN = "main"
+PROJECT_DIR = "@PROJECT_DIR"
 
 
 @dataclass
@@ -23,7 +23,7 @@ class AliasCommand:
     cmd: str
     cwd: Optional[str] = None
     env: Dict[str, str] = field(default_factory=dict)
-    tool: Optional[str] = None
+    ctx: Optional[str] = None
 
 
 class Config:
@@ -35,11 +35,11 @@ class Config:
         try:
             with toml_path.open("rb") as f:
                 toml_dict = tomllib.load(f)
-                self._tools = toml_dict.get("tool", {}).get("pyprojectx", {})
+                self._contexts = toml_dict.get("tool", {}).get("pyprojectx", {})
                 self._aliases = self._merge_os_aliases()
-                self.env = self._tools.get("env", {})
+                self.env = self._contexts.get("env", {})
                 self.project_dir = str(toml_path.parent.absolute())
-                self.cwd = self._tools.get("cwd", self.project_dir)
+                self.cwd = self._contexts.get("cwd", self.project_dir)
         except Exception as e:  # noqa: BLE001
             raise Warning(f"Could not parse {toml_path}: {e}") from e
         if not isinstance(self.env, dict):
@@ -55,35 +55,39 @@ class Config:
         if alias_cmds:
             print(f"{cmd}{BLUE} is an alias in {CYAN}{self._toml_path.absolute()}", file=sys.stderr)
             for alias_cmd in alias_cmds:
-                if alias_cmd.tool:
-                    print(f"{BLUE}and runs in the {CYAN}{alias_cmd.tool}{BLUE} tool context", file=sys.stderr)
+                if alias_cmd.ctx:
+                    print(f"{BLUE}and runs in the {CYAN}{alias_cmd.ctx}{BLUE} tool context", file=sys.stderr)
                 print(f"{BLUE}command:{RESET}", file=sys.stderr)
                 print(alias_cmd.cmd, file=out)
-        elif self.is_tool(cmd):
-            print(f"{cmd}{BLUE} is a tool in {CYAN}{self._toml_path.absolute()}", file=sys.stderr)
+        elif self.is_ctx(cmd):
+            print(f"{cmd}{BLUE} is a tool context in {CYAN}{self._toml_path.absolute()}", file=sys.stderr)
             print(f"{BLUE}requirements:{RESET}", file=sys.stderr)
-            print(self.get_tool_requirements(cmd), file=out)
+            print(self.get_ctx_requirements(cmd), file=out)
         else:
             if cmd:
                 print(
-                    f"{cmd}{BLUE} is not configured as tool or alias in {self._toml_path.absolute()}:{RESET}",
+                    f"{cmd}{BLUE} is not configured as tool context or alias in {self._toml_path.absolute()}:{RESET}",
                     file=sys.stderr,
                 )
+                if self.is_ctx(MAIN):
+                    print(f"{cmd}{BLUE} would run in the main context.{RESET}", file=sys.stderr)
+                else:
+                    print(f"{cmd}{BLUE} cannot run because there is no main context.{RESET}", file=sys.stderr)
             print(f"{BLUE}available aliases:{RESET}", file=sys.stderr)
             print("\n".join(self._aliases.keys()), file=out)
-            print(f"{BLUE}available tools:{RESET}", file=sys.stderr)
-            print("\n".join(self._tools.keys() - ["aliases", "os"]), file=out)
+            print(f"{BLUE}available tool contexts:{RESET}", file=sys.stderr)
+            print("\n".join(self._contexts.keys() - ["aliases", "os"]), file=out)
 
-    def get_tool_requirements(self, key) -> dict:
-        """Get the requirements (dependencies) for a configured tool in the [tool.pyprojectx] section.
+    def get_ctx_requirements(self, key) -> dict:
+        """Get the requirements (dependencies) for a configured tool context in the [tool.pyprojectx] section.
 
         The requirements can either be specified as a string, a list of strings or an object with requirements and
         post-install as keys.
         A multiline string is treated as one requirement per line.
-        :param key: The key (tool name) to look for
+        :param key: The key (tool context name) to look for
         :return: a dict with the requirements as a list and the post-install script, or None if key is not found
         """
-        requirements_config = self._tools.get(key)
+        requirements_config = self._contexts.get(key)
         post_install = None
         requirements = []
         if isinstance(requirements_config, str):
@@ -99,32 +103,43 @@ class Config:
             post_install = requirements_config.get("post-install")
         return {"requirements": requirements, "post-install": post_install}
 
-    def is_tool(self, key) -> bool:
-        """Check whether a key (tool name) exists in the [tool.pyprojectx] section.
+    def get_ctx_or_main(self, ctx=None):
+        """Return the given context if it exists, otherwise return the main context if it exists.
 
-        :param key: The key (tool name) to look for
+        @param ctx: The context to look for
+        """
+        if ctx and self.is_ctx(ctx):
+            return ctx
+        if self.is_ctx(MAIN):
+            return MAIN
+        return None
+
+    def is_ctx(self, key) -> bool:
+        """Check whether a key (context name) exists in the [tool.pyprojectx] section.
+
+        :param key: The key (context name) to look for
         :return: True if the key exists in the [tool.pyprojectx] section.
         """
-        return self._tools.get(key) is not None
+        return self._contexts.get(key) is not None
 
     def get_alias(self, key) -> List[AliasCommand]:
         """Get an alias command configured in the [tool.pyprojectx.alias] section.
 
-        The alias is considered to be part of a tool if:
-         * its command starts with the name of the tool
+        The alias is considered to be part of a tool context if:
+         * its command starts with the name of the tool context
          * the command starts with '@tool-name:'
-         * the alias
+         * the alias explicitly specifies the tool context with the 'ctx' key
         :param key: The key (name) of the alias
         :return: A list of aliases or an empty list if there is no alias with the given key.
         """
         alias = self._aliases.get(key)
         if not alias:
             return []
-        alias_config = {"tool": None, "env": {}, "cwd": self.cwd}
+        alias_config = {"ctx": None, "env": {}, "cwd": self.cwd}
         if isinstance(alias, dict):
             alias_config.update(alias)
-            if alias_config.get("tool") and not isinstance(alias_config["tool"], str):
-                raise Warning(f"Invalid alias {key}: 'tool' must be a string")
+            if alias_config.get("ctx") and not isinstance(alias_config["ctx"], str):
+                raise Warning(f"Invalid alias {key}: 'ctx' must be a string")
             if not isinstance(alias_config["env"], dict):
                 raise Warning(f"Invalid alias {key}: 'env' must be a dictionary")
             if not isinstance(alias_config["cwd"], str):
@@ -140,22 +155,22 @@ class Config:
         return [self._build_alias_command(cmd, alias_config, key) for cmd in alias_config.get("cmd", [])]
 
     def _build_alias_command(self, cmd, alias_config, key) -> AliasCommand:
-        tool = None
+        ctx = self.get_ctx_or_main()
         alias_cmd = cmd
         if re.match(r"^@?[\w|-]+\s*:\s*", cmd):
-            tool, alias_cmd = re.split(r"\s*:\s*", cmd, maxsplit=1)
-            if tool.startswith("@"):
-                tool = tool[1:]
-        elif alias_config.get("tool"):
-            tool = alias_config["tool"]
+            ctx, alias_cmd = re.split(r"\s*:\s*", cmd, maxsplit=1)
+            if ctx.startswith("@"):
+                ctx = ctx[1:]
+        elif alias_config.get("ctx"):
+            ctx = alias_config["ctx"]
         else:
             candidate = cmd.split()[0]
-            if self.is_tool(candidate):
-                tool = candidate
-        if tool and not self.is_tool(tool):
-            raise Warning(f"Invalid alias {key}: '{tool}' is not defined in [tool.pyprojectx]")
+            if self.is_ctx(candidate):
+                ctx = candidate
+        if ctx and not self.is_ctx(ctx):
+            raise Warning(f"Invalid alias {key}: '{ctx}' is not defined in [tool.pyprojectx]")
 
-        return AliasCommand(alias_cmd, tool=tool, env=alias_config["env"], cwd=self.get_cwd(alias_config["cwd"]))
+        return AliasCommand(alias_cmd, ctx=ctx, env=alias_config["env"], cwd=self.get_cwd(alias_config["cwd"]))
 
     def is_alias(self, key) -> bool:
         """Check whether a key (alias name) exists in the [tool.pyprojectx.alias] section.
@@ -185,11 +200,11 @@ class Config:
         return _cwd.replace(PROJECT_DIR, self.project_dir)
 
     def __repr__(self):
-        return str(self._tools)
+        return str(self._contexts)
 
     def _merge_os_aliases(self):
-        aliases = self._tools.get("aliases", {})
-        os_dict = self._tools.get("os", {})
+        aliases = self._contexts.get("aliases", {})
+        os_dict = self._contexts.get("os", {})
         for os_key in os_dict:
             if sys.platform.startswith(os_key) and isinstance(os_dict[os_key], dict):
                 aliases.update(os_dict[os_key].get("aliases", {}))

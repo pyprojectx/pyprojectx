@@ -1,4 +1,6 @@
 [tool.pyprojectx]
+main = { requirements = ["px-utils"], post-install = "pmkdirs post-install-dir" }
+
 pycowsay = "pycowsay==0.0.0.1"
 failing-install = "pycowsay==123.456.789.0"
 
@@ -25,11 +27,11 @@ list-files = "ls"
 say-post-install = "@post-install-pycowsay: pycowsay after-post-install"
 create-file = "touch post-install-file.txt"
 
-ls-projectdir = {cwd = "$PROJECT_DIR", cmd = "ls -al"}
-ls-pyprojectx = {cwd = "$PROJECT_DIR/.pyprojectx", cmd = "ls -al"}
+ls-projectdir = {cwd = "@PROJECT_DIR", cmd = "ls -al"}
+ls-pyprojectx = {cwd = "@PROJECT_DIR/.pyprojectx", cmd = "ls -al"}
 
 [tool.pyprojectx.os.win.aliases]
 list-files = "dir /b"
 create-file = "echo '' > post-install-file.txt"
-ls-projectdir = {cwd = "$PROJECT_DIR", cmd = "dir"}
-ls-pyprojectx = {cwd = "$PROJECT_DIR/.pyprojectx", cmd = "dir"}
+ls-projectdir = {cwd = "@PROJECT_DIR", cmd = "dir"}
+ls-pyprojectx = {cwd = "@PROJECT_DIR/.pyprojectx", cmd = "dir"}
