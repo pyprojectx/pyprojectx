@@ -200,3 +200,12 @@ def test_default_ctx(tmp_project):
     cmd = f"{SCRIPT_PREFIX}pw -vvv prm post-install-dir"
     subprocess.run(cmd, shell=True, cwd=project_dir, env=env, check=True)
     assert not (project_dir / "post-install-dir").exists()
+
+
+def test_run_script_with_args(tmp_project):
+    project_dir, env = tmp_project
+    assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
+
+    cmd = f"{SCRIPT_PREFIX}pw -vvv call-prm"
+    subprocess.run(cmd, shell=True, cwd=project_dir, env=env, check=True)
+    assert (project_dir / "created-by-call-prm").exists()

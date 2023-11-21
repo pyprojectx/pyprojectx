@@ -44,7 +44,7 @@ def test_run_tool(tmp_dir, mocker):
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "tool-1"])
 
-    pip_install_args = _get_call_args(run_mock.mock_calls[0])
+    pip_install_args = run_mock.mock_calls[0].args[0]
     first_arg = str(pip_install_args[0])
     assert (
         f"{tmp_dir.name}{os.sep}venvs{os.sep}"
@@ -53,8 +53,8 @@ def test_run_tool(tmp_dir, mocker):
     assert pip_install_args[1:-1] == ["-Im", "pip", "install", "--use-pep517", "--no-warn-script-location", "-r"]
     assert "build-reqs-" in str(pip_install_args[-1])
 
-    run_args = _get_call_args(run_mock.mock_calls[1])
-    run_kwargs = _get_call_kwargs(run_mock.mock_calls[1])
+    run_args = run_mock.mock_calls[1].args[0]
+    run_kwargs = run_mock.mock_calls[1].kwargs
     assert len(run_args) == 1
     assert run_args[0] == "tool-1"
     path_env = run_kwargs["env"]["PATH"]
@@ -73,7 +73,7 @@ def test_run_tool_with_args(tmp_dir, mocker):
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "tool-1", "arg1", "@last arg"])
 
     run_mock.assert_called_with(ANY, shell=False, check=True, env=ANY, cwd=ANY)
-    run_args = _get_call_args(run_mock.mock_calls[1])
+    run_args = run_mock.mock_calls[1].args[0]
     assert run_args[0] == "tool-1"
     assert run_args[1:] == ["arg1", "@last arg"]
 
@@ -91,7 +91,7 @@ def test_run_alias_with_ctx(tmp_dir, mocker):
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "alias-1"])
 
     run_mock.assert_called_with("tool-1 arg", shell=True, check=True, env=ANY, cwd=ANY)
-    path_env = _get_call_kwargs(run_mock.mock_calls[1])["env"]["PATH"]
+    path_env = run_mock.mock_calls[1].kwargs["env"]["PATH"]
     assert (
         f"{tmp_dir.name}{os.sep}venvs{os.sep}"
         f"tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.path.pathsep}" in path_env
@@ -117,7 +117,7 @@ def test_run_explicit_alias_with_ctx_with_arg(tmp_dir, mocker):
     assert (
         f"{tmp_dir.name}{os.sep}venvs{os.sep}"
         f"tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.path.pathsep}"
-        in _get_call_kwargs(run_mock.mock_calls[1])["env"]["PATH"]
+        in run_mock.mock_calls[1].kwargs["env"]["PATH"]
     )
 
 
@@ -179,13 +179,19 @@ def test_shell_command_alias(tmp_dir, mocker):
     )
 
 
-def _get_call_args(mock_call):
-    if sys.version_info.major == 3 and sys.version_info.minor == 7:
-        return mock_call[1][0]
-    return mock_call.args[0]
+def test_run_script(tmp_dir, mocker):
+    data = Path(__file__).parent.with_name("data")
+    toml = data / "test.toml"
+    run_mock = mocker.patch("subprocess.run")
 
+    _run(["path to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "script-a"])
 
-def _get_call_kwargs(mock_call):
-    if sys.version_info.major == 3 and sys.version_info.minor == 7:
-        return mock_call[2]
-    return mock_call.kwargs
+    args = run_mock.call_args.args[0]
+    assert len(args) == 2
+    assert "python" in args[0]
+    assert args[1] == str((data / "scripts/script-a.py").absolute())
+    kwargs = run_mock.call_args.kwargs
+    assert kwargs["env"]["ENV_VAR1"] == "ENV_VAR1"
+    assert kwargs["check"]
+    assert kwargs["cwd"] == "/cwd"
+    assert not kwargs["shell"]
