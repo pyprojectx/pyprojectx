@@ -6,9 +6,8 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from collections import OrderedDict
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Union
+from typing import Iterable, List, Optional, Union
 
 import virtualenv
 
@@ -130,18 +129,14 @@ class IsolatedVirtualEnv:
         :return: The subprocess.CompletedProcess instance
         """
         logger.info("Running command in isolated venv %s: %s", self.name, cmd)
+        path = os.pathsep.join((str(self.scripts_path.absolute()), os.environ.get("PATH", os.defpath)))
+        extra_environ = {"PATH": path}
         if isinstance(cmd, List):
-            extension = ".exe" if sys.platform.startswith("win") else ""
-            cmd[0] = str(self.scripts_path.joinpath(cmd[0] + extension))
+            cmd[0] = shutil.which(cmd[0], path=path) or cmd[0]
             shell = False
         else:
             shell = True
 
-        paths: Dict[str, None] = OrderedDict()
-        paths[str(self.scripts_path)] = None
-        if "PATH" in os.environ:
-            paths.update((i, None) for i in os.environ["PATH"].split(os.pathsep))
-        extra_environ = {"PATH": os.pathsep.join(paths)}
         env = {**os.environ, **extra_environ, **env}
         logger.debug("Final command to run: %s", cmd)
         logger.debug("Environment for running command: %s", env)

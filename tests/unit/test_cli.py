@@ -11,7 +11,6 @@ from pyprojectx.wrapper import pw
 
 PY_VER = f"py{sys.version_info.major}.{sys.version_info.minor}"
 SCRIPTS_DIR = "Scripts" if sys.platform.startswith("win") else "bin"
-EXTENSION = ".exe" if sys.platform == "win32" else ""
 
 
 def test_parse_args():
@@ -57,10 +56,7 @@ def test_run_tool(tmp_dir, mocker):
     run_args = _get_call_args(run_mock.mock_calls[1])
     run_kwargs = _get_call_kwargs(run_mock.mock_calls[1])
     assert len(run_args) == 1
-    assert run_args[0].endswith(
-        f"{tmp_dir.name}{os.sep}venvs{os.sep}"
-        f"tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.sep}tool-1{EXTENSION}"
-    )
+    assert run_args[0] == "tool-1"
     path_env = run_kwargs["env"]["PATH"]
     assert (
         f"{tmp_dir.name}{os.sep}venvs{os.sep}tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}"
@@ -78,10 +74,7 @@ def test_run_tool_with_args(tmp_dir, mocker):
 
     run_mock.assert_called_with(ANY, shell=False, check=True, env=ANY, cwd=ANY)
     run_args = _get_call_args(run_mock.mock_calls[1])
-    assert run_args[0].endswith(
-        f"{tmp_dir.name}{os.sep}venvs{os.sep}"
-        f"tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.sep}tool-1{EXTENSION}"
-    )
+    assert run_args[0] == "tool-1"
     assert run_args[1:] == ["arg1", "@last arg"]
 
 
