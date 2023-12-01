@@ -226,6 +226,7 @@ locked_requirements = {
         "hash": "9527921d7ae716ee12d9cc43fba35c9e",
         "requirements": [
             "click==8.1.3",
+            "colorama==0.4.6",
             "distlib==0.3.6",
             "filelock==3.11.0",
             "platformdirs==3.2.0",
@@ -236,6 +237,8 @@ locked_requirements = {
         ],
     },
 }
+if not sys.platform.startswith("win"):
+    locked_requirements["tool-with-known-requirements"]["requirements"].remove("colorama==0.4.6")
 
 
 def test_lock(tmp_lock_project):
