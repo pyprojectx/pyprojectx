@@ -9,6 +9,9 @@ import pytest
 from pyprojectx.wrapper import pw
 
 
+data_dir = Path(__file__).with_name("data")
+
+
 @pytest.fixture()
 def tmp_dir():
     path = tempfile.mkdtemp(prefix="build env")
@@ -16,19 +19,29 @@ def tmp_dir():
     shutil.rmtree(path)
 
 
-@pytest.fixture(scope="session")
-def tmp_project():
-    tmp = Path(tempfile.mkdtemp(prefix="build env"))
-    data = Path(__file__).with_name("data")
-    toml = data / "pw-test.toml"
-    shutil.copyfile(toml, tmp / pw.PYPROJECT_TOML)
-    pw_copy = Path(tmp, "pw")
-    project_dir = Path(__file__).parent.parent
-    shutil.copyfile(project_dir / "src/pyprojectx/wrapper/pw.py", pw_copy)
+def create_tmp_project(tmp_project_dir):
+    toml = data_dir / "pw-test.toml"
+    shutil.copyfile(toml, tmp_project_dir / pw.PYPROJECT_TOML)
+    pw_copy = Path(tmp_project_dir, "pw")
+    pyprojectx_project_dir = Path(__file__).parent.parent
+    shutil.copyfile(pyprojectx_project_dir / "src/pyprojectx/wrapper/pw.py", pw_copy)
     pw_copy.chmod(stat.S_IRWXU | stat.S_IRWXG)
-    shutil.copy(project_dir / "src/pyprojectx/wrapper/pw.bat", tmp)
-    shutil.copytree(data / "bin", tmp / "bin")
+    shutil.copy(pyprojectx_project_dir / "src/pyprojectx/wrapper/pw.bat", tmp_project_dir)
+    shutil.copytree(data_dir / "bin", tmp_project_dir / "bin")
     env = os.environ.copy()
-    env["PYPROJECTX_PACKAGE"] = str(project_dir.absolute())
-    yield tmp, env
-    shutil.rmtree(tmp)
+    env["PYPROJECTX_PACKAGE"] = str(pyprojectx_project_dir.absolute())
+    return tmp_project_dir, env
+
+
+@pytest.fixture(scope="session")
+def tmp_project(tmp_path_factory):
+    tmp_project_dir, env = create_tmp_project(tmp_path_factory.mktemp("project dir"))
+    return tmp_project_dir, env
+
+
+@pytest.fixture(scope="session")
+def tmp_lock_project(tmp_path_factory):
+    tmp_project_dir, env = create_tmp_project(tmp_path_factory.mktemp("lock dir"))
+    toml = data_dir / "test-lock.toml"
+    shutil.copyfile(toml, tmp_project_dir / pw.PYPROJECT_TOML)
+    return tmp_project_dir, env

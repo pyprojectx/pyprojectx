@@ -110,6 +110,11 @@ def arg_parser():
         "If the command is not configured as tool or alias, a list with all available tools and aliases is shown.",
     )
     parser.add_argument(
+        "--lock",
+        action="store_true",
+        help="Write all dependencies of all tool contexts to 'pw.lock' to guarantee reproducible outcomes.",
+    )
+    parser.add_argument(
         "--init",
         action="store_true",
         help="Create or prepare a pyproject.toml and pyprojectx wrapper scripts. "

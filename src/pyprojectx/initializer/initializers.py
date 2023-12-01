@@ -5,11 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-try:
-    import tomllib
-except ImportError:
-    import tomli as tomllib
-
+import tomlkit
 import userpath
 
 from pyprojectx.log import logger
@@ -113,7 +109,7 @@ def _initialize_template(template_name, toml_file=PYPROJECT_TOML):
         shutil.copy2(template, target_toml)
     else:
         with target_toml.open("a+") as dst:
-            toml_dict = tomllib.load(dst)
+            toml_dict = tomlkit.load(dst)
             if not toml_dict.get("tool", {}).get("pyprojectx"):
                 with template.open() as src:
                     logger.info("appending template to %s", toml_file)

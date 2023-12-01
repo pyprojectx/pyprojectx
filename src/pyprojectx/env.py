@@ -1,29 +1,17 @@
 # ruff: noqa: S324
 """Creates and manages isolated build environments."""
-import hashlib
 import os
 import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import Iterable, List, Optional, Union
+from typing import List, Optional, Union
 
 import virtualenv
 
+from pyprojectx.hash import calculate_hash
 from pyprojectx.log import logger
-
-
-def calculate_path(base_path: Path, name: str, requirements: Iterable[str], post_install: str) -> Path:
-    md5 = hashlib.md5()
-    for req in requirements:
-        md5.update(req.strip().encode())
-    if post_install:
-        md5.update(post_install.strip().encode())
-    return Path(
-        base_path,
-        f"{name.lower()}-{md5.hexdigest()}-py{sys.version_info.major}.{sys.version_info.minor}",
-    ).absolute()
 
 
 class IsolatedVirtualEnv:
@@ -38,8 +26,9 @@ class IsolatedVirtualEnv:
         """
         self._name = name
         self._base_path = base_path
+        self._hash = calculate_hash(requirements_config)
         self._requirements = requirements_config.get("requirements", [])
-        self._path = calculate_path(base_path, name, self._requirements, requirements_config.get("post-install"))
+        self._path = self._compose_path()
         self._scripts_path_file = self._path.joinpath(".scripts_path")
         self._executable = None
 
@@ -107,6 +96,7 @@ class IsolatedVirtualEnv:
                 "-r",
                 Path(req_file.name).resolve(),
             ]
+
             subprocess.run(
                 cmd,
                 stdout=sys.stderr,
@@ -120,15 +110,19 @@ class IsolatedVirtualEnv:
         logger.info("Removing isolated environment in %s", self.path)
         shutil.rmtree(self.path)
 
-    def run(self, cmd: Union[str, List[str]], env: dict, cwd: str) -> subprocess.CompletedProcess:
+    def run(
+        self, cmd: Union[str, List[str]], env: dict, cwd: Union[str, bytes, os.PathLike], stdout=None
+    ) -> subprocess.CompletedProcess:
         """Run a command inside the virtual environment.
 
         :param cmd: The command string to run
         :param env: additional environment variables
         :param cwd: current working directory
+        :param stdout: redirect stdout to this stream
         :return: The subprocess.CompletedProcess instance
         """
         logger.info("Running command in isolated venv %s: %s", self.name, cmd)
+        logger.debug("Adding scripts path to PATH: %s", self.scripts_path.absolute())
         path = os.pathsep.join((str(self.scripts_path.absolute()), os.environ.get("PATH", os.defpath)))
         extra_environ = {"PATH": path}
         if isinstance(cmd, List):
@@ -141,4 +135,10 @@ class IsolatedVirtualEnv:
         logger.debug("Final command to run: %s", cmd)
         logger.debug("Environment for running command: %s", env)
         logger.debug("Cwd for running command: %s", cwd)
-        return subprocess.run(cmd, env=env, shell=shell, check=True, cwd=cwd)
+        return subprocess.run(cmd, env=env, shell=shell, check=True, cwd=cwd, stdout=stdout)
+
+    def _compose_path(self):
+        return Path(
+            self._base_path,
+            f"{self._name.lower()}-{self._hash}-py{sys.version_info.major}.{sys.version_info.minor}",
+        ).absolute()

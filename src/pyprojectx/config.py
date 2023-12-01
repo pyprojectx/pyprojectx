@@ -3,18 +3,16 @@ import sys
 from dataclasses import dataclass, field
 from itertools import zip_longest
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, Iterable, List, Optional
 
-try:
-    import tomllib
-except ImportError:
-    import tomli as tomllib
+import tomlkit
 
 from pyprojectx.wrapper.pw import BLUE, CYAN, RESET
 
 MAIN = "main"
 PROJECT_DIR = "@PROJECT_DIR"
 DEFAULT_SCRIPTS_DIR = "bin"
+LOCK_FILE = "pw.lock"
 
 
 @dataclass
@@ -35,7 +33,7 @@ class Config:
         self._toml_path = toml_path
         try:
             with toml_path.open("rb") as f:
-                toml_dict = tomllib.load(f)
+                toml_dict = tomlkit.load(f)
         except Exception as e:  # noqa: BLE001
             raise Warning(f"Could not parse {toml_path}: {e}") from e
 
@@ -56,6 +54,7 @@ class Config:
             msg = "Invalid config: 'scripts_dir' must be a string"
             raise Warning(msg)
         self.scripts_path = project_path / scripts_dir
+        self.lock_file = project_path / LOCK_FILE
 
     def show_info(self, cmd, error=False):
         alias_cmds = self.get_alias(cmd)
@@ -70,7 +69,7 @@ class Config:
         elif self.is_ctx(cmd):
             print(f"{cmd}{BLUE} is a tool context in {CYAN}{self._toml_path.absolute()}", file=sys.stderr)
             print(f"{BLUE}requirements:{RESET}", file=sys.stderr)
-            print(self.get_ctx_requirements(cmd), file=out)
+            print(self.get_requirements(cmd), file=out)
         else:
             if cmd:
                 print(
@@ -86,7 +85,7 @@ class Config:
             print(f"{BLUE}available tool contexts:{RESET}", file=sys.stderr)
             print("\n".join(self._contexts.keys() - ["aliases", "os"]), file=out)
 
-    def get_ctx_requirements(self, key) -> dict:
+    def get_requirements(self, key) -> dict:
         """Get the requirements (dependencies) for a configured tool context in the [tool.pyprojectx] section.
 
         The requirements can either be specified as a string, a list of strings or an object with requirements and
@@ -109,7 +108,7 @@ class Config:
             if isinstance(reqs, list):
                 requirements = reqs
             post_install = requirements_config.get("post-install")
-        return {"requirements": requirements, "post-install": post_install}
+        return {"requirements": sorted(requirements), "post-install": post_install}
 
     def get_ctx_or_main(self, ctx=None):
         """Return the given context if it exists, otherwise return the main context if it exists.
@@ -121,6 +120,10 @@ class Config:
         if self.is_ctx(MAIN):
             return MAIN
         return None
+
+    def get_context_names(self) -> Iterable[str]:
+        """Return all context names in the [tool.pyprojectx] section."""
+        return self._contexts.keys()
 
     def is_ctx(self, key) -> bool:
         """Check whether a key (context name) exists in the [tool.pyprojectx] section.
@@ -215,8 +218,8 @@ class Config:
         return str(self._contexts)
 
     def _merge_os_aliases(self):
-        aliases = self._contexts.get("aliases", {})
-        os_dict = self._contexts.get("os", {})
+        aliases = self._contexts.pop("aliases", {})
+        os_dict = self._contexts.pop("os", {})
         for os_key in os_dict:
             if sys.platform.startswith(os_key) and isinstance(os_dict[os_key], dict):
                 aliases.update(os_dict[os_key].get("aliases", {}))

@@ -72,7 +72,7 @@ def test_run_tool_with_args(tmp_dir, mocker):
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "tool-1", "arg1", "@last arg"])
 
-    run_mock.assert_called_with(ANY, shell=False, check=True, env=ANY, cwd=ANY)
+    run_mock.assert_called_with(ANY, shell=False, check=True, env=ANY, cwd=ANY, stdout=None)
     run_args = run_mock.mock_calls[1].args[0]
     assert run_args[0] == "tool-1"
     assert run_args[1:] == ["arg1", "@last arg"]
@@ -90,7 +90,7 @@ def test_run_alias_with_ctx(tmp_dir, mocker):
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "alias-1"])
 
-    run_mock.assert_called_with("tool-1 arg", shell=True, check=True, env=ANY, cwd=ANY)
+    run_mock.assert_called_with("tool-1 arg", shell=True, check=True, env=ANY, cwd=ANY, stdout=None)
     path_env = run_mock.mock_calls[1].kwargs["env"]["PATH"]
     assert (
         f"{tmp_dir.name}{os.sep}venvs{os.sep}"
@@ -104,7 +104,9 @@ def test_run_alias_with_ctx_with_args(tmp_dir, mocker):
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "alias-1", "alias-arg1", "alias-arg2"])
 
-    run_mock.assert_called_with('tool-1 arg "alias-arg1" "alias-arg2"', shell=True, check=True, env=ANY, cwd=ANY)
+    run_mock.assert_called_with(
+        'tool-1 arg "alias-arg1" "alias-arg2"', shell=True, check=True, env=ANY, cwd=ANY, stdout=None
+    )
 
 
 def test_run_explicit_alias_with_ctx_with_arg(tmp_dir, mocker):
@@ -113,7 +115,7 @@ def test_run_explicit_alias_with_ctx_with_arg(tmp_dir, mocker):
 
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "alias-3", "alias-arg"])
 
-    run_mock.assert_called_with('command arg "alias-arg"', shell=True, check=True, env=ANY, cwd=ANY)
+    run_mock.assert_called_with('command arg "alias-arg"', shell=True, check=True, env=ANY, cwd=ANY, stdout=None)
     assert (
         f"{tmp_dir.name}{os.sep}venvs{os.sep}"
         f"tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.path.pathsep}"
@@ -136,6 +138,7 @@ def test_combined_alias_with_arg(tmp_dir, mocker):
         check=True,
         env=ANY,
         cwd=ANY,
+        stdout=None,
     )
 
 
@@ -170,13 +173,7 @@ def test_shell_command_alias(tmp_dir, mocker):
         ]
     )
 
-    run_mock.assert_called_with(
-        'ls -al "alias-arg"',
-        shell=True,
-        check=True,
-        env=ANY,
-        cwd=ANY,
-    )
+    run_mock.assert_called_with('ls -al "alias-arg"', shell=True, check=True, env=ANY, cwd=ANY, stdout=None)
 
 
 def test_run_script(tmp_dir, mocker):
