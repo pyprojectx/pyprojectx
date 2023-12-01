@@ -56,11 +56,7 @@ def test_isolation(tmp_dir):
 
 def test_isolated_env_install_arguments(mocker, tmp_dir):
     run_mock = mocker.patch("subprocess.run")
-    env = IsolatedVirtualEnv(
-        tmp_dir,
-        "env-name",
-        {"requirements": ["some", "requirements"]},
-    )
+    env = IsolatedVirtualEnv(tmp_dir, "env-name", {"requirements": ["some", "requirements"]})
     env.install()
 
     run_mock.assert_called()

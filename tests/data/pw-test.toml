@@ -1,5 +1,5 @@
 [tool.pyprojectx]
-main = { requirements = ["px-utils"], post-install = "pmkdirs post-install-dir" }
+main = { requirements = ["px-utils"], post-install = "pxmkdirs post-install-dir" }
 
 pycowsay = "pycowsay==0.0.0.1"
 failing-install = "pycowsay==123.456.789.0"

@@ -7,7 +7,7 @@ from pyprojectx.config import Config, AliasCommand, MAIN
 
 def test_no_config():
     config = Config(Path(__file__).parent.with_name("data").joinpath("test-no-config.toml"))
-    assert config.get_ctx_requirements("tool") == {"requirements": [], "post-install": None}
+    assert config.get_requirements("tool") == {"requirements": [], "post-install": None}
     assert not config.is_ctx("tool")
     assert config.get_alias("alias") == []
 
@@ -26,25 +26,25 @@ def test_ctx_config():
     config = Config(Path(__file__).parent.with_name("data").joinpath("test.toml"))
 
     assert config.is_ctx("tool-1")
-    assert config.get_ctx_requirements("tool-1") == {"requirements": ["req1", "req2"], "post-install": None}
+    assert config.get_requirements("tool-1") == {"requirements": ["req1", "req2"], "post-install": None}
 
     assert config.is_ctx("tool-2")
-    assert config.get_ctx_requirements("tool-2") == {"requirements": ["tool2 requirement"], "post-install": None}
+    assert config.get_requirements("tool-2") == {"requirements": ["tool2 requirement"], "post-install": None}
 
     assert config.is_ctx("tool-3")
-    assert config.get_ctx_requirements("tool-3") == {"requirements": ["req1", "req2", "req3"], "post-install": None}
+    assert config.get_requirements("tool-3") == {"requirements": ["req1", "req2", "req3"], "post-install": None}
 
     assert config.is_ctx("tool-4")
-    assert config.get_ctx_requirements("tool-4") == {"requirements": ["tool-4-req1"], "post-install": None}
+    assert config.get_requirements("tool-4") == {"requirements": ["tool-4-req1"], "post-install": None}
 
     assert config.is_ctx("tool-5")
-    assert config.get_ctx_requirements("tool-5") == {
+    assert config.get_requirements("tool-5") == {
         "requirements": ["tool-5-req1", "tool-5-req2"],
         "post-install": "tool-5 && pw@alias-1",
     }
 
     assert not config.is_ctx("nope")
-    assert config.get_ctx_requirements("nope") == {"requirements": [], "post-install": None}
+    assert config.get_requirements("nope") == {"requirements": [], "post-install": None}
 
 
 def test_alias_config():
@@ -83,7 +83,7 @@ def test_os_specific_alias_config(mocker):
 
 
 def test_invalid_toml():
-    with pytest.raises(Warning, match=r".+invalid.toml: Illegal character"):
+    with pytest.raises(Warning, match=r"Could not parse.+are not allowed in strings.+"):
         Config(Path(__file__).parent.with_name("data").joinpath("invalid.toml"))
 
 

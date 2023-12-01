@@ -1,21 +1,26 @@
 import os
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
 
 import pytest
+import tomlkit
 
 from pyprojectx.initializer.initializers import SCRIPT_PREFIX
 
 pip_upgrade_regex = re.compile(r"\s*\[notice] A new release of pip.+upgrade pip\s*", re.DOTALL)
+data_dir = Path(__file__).parent.parent / "data"
 
 
 def test_install_ctx(tmp_project):
     project_dir, env = tmp_project
     cmd = f"{SCRIPT_PREFIX}pw --install pycowsay"
     assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
-    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
+    if proc_result.returncode:
+        print(proc_result.stderr.decode("utf-8"))
     assert "Successfully installed pycowsay-0.0.0.1" in proc_result.stderr.decode("utf-8")
 
 
@@ -23,7 +28,9 @@ def test_logs_and_stdout_with_quiet(tmp_project):
     project_dir, env = tmp_project
     cmd = f"{SCRIPT_PREFIX}pw -q pycowsay Hello px!"
     assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
-    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
+    if proc_result.returncode:
+        print(proc_result.stderr.decode("utf-8"))
 
     assert (
         proc_result.stdout.decode("utf-8")
@@ -45,7 +52,9 @@ def test_logs_and_stdout_with_quiet(tmp_project):
         assert not pip_upgrade_regex.sub("", proc_result.stderr.decode("utf-8"))
 
     cmd = f"{SCRIPT_PREFIX}pw -q list-files *.toml"
-    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
+    if proc_result.returncode:
+        print(proc_result.stderr.decode("utf-8"))
     assert proc_result.stdout.decode("utf-8").strip() == "pyproject.toml"
 
 
@@ -197,7 +206,7 @@ def test_default_ctx(tmp_project):
     ), "the cmd did not run in the main ctx or the main post-install did not run"
     assert (project_dir / "post-install-dir").exists()
 
-    cmd = f"{SCRIPT_PREFIX}pw -vvv prm post-install-dir"
+    cmd = f"{SCRIPT_PREFIX}pw -vvv pxrm post-install-dir"
     subprocess.run(cmd, shell=True, cwd=project_dir, env=env, check=True)
     assert not (project_dir / "post-install-dir").exists()
 
@@ -209,3 +218,89 @@ def test_run_script_with_args(tmp_project):
     cmd = f"{SCRIPT_PREFIX}pw -vvv call-prm"
     subprocess.run(cmd, shell=True, cwd=project_dir, env=env, check=True)
     assert (project_dir / "created-by-call-prm").exists()
+
+
+locked_requirements = {
+    "main": {"hash": "0847ad891da4272b514080caa1eb825f", "requirements": ["px-utils==1.1.0"]},
+    "tool-with-known-requirements": {
+        "hash": "9527921d7ae716ee12d9cc43fba35c9e",
+        "requirements": [
+            "click==8.1.3",
+            "distlib==0.3.6",
+            "filelock==3.11.0",
+            "platformdirs==3.2.0",
+            "pyprojectx==1.0.1",
+            "tomli==2.0.1",
+            "userpath==1.8.0",
+            "virtualenv==20.23.0",
+        ],
+    },
+}
+
+
+def test_lock(tmp_lock_project):
+    project_dir, env = tmp_lock_project
+    assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
+    lock_file = project_dir / "pw.lock"
+    assert not lock_file.exists()
+
+    cmd = f"{SCRIPT_PREFIX}pw --lock"
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
+    if proc_result.returncode:
+        print(proc_result.stderr.decode("utf-8"))
+
+    assert lock_file.exists()
+    lock_content = load_toml(lock_file)
+    assert lock_content["main"] == locked_requirements["main"]
+    assert lock_content["tool-with-known-requirements"] == locked_requirements["tool-with-known-requirements"]
+
+
+def test_automatic_lock_update(tmp_lock_project):
+    project_dir, env = tmp_lock_project
+    assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
+    lock_file = project_dir / "pw.lock"
+    outdated = data_dir / "outdated.lock"
+    shutil.copy(outdated, lock_file)
+
+    cmd = f"{SCRIPT_PREFIX}pw -q show-version"
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
+    if proc_result.returncode:
+        print(proc_result.stderr.decode("utf-8"))
+
+    assert proc_result.stdout.decode("utf-8").strip() == "1.0.1"
+    assert proc_result.stderr.decode("utf-8").strip() == ""
+    lock_content = load_toml(lock_file)
+    assert lock_content["tool-with-known-requirements"] == locked_requirements["tool-with-known-requirements"]
+    assert not lock_content.get("main")
+
+    cmd = f"{SCRIPT_PREFIX}pw pxrm foo/bar"
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
+    if proc_result.returncode:
+        print(proc_result.stderr.decode("utf-8"))
+    assert "locking" in proc_result.stderr.decode("utf-8")
+
+    lock_content = load_toml(lock_file)
+    assert lock_content["tool-with-known-requirements"] == locked_requirements["tool-with-known-requirements"]
+    assert lock_content["main"] == locked_requirements["main"]
+
+
+def test_requirements_from_lock_are_used(tmp_lock_project):
+    project_dir, env = tmp_lock_project
+    assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
+    lock_file = project_dir / "pw.lock"
+    test_lock_file = data_dir / "test-use-lock-requirements.lock"
+    shutil.copy(test_lock_file, lock_file)
+    for path in (project_dir / ".pyprojectx/venvs/main").glob("main*"):
+        shutil.rmtree(path)
+
+    cmd = f"{SCRIPT_PREFIX}pw prm foo/bar"  # lock file has px-utils==1.0.0 which uses prm instead of pxrm
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
+    if proc_result.returncode:
+        print(proc_result.stderr.decode("utf-8"))
+
+    assert not proc_result.returncode
+
+
+def load_toml(path):
+    with path.open() as f:
+        return tomlkit.load(f)

@@ -7,7 +7,9 @@ from typing import List, Union
 
 from pyprojectx.config import MAIN, AliasCommand, Config
 from pyprojectx.env import IsolatedVirtualEnv
+from pyprojectx.hash import calculate_hash
 from pyprojectx.initializer.initializers import initialize
+from pyprojectx.lock import get_locked_requirements, lock
 from pyprojectx.log import logger, set_verbosity
 from pyprojectx.wrapper import pw
 
@@ -29,6 +31,7 @@ def main() -> None:
     _run(sys.argv)
 
 
+# ruff: noqa: PLR0911
 def _run(argv: List[str]) -> None:
     options = _get_options(argv[1:])
     if options.init:
@@ -45,6 +48,10 @@ def _run(argv: List[str]) -> None:
         _install_ctx(options, config)
         return
 
+    if options.lock:
+        lock(config, options.venvs_dir, options.quiet)
+        return
+
     cmd = options.cmd
     if options.info:
         config.show_info(cmd)
@@ -56,6 +63,17 @@ def _run(argv: List[str]) -> None:
 
     cmd_index = argv.index(cmd)
     pw_args = argv[:cmd_index]
+    if _run_alias_cmds(config, cmd, pw_args, options):
+        return
+
+    if _run_cmds_in_ctx(config, cmd, pw_args, options):
+        return
+
+    config.show_info(cmd, error=True)
+    raise SystemExit(1)
+
+
+def _run_alias_cmds(config, cmd, pw_args, options) -> bool:
     candidates = config.find_aliases_or_scripts(cmd)
     logger.debug("Matching aliases/scripts for %s: %s", cmd, ", ".join(candidates))
     if candidates:
@@ -71,7 +89,11 @@ def _run(argv: List[str]) -> None:
                 )
         else:
             _run_script(candidates[0], options, config)
-        return
+        return True
+    return False
+
+
+def _run_cmds_in_ctx(config, cmd, pw_args, options) -> bool:
     ctx = config.get_ctx_or_main(cmd)
     if ctx:
         _run_in_ctx(
@@ -83,10 +105,8 @@ def _run(argv: List[str]) -> None:
             env=config.env,
             cwd=config.get_cwd(),
         )
-        return
-
-    config.show_info(cmd, error=True)
-    raise SystemExit(1)
+        return True
+    return False
 
 
 def verify_ambiguity(candidates, cmd):
@@ -154,12 +174,12 @@ def _run_script(script: str, options, config) -> None:
 # ruff: noqa: PLR0913
 def _run_in_ctx(ctx: str, full_cmd: Union[str, List[str]], options, pw_args, config, env, cwd) -> None:
     logger.debug("Running command in virtual environment, ctx: %s, full command: %s", ctx, full_cmd)
-    requirements = config.get_ctx_requirements(ctx)
+    requirements = _update_locked_requirements(ctx, config, options)
     venv = IsolatedVirtualEnv(options.venvs_dir, ctx, requirements)
     if not venv.is_installed or options.force_install:
         try:
             venv.install(quiet=options.quiet)
-            if requirements["post-install"]:
+            if requirements.get("post-install"):
                 post_install_cmd = _resolve_references(requirements["post-install"], pw_args, config=config)
                 venv.run(post_install_cmd, env, cwd)
         except subprocess.CalledProcessError as e:
@@ -208,7 +228,7 @@ def _get_options(args):
     else:
         options.cmd = None
         options.cmd_args = []
-    options.venvs_dir = options.install_path.joinpath("venvs")
+    options.venvs_dir = options.install_path / "venvs"
     set_verbosity(options.verbosity)
     logger.debug("Parsed cli arguments: %s", options)
     return options
@@ -237,3 +257,14 @@ def _install_ctx(options, config):
         env={},
         cwd=".",
     )
+
+
+def _update_locked_requirements(ctx, config, options):
+    requirements = config.get_requirements(ctx)
+    if not config.lock_file.exists():
+        return requirements
+    locked_requirements = get_locked_requirements(ctx, config.lock_file)
+    if locked_requirements["hash"] == calculate_hash(requirements):
+        return locked_requirements
+    all_requirements = lock(config, options.venvs_dir, options.quiet, ctx)
+    return all_requirements[ctx]

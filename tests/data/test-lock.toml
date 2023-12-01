@@ -1,0 +1,6 @@
+[tool.pyprojectx]
+main = "px-utils==1.1.0"
+tool-with-known-requirements = "pyprojectx==1.0.1"
+
+[tool.pyprojectx.aliases]
+show-version = { cmd = "pyprojectx --version", ctx = "tool-with-known-requirements", env = { "PYPROJECTX_PACKAGE" = "" } }
