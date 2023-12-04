@@ -11,6 +11,7 @@ from pyprojectx.hash import calculate_hash
 from pyprojectx.initializer.initializers import initialize
 from pyprojectx.lock import get_locked_requirements, lock
 from pyprojectx.log import logger, set_verbosity
+from pyprojectx.requirements import add_requirement
 from pyprojectx.wrapper import pw
 
 UPGRADE_INSTRUCTIONS = (
@@ -36,6 +37,10 @@ def _run(argv: List[str]) -> None:
     options = _get_options(argv[1:])
     if options.init:
         initialize(options)
+        return
+
+    if options.add:
+        add_requirement(options.add, options.toml_path, options.venvs_dir, options.quiet)
         return
 
     if options.upgrade:
