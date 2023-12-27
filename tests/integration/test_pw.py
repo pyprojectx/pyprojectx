@@ -271,7 +271,8 @@ def test_automatic_lock_update(tmp_lock_project):
         print(proc_result.stderr.decode("utf-8"))
 
     assert proc_result.stdout.decode("utf-8").strip() == "1.0.1"
-    assert proc_result.stderr.decode("utf-8").strip() == ""
+    error_output = proc_result.stderr.decode("utf-8")
+    assert re.sub(r"\s*\[notice].*\n", "", error_output).strip() == ""
     lock_content = load_toml(lock_file)
     assert lock_content["tool-with-known-requirements"] == locked_requirements["tool-with-known-requirements"]
     assert not lock_content.get("main")
