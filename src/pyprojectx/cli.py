@@ -8,7 +8,7 @@ from typing import List, Union
 from pyprojectx.config import MAIN, AliasCommand, Config
 from pyprojectx.env import IsolatedVirtualEnv
 from pyprojectx.hash import calculate_hash
-from pyprojectx.initializer.initializers import initialize
+from pyprojectx.install_global import install_px
 from pyprojectx.lock import get_locked_requirements, lock
 from pyprojectx.log import logger, set_verbosity
 from pyprojectx.requirements import add_requirement
@@ -35,8 +35,8 @@ def main() -> None:
 # ruff: noqa: PLR0911
 def _run(argv: List[str]) -> None:
     options = _get_options(argv[1:])
-    if options.init:
-        initialize(options)
+    if options.install_px:
+        install_px(options)
         return
 
     if options.add:

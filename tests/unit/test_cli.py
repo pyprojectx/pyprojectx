@@ -29,11 +29,10 @@ def test_parse_args():
     assert _get_options(["my-cmd"]).verbosity == 0
     assert _get_options(["--verbose", "--verbose", "-q", "my-cmd"]).verbosity == 0
 
-    assert _get_options(["--init", "global"]).init
+    assert _get_options(["--install-px"]).install_px
     assert _get_options(["-i", "all"]).info
 
     assert _get_options(["my-cmd", "--in"]).cmd == "my-cmd"
-    assert not _get_options(["my-cmd", "--init"]).init
 
     assert _get_options(["--upgrade"]).upgrade
 

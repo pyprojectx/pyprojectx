@@ -88,7 +88,7 @@ def arg_parser():
         action="store_true",
         help="Force clean installation of the virtual environment used to run cmd, if any",
     )
-    parser.add_argument("--install", action="store", help="Install a tool without running it.")
+    parser.add_argument("--install", action="store", help="Install a tool context without running a command.")
     parser.add_argument(
         "--verbose",
         "-v",
@@ -107,7 +107,7 @@ def arg_parser():
         "-i",
         action="store_true",
         help="Show the configuration details of a command instead of running it. "
-        "If the command is not configured as tool or alias, a list with all available tools and aliases is shown.",
+        "If no command is specified, a list with all available tools and aliases is shown.",
     )
     parser.add_argument(
         "--add",
@@ -123,10 +123,7 @@ def arg_parser():
         help="Write all dependencies of all tool contexts to 'pw.lock' to guarantee reproducible outcomes.",
     )
     parser.add_argument(
-        "--init",
-        action="store_true",
-        help="Create or prepare a pyproject.toml and pyprojectx wrapper scripts. "
-        "Run with '--init help' to show available init options",
+        "--install-px", action="store_true", help="Install the px and pxg scripts in your home directory."
     )
     parser.add_argument(
         "--upgrade",

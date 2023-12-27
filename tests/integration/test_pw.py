@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 import tomlkit
 
-from pyprojectx.initializer.initializers import SCRIPT_PREFIX
+SCRIPT_PREFIX = ".\\" if sys.platform.startswith("win") else "./"
 
 pip_upgrade_regex = re.compile(r"\s*\[notice] A new release of pip.+upgrade pip\s*", re.DOTALL)
 data_dir = Path(__file__).parent.parent / "data"
