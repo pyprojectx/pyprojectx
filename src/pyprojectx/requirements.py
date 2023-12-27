@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 import tomlkit
+from tomlkit.toml_file import TOMLFile
 
 from pyprojectx.config import MAIN, Config
 from pyprojectx.env import IsolatedVirtualEnv
@@ -14,23 +15,21 @@ requirment_regexp = re.compile(r"^([^=<>~!]+)")
 def add_requirement(requirement: str, toml_path: Path, venvs_dir: Path, quiet: bool):
     if not toml_path.exists():
         toml_path.touch()
+    toml_file = TOMLFile(toml_path)
+    toml = toml_file.read()
     if ":" in requirement:
         ctx, req_spec = requirement.split(":", 1)
     else:
         ctx = MAIN
         req_spec = requirement
-    toml, requirements = _get_or_add_requirements(toml_path, ctx)
+    toml, requirements = _get_or_add_requirements(toml, ctx)
     _check_already_met(requirements, req_spec, ctx)
     _check_is_installable(req_spec, ctx, Config(toml_path).get_requirements(ctx), venvs_dir, quiet)
     requirements.append(req_spec)
-    with toml_path.open("w") as f:
-        tomlkit.dump(toml, f)
+    toml_file.write(toml)
 
 
-def _get_or_add_requirements(toml_path, ctx: str):
-    with toml_path.open("rb") as f:
-        toml = tomlkit.load(f)
-
+def _get_or_add_requirements(toml, ctx: str):
     if not toml.get("tool"):
         toml["tool"] = tomlkit.table()
     if not toml["tool"].get("pyprojectx"):
