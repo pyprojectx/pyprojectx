@@ -110,6 +110,14 @@ def arg_parser():
         "If the command is not configured as tool or alias, a list with all available tools and aliases is shown.",
     )
     parser.add_argument(
+        "--add",
+        action="store",
+        metavar="package",
+        help="Add a package to a tool context. "
+        "The package needs to be specified as [context:] <pip requirement specifier>."
+        "If no context is specified, the package is added to the main context.",
+    )
+    parser.add_argument(
         "--lock",
         action="store_true",
         help="Write all dependencies of all tool contexts to 'pw.lock' to guarantee reproducible outcomes.",
