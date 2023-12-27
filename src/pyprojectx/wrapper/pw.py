@@ -88,7 +88,7 @@ def arg_parser():
         action="store_true",
         help="Force clean installation of the virtual environment used to run cmd, if any",
     )
-    parser.add_argument("--install", action="store", help="Install a tool context without running a command.")
+    parser.add_argument("--install-context", action="store", help="Install a tool context without running a command.")
     parser.add_argument(
         "--verbose",
         "-v",

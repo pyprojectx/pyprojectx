@@ -16,7 +16,7 @@ data_dir = Path(__file__).parent.parent / "data"
 
 def test_install_ctx(tmp_project):
     project_dir, env = tmp_project
-    cmd = f"{SCRIPT_PREFIX}pw --install pycowsay"
+    cmd = f"{SCRIPT_PREFIX}pw --install-context pycowsay"
     assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
     if proc_result.returncode:

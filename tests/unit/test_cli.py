@@ -2,7 +2,7 @@
 import os.path
 import sys
 from pathlib import Path
-from unittest.mock import ANY
+from unittest.mock import ANY, call
 
 import pytest
 
@@ -191,3 +191,30 @@ def test_run_script(tmp_dir, mocker):
     assert kwargs["check"]
     assert kwargs["cwd"] == "/cwd"
     assert not kwargs["shell"]
+
+
+def test_install_context(tmp_dir, mocker):
+    data = Path(__file__).parent.with_name("data")
+    toml = data / "test.toml"
+    run_mock = mocker.patch("subprocess.run")
+
+    _run(["path to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "--install-context", "main"])
+
+    calls = [
+        call(
+            [ANY, "-Im", "pip", "install", "--use-pep517", "--no-warn-script-location", "-r", ANY],
+            stdout=ANY,
+            check=True,
+        ),
+        call("main-post-install", shell=True, check=True, env=ANY, cwd=ANY, stdout=ANY),
+    ]
+    run_mock.assert_has_calls(calls)
+
+    run_mock = mocker.patch("subprocess.run")
+
+
+def test_install_non_existing_context(tmp_dir):
+    data = Path(__file__).parent.with_name("data")
+    toml = data / "test.toml"
+    with pytest.raises(Warning, match=r"Invalid ctx: 'foo' is not defined in \[tool.pyprojectx\]"):
+        _run(["path to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "--install-context", "foo"])

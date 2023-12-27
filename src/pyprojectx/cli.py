@@ -49,7 +49,7 @@ def _run(argv: List[str]) -> None:
 
     config = Config(options.toml_path)
 
-    if options.install:
+    if options.install_context:
         _install_ctx(options, config)
         return
 
@@ -179,6 +179,14 @@ def _run_script(script: str, options, config) -> None:
 # ruff: noqa: PLR0913
 def _run_in_ctx(ctx: str, full_cmd: Union[str, List[str]], options, pw_args, config, env, cwd) -> None:
     logger.debug("Running command in virtual environment, ctx: %s, full command: %s", ctx, full_cmd)
+    venv = _ensure_ctx(config, ctx, cwd, env, options, pw_args)
+    try:
+        venv.run(full_cmd, env, cwd)
+    except subprocess.CalledProcessError as e:
+        raise SystemExit(e.returncode) from e
+
+
+def _ensure_ctx(config, ctx, cwd, env, options, pw_args):
     requirements = _update_locked_requirements(ctx, config, options)
     venv = IsolatedVirtualEnv(options.venvs_dir, ctx, requirements)
     if not venv.is_installed or options.force_install:
@@ -193,11 +201,7 @@ def _run_in_ctx(ctx: str, full_cmd: Union[str, List[str]], options, pw_args, con
                 file=sys.stderr,
             )
             raise SystemExit(e.returncode) from e
-
-    try:
-        venv.run(full_cmd, env, cwd)
-    except subprocess.CalledProcessError as e:
-        raise SystemExit(e.returncode) from e
+    return venv
 
 
 def _resolve_references(alias_cmd: str, pw_args: List[str], config) -> str:
@@ -250,15 +254,14 @@ def _show_upgrade_instructions():
 
 
 def _install_ctx(options, config):
-    ctx = options.install
+    ctx = options.install_context
     if not config.is_ctx(ctx):
-        raise Warning(f"Invalid ctx: '{options.install}' is not defined in [tool.pyprojectx]")
-    _run_in_ctx(
+        raise Warning(f"Invalid ctx: '{options.install_context}' is not defined in [tool.pyprojectx]")
+    _ensure_ctx(
+        config,
         ctx,
-        "cd .",  # noop command
         options=options,
         pw_args=[],
-        config=config,
         env={},
         cwd=".",
     )
