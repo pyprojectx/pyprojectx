@@ -37,4 +37,4 @@ list-files = "dir /b"
 create-file = "echo '' > post-install-file.txt"
 ls-projectdir = { cwd = "@PROJECT_DIR", cmd = "dir" }
 ls-pyprojectx = { cwd = "@PROJECT_DIR/.pyprojectx", cmd = "dir" }
-echo-env-var = { cmd = "echo Get-Item Env:ALIAS_VAR", env = { ALIAS_VAR = "windows-alias-var" }, shell = "pwsh.exe" }
+echo-env-var = { cmd = "echo (Get-Item Env:ALIAS_VAR)", env = { ALIAS_VAR = "windows-alias-var" }, shell = "pwsh.exe" }
