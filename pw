@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 from venv import EnvBuilder
 
-VERSION = "1.0.1"
+VERSION = "2.0.0b1"
 
 PYPROJECTX_INSTALL_DIR_ENV_VAR = "PYPROJECTX_INSTALL_DIR"
 PYPROJECTX_PACKAGE_ENV_VAR = "PYPROJECTX_PACKAGE"
@@ -88,6 +88,7 @@ def arg_parser():
         action="store_true",
         help="Force clean installation of the virtual environment used to run cmd, if any",
     )
+    parser.add_argument("--install-context", action="store", help="Install a tool context without running a command.")
     parser.add_argument(
         "--verbose",
         "-v",
@@ -106,13 +107,23 @@ def arg_parser():
         "-i",
         action="store_true",
         help="Show the configuration details of a command instead of running it. "
-        "If the command is not configured as tool or alias, a list with all available tools and aliases is shown.",
+        "If no command is specified, a list with all available tools and aliases is shown.",
     )
     parser.add_argument(
-        "--init",
+        "--add",
+        action="store",
+        metavar="package",
+        help="Add a package to a tool context. "
+        "The package needs to be specified as [context:] <pip requirement specifier>."
+        "If no context is specified, the package is added to the main context.",
+    )
+    parser.add_argument(
+        "--lock",
         action="store_true",
-        help="Create or prepare a pyproject.toml and pyprojectx wrapper scripts. "
-        "Run with '--init help' to show available init options",
+        help="Write all dependencies of all tool contexts to 'pw.lock' to guarantee reproducible outcomes.",
+    )
+    parser.add_argument(
+        "--install-px", action="store_true", help="Install the px and pxg scripts in your home directory."
     )
     parser.add_argument(
         "--upgrade",
