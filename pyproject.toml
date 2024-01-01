@@ -54,7 +54,7 @@ ignore = ["D100", "D102", "D103", "D104", "D105", "D213", "D203", "T201", "TRY00
 requirements = [
     "pdm",
     "ruff",
-    "pre-commit",
+    "pre-commit==3.5.0",
     "px-utils",
     "mkdocs",
     "mkdocs-material",
