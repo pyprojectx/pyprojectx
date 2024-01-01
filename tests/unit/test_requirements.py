@@ -1,4 +1,5 @@
 import sys
+
 import pytest
 from pyprojectx import requirements
 from pyprojectx.hash import calculate_hash

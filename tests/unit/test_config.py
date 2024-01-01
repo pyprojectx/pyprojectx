@@ -1,8 +1,7 @@
 from pathlib import Path
 
 import pytest
-
-from pyprojectx.config import Config, AliasCommand, MAIN
+from pyprojectx.config import MAIN, AliasCommand, Config
 
 
 def test_no_config():

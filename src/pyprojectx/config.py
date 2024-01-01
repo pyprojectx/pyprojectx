@@ -249,7 +249,7 @@ def camel_match(abbrev, key):
 def to_camel_parts(key):
     if not key:
         return []
-    if len(key) < 2:  # noqa PLR2004
+    if len(key) < 2:  # noqa: PLR2004
         return [key]
     camel = re.sub(r"(-\w)", lambda m: m.group(0)[1].upper(), key)
     return filter(len, re.split("([A-Z][^A-Z]*)", camel[0].lower() + camel[1:]))

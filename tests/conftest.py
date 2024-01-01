@@ -5,9 +5,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
-
 from pyprojectx.wrapper import pw
-
 
 data_dir = Path(__file__).with_name("data")
 

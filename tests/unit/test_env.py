@@ -5,7 +5,6 @@ import sys
 
 import pytest
 from packaging.version import Version
-
 from pyprojectx.env import IsolatedVirtualEnv
 from pyprojectx.log import set_verbosity
 

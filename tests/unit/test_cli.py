@@ -5,7 +5,6 @@ from pathlib import Path
 from unittest.mock import ANY, call
 
 import pytest
-
 from pyprojectx.cli import _get_options, _run
 from pyprojectx.wrapper import pw
 

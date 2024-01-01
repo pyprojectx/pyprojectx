@@ -68,7 +68,7 @@ def ensure_path(location: Path):
             print(
                 " but you need to open a new terminal or re-login for this PATH change to take effect.", file=sys.stderr
             )
-    except Exception:  # noqa BLE001
+    except Exception:  # noqa: BLE001
         print(
             f"{global_path} {RED} could not be added automatically to PATH. You will need to add it manually{RESET}",
             file=sys.stderr,
