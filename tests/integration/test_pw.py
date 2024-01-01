@@ -305,6 +305,17 @@ def test_requirements_from_lock_are_used(tmp_lock_project):
     assert not proc_result.returncode
 
 
+def test_shell(tmp_project):
+    project_dir, env = tmp_project
+    assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
+
+    cmd = f"{SCRIPT_PREFIX}pw -q echo-env-var"
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
+    output = "windows-alias-var" if sys.platform.startswith("win") else "linux-alias-var"
+    assert proc_result.stdout.decode("utf-8").strip() == output
+    assert not proc_result.stderr.decode("utf-8")
+
+
 def load_toml(path):
     with path.open() as f:
         return tomlkit.load(f)

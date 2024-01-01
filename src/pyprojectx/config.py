@@ -21,6 +21,7 @@ class AliasCommand:
 
     cmd: str
     cwd: Optional[str] = None
+    shell: Optional[str] = None
     env: Dict[str, str] = field(default_factory=dict)
     ctx: Optional[str] = None
 
@@ -39,7 +40,7 @@ class Config:
 
         project_path = toml_path.parent.absolute()
         self._contexts = toml_dict.get("tool", {}).get("pyprojectx", {}).copy()
-        self._aliases = self._merge_os_aliases()
+        self._aliases = self._contexts.pop("aliases", {})
         self.env = self._contexts.pop("env", {})
         if not isinstance(self.env, dict):
             msg = "Invalid config: 'env' must be a dictionary"
@@ -49,10 +50,15 @@ class Config:
         if not isinstance(self.cwd, str):
             msg = "Invalid config: 'cwd' must be a string"
             raise Warning(msg)
+        self.shell = self._contexts.pop("shell", None)
+        if self.shell and not isinstance(self.shell, str):
+            msg = "Invalid config: 'shell' must be a string"
+            raise Warning(msg)
         scripts_dir = self._contexts.pop("scripts_dir", DEFAULT_SCRIPTS_DIR)
         if not isinstance(scripts_dir, str):
             msg = "Invalid config: 'scripts_dir' must be a string"
             raise Warning(msg)
+        self._merge_os_config()
         self.scripts_path = project_path / scripts_dir
         self.lock_file = project_path / LOCK_FILE
 
@@ -146,7 +152,7 @@ class Config:
         alias = self._aliases.get(key)
         if not alias:
             return []
-        alias_config = {"ctx": None, "env": {}, "cwd": self.cwd}
+        alias_config = {"ctx": None, "env": {}, "cwd": self.cwd, "shell": self.shell}
         if isinstance(alias, dict):
             alias_config.update(alias)
             if alias_config.get("ctx") and not isinstance(alias_config["ctx"], str):
@@ -181,7 +187,13 @@ class Config:
         if ctx and not self.is_ctx(ctx):
             raise Warning(f"Invalid alias {key}: '{ctx}' is not defined in [tool.pyprojectx]")
 
-        return AliasCommand(alias_cmd, ctx=ctx, env=alias_config["env"], cwd=self.get_cwd(alias_config["cwd"]))
+        return AliasCommand(
+            alias_cmd,
+            ctx=ctx,
+            env=alias_config["env"],
+            cwd=self.get_cwd(alias_config["cwd"]),
+            shell=alias_config["shell"],
+        )
 
     def is_alias(self, key) -> bool:
         """Check whether a key (alias name) exists in the [tool.pyprojectx.alias] section.
@@ -217,13 +229,12 @@ class Config:
     def __repr__(self):
         return str(self._contexts)
 
-    def _merge_os_aliases(self):
-        aliases = self._contexts.pop("aliases", {})
+    def _merge_os_config(self):
         os_dict = self._contexts.pop("os", {})
         for os_key in os_dict:
             if sys.platform.startswith(os_key) and isinstance(os_dict[os_key], dict):
-                aliases.update(os_dict[os_key].get("aliases", {}))
-        return aliases
+                self.shell = os_dict[os_key].pop("shell", self.shell)
+                self._aliases.update(os_dict[os_key].get("aliases", {}))
 
     def _get_scripts(self):
         return sorted([f.name.replace(".py", "") for f in self.scripts_path.glob("*.py") if f.is_file()])
