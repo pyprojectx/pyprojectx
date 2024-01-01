@@ -49,37 +49,49 @@ def test_ctx_config():
 
 def test_alias_config():
     data_dir = Path(__file__).parent.with_name("data")
-    config = Config(data_dir / "test.toml")
-    assert config.get_alias("alias-1") == [AliasCommand("tool-1 arg", ctx="tool-1", cwd="/cwd")]
-    assert config.get_alias("alias-2") == [AliasCommand("tool-2 arg1 arg2", ctx="tool-2", cwd="/cwd")]
-    assert config.get_alias("alias-3") == [AliasCommand("command arg", ctx="tool-1", cwd="/cwd")]
-    assert config.get_alias("alias-4") == [AliasCommand("command --default @arg:x", ctx="tool-2", cwd="/cwd")]
+    config = Config(data_dir / "test-shell.toml")
+    assert config.get_alias("alias-1") == [AliasCommand("tool-1 arg", ctx="tool-1", cwd="/cwd", shell="default-shell")]
+    assert config.get_alias("alias-2") == [
+        AliasCommand("tool-2 arg1 arg2", ctx="tool-2", cwd="/cwd", shell="default-shell")
+    ]
+    assert config.get_alias("alias-3") == [AliasCommand("command arg", ctx="tool-1", cwd="/cwd", shell="default-shell")]
+    assert config.get_alias("alias-4") == [
+        AliasCommand("command --default @arg:x", ctx="tool-2", cwd="/cwd", shell="default-shell")
+    ]
     assert config.get_alias("combined-alias") == [
-        AliasCommand("pw@alias-1 && pw@alias-2 pw@shell-command", cwd="/cwd", ctx=MAIN)
+        AliasCommand("pw@alias-1 && pw@alias-2 pw@shell-command", cwd="/cwd", ctx=MAIN, shell="default-shell")
     ]
     assert config.get_alias("alias-list") == [
-        AliasCommand("pw@alias-1", cwd="/cwd", ctx=MAIN),
-        AliasCommand("pw@alias-2", cwd="/cwd", ctx=MAIN),
-        AliasCommand("pw@shell-command", cwd="/cwd", ctx=MAIN),
+        AliasCommand("pw@alias-1", cwd="/cwd", ctx=MAIN, shell="default-shell"),
+        AliasCommand("pw@alias-2", cwd="/cwd", ctx=MAIN, shell="default-shell"),
+        AliasCommand("pw@shell-command", cwd="/cwd", ctx=MAIN, shell="default-shell"),
     ]
     assert config.get_alias("alias-dict") == [
-        AliasCommand("alias-dict", ctx="tool-1", env={"ENV_VAR2": "ENV_VAR2"}, cwd=str(data_dir.absolute()))
+        AliasCommand(
+            "alias-dict",
+            ctx="tool-1",
+            env={"ENV_VAR2": "ENV_VAR2"},
+            cwd=str(data_dir.absolute()),
+            shell="alias-shell",
+        )
     ]
     assert config.get_alias("alias-dict-list") == [
-        AliasCommand("alias-dict-list-1", ctx="tool-1", cwd="/cwd"),
-        AliasCommand("alias-dict-list-2", ctx="tool-2", cwd="/cwd"),
+        AliasCommand("alias-dict-list-1", ctx="tool-1", cwd="/cwd", shell="default-shell"),
+        AliasCommand("alias-dict-list-2", ctx="tool-2", cwd="/cwd", shell="default-shell"),
     ]
-    assert config.get_alias("shell-command") == [AliasCommand("ls -al", cwd="/cwd", ctx=MAIN)]
-    assert config.get_alias("backward-compatible-tool-ref") == [AliasCommand("command arg", ctx="tool-1", cwd="/cwd")]
+    assert config.get_alias("shell-command") == [AliasCommand("ls -al", cwd="/cwd", ctx=MAIN, shell="default-shell")]
+    assert config.get_alias("backward-compatible-tool-ref") == [
+        AliasCommand("command arg", ctx="tool-1", cwd="/cwd", shell="default-shell")
+    ]
 
 
 def test_os_specific_alias_config(mocker):
-    config = Config(Path(__file__).parent.with_name("data").joinpath("test.toml"))
-    assert config.get_alias("os-specific") == [AliasCommand("cmd", cwd="/cwd", ctx=MAIN)]
+    config = Config(Path(__file__).parent.with_name("data").joinpath("test-shell.toml"))
+    assert config.get_alias("os-specific") == [AliasCommand("cmd", cwd="/cwd", ctx=MAIN, shell="default-shell")]
 
     mocker.patch("sys.platform", "my-os")
-    config = Config(Path(__file__).parent.with_name("data").joinpath("test.toml"))
-    assert config.get_alias("os-specific") == [AliasCommand("my-os-cmd", cwd="/cwd", ctx=MAIN)]
+    config = Config(Path(__file__).parent.with_name("data").joinpath("test-shell.toml"))
+    assert config.get_alias("os-specific") == [AliasCommand("my-os-cmd", cwd="/cwd", ctx=MAIN, shell="my-os-shell")]
 
 
 def test_invalid_toml():

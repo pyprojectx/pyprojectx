@@ -134,6 +134,8 @@ def _run_alias(alias_cmd: AliasCommand, pw_args: List[str], options, config) -> 
     )
     quoted_args = [f'"{a}"' for a in options.cmd_args]
     full_cmd = " ".join([_resolve_references(alias_cmd.cmd, pw_args, config), *quoted_args])
+    if alias_cmd.shell:
+        full_cmd = [alias_cmd.shell, "-c", full_cmd]
 
     alias_env = {**config.env, **alias_cmd.env}
     if alias_cmd.ctx:
@@ -148,7 +150,12 @@ def _run_alias(alias_cmd: AliasCommand, pw_args: List[str], options, config) -> 
         )
     else:
         try:
-            logger.debug("Running command without venv, full command: %s, in %s", full_cmd, alias_cmd.cwd)
+            logger.debug(
+                "Running command without venv, full command: %s, in %s, with shell %s",
+                full_cmd,
+                alias_cmd.cwd,
+                alias_cmd.shell,
+            )
             subprocess.run(full_cmd, shell=True, check=True, env={**os.environ, **alias_env}, cwd=alias_cmd.cwd)
         except subprocess.CalledProcessError as e:
             raise SystemExit(e.returncode) from e

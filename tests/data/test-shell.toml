@@ -1,0 +1,52 @@
+[tool.pyprojectx]
+env = { ENV_VAR1 = "ENV_VAR1" }
+cwd = "/cwd"
+shell = "default-shell"
+scripts_dir = "scripts"
+
+main = { requirements = "main-requirement", post-install = "main-post-install" }
+
+tool-1 = ["req1", "req2"]
+tool-2 = 'tool2 requirement'
+
+tool-3 = """
+req1
+req2
+req3
+"""
+
+tool-4 = { requirements = ["tool-4-req1"] }
+tool-5 = { requirements = """
+tool-5-req1
+tool-5-req2
+""", post-install = "tool-5 && pw@alias-1" }
+
+[tool.pyprojectx.aliases]
+alias-1 = 'tool-1 arg'
+alias-2 = 'tool-2 arg1 arg2'
+alias-3 = '@tool-1:command arg'
+alias-4 = '@tool-2 : command --default @arg:x'
+
+combined-alias = 'pw@alias-1 && pw@alias-2 pw@shell-command'
+alias-list = [
+    'pw@alias-1',
+    'pw@alias-2',
+    'pw@shell-command'
+]
+alias-dict = { ctx = 'tool-1', cmd = 'alias-dict', env = { ENV_VAR2 = "ENV_VAR2" }, cwd = "@PROJECT_DIR", shell = "alias-shell" }
+alias-dict-list = { ctx = 'tool-1', cmd = [
+    'alias-dict-list-1',
+    '@tool-2: alias-dict-list-2',
+] }
+
+shell-command = "ls -al"
+
+
+backward-compatible-tool-ref = 'tool-1: command arg'
+
+os-specific = "cmd"
+os = "foo"
+
+[tool.pyprojectx.os.my-os]
+aliases = { os-specific = "my-os-cmd" }
+shell = "my-os-shell"
