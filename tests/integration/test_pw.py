@@ -44,9 +44,7 @@ def test_logs_and_stdout_with_quiet(tmp_project):
            ||----w |
            ||     ||
 
-""".replace(
-            "\n", os.linesep
-        )
+""".replace("\n", os.linesep)
     )
     if not sys.platform.startswith("win"):
         assert not pip_upgrade_regex.sub("", proc_result.stderr.decode("utf-8"))
@@ -147,9 +145,7 @@ def test_post_install(tmp_project):
            ||----w |
            ||     ||
 
-""".replace(
-            "\n", os.linesep
-        )
+""".replace("\n", os.linesep)
     )
     if not sys.platform.startswith("win"):
         assert not pip_upgrade_regex.sub("", proc_result.stderr.decode("utf-8"))
@@ -177,9 +173,7 @@ def test_alias_with_quoted_args(tmp_project):
            ||----w |
            ||     ||
 
-""".replace(
-            "\n", os.linesep
-        )
+""".replace("\n", os.linesep)
     )
 
 

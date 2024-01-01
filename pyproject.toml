@@ -48,6 +48,7 @@ fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN
 ignore = ["D100", "D102", "D103", "D104", "D105", "D213", "D203", "T201", "TRY003", "EM102", "COM812", "S602", "S603", "S604", "S605", "S607", "S324"]
 [tool.ruff.per-file-ignores]
 "tests/*" = ["S101", "I001", "INP001"]
+"bin/*" = ["INP001"]
 
 [tool.pyprojectx]
 [tool.pyprojectx.main]
@@ -71,15 +72,15 @@ outdated = "pdm update --outdated"
 clean = "pxrm .venv .pytest_cache dist .pdm-build .ruff_cache"
 full-clean = ["@clean", "pxrm .pyprojectx"]
 ruff = "ruff src tests --fix"
+format = "pre-commit run ruff-format --all-files; pre-commit run ruff --all-files"
 unit-test = "pdm run pytest tests/unit"
 integration-test = "pdm run pytest tests/integration"
 test = [
     "@unit-test",
     "@integration-test"
 ]
-check-ruff = "ruff src tests"
 check = [
-    "@check-ruff",
+    "ruff .",
     "@test"
 ]
 build = [
@@ -90,23 +91,6 @@ build = [
 
 # used in github actions:
 publish = "pdm publish --username __token__"
-prep-release = """\
-# cleanup
-rm -f wrappers.zip .changelog.md
-# extract version from tag
-RELEASE_VERSION="${GITHUB_REF_NAME}"
-# replace __version__ in wrapper
-sed -i -e "s/__version__/${RELEASE_VERSION}/g" src/pyprojectx/wrapper/pw.py
-sed -i -e "s/1.0.0.dev/${RELEASE_VERSION}/g" pyproject.toml
-# cleanup sed backup
-rm -r src/pyprojectx/wrapper/pw.py?*
-rm -r pyproject.toml?*
-mkdir -p dist-zip
-cp src/pyprojectx/wrapper/pw.py dist-zip/pw
-cp src/pyprojectx/wrapper/pw.bat dist-zip/pw.bat
-zip -j wrappers.zip dist-zip/pw*
-awk '/-{3,}/{flag=1;next}/Release/{if (flag==1)exit}flag' CHANGELOG.md > .changelog.md
-"""
 
 generate-usage = "./pw --help > docs/docs/usage.txt"
 serve-docs = { cmd = "mkdocs serve", cwd = "docs" }

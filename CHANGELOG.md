@@ -1,3 +1,17 @@
+Release v2.0.0b1 (2023-06-19)
+----------------------------
+### Features & Improvements
+- #55 Optional locking of all tool dependencies
+- #54 CLI option to add a tool to a context
+- #52 Support for running Python scripts
+- #50 Group tools in one virtual environment
+- #46 Allow to specify the working directory for commands
+- #27 Set alias interpreter explicitly
+- #24 Command to install tool explicitly
+
+### Bug Fixes
+- #48 Executing a tool directly (without alias) assumes that the extension is always .exe on windows
+
 Release v1.0.0b5 (2023-06-19)
 ----------------------------
 ### Features & Improvements
