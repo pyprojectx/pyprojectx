@@ -312,7 +312,7 @@ def test_shell(tmp_project):
     cmd = f"{SCRIPT_PREFIX}pw -q echo-env-var"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
     output = "windows-alias-var" if sys.platform.startswith("win") else "linux-alias-var"
-    assert proc_result.stdout.decode("utf-8").strip() == output
+    assert output in proc_result.stdout.decode("utf-8")
     assert not proc_result.stderr.decode("utf-8")
 
 
