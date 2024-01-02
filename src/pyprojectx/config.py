@@ -137,7 +137,7 @@ class Config:
         :param key: The key (context name) to look for
         :return: True if the key exists in the [tool.pyprojectx] section.
         """
-        return self._contexts.get(key) is not None
+        return key and self._contexts.get(key) is not None
 
     def get_alias(self, key) -> List[AliasCommand]:
         """Get an alias command configured in the [tool.pyprojectx.alias] section.
@@ -149,7 +149,7 @@ class Config:
         :param key: The key (name) of the alias
         :return: A list of aliases or an empty list if there is no alias with the given key.
         """
-        alias = self._aliases.get(key)
+        alias = self._aliases.get(key) if key else None
         if not alias:
             return []
         alias_config = {"ctx": None, "env": {}, "cwd": self.cwd, "shell": self.shell}

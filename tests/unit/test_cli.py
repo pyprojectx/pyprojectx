@@ -209,11 +209,15 @@ def test_install_context(tmp_dir, mocker):
     ]
     run_mock.assert_has_calls(calls)
 
-    run_mock = mocker.patch("subprocess.run")
-
 
 def test_install_non_existing_context(tmp_dir):
     data = Path(__file__).parent.with_name("data")
     toml = data / "test.toml"
     with pytest.raises(Warning, match=r"Invalid ctx: 'foo' is not defined in \[tool.pyprojectx\]"):
         _run(["path to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "--install-context", "foo"])
+
+
+def test_info_without_arg_should_not_raise_exception(tmp_dir):
+    data = Path(__file__).parent.with_name("data")
+    toml = data / "test.toml"
+    _run(["path to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "--info"])
