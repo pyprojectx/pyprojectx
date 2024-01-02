@@ -217,7 +217,7 @@ def test_run_script_with_args(tmp_project):
 locked_requirements = {
     "main": {"hash": "0847ad891da4272b514080caa1eb825f", "requirements": ["px-utils==1.1.0"]},
     "tool-with-known-requirements": {
-        "hash": "9527921d7ae716ee12d9cc43fba35c9e",
+        "hash": "1af658158bd6e34e51157b81c6b3fdd5",
         "requirements": [
             "click==8.1.3",
             "colorama==0.4.6",
@@ -229,6 +229,7 @@ locked_requirements = {
             "userpath==1.8.0",
             "virtualenv==20.23.0",
         ],
+        "post-install": "pxmkdirs post-install-table-dir",
     },
 }
 if not sys.platform.startswith("win"):
@@ -276,6 +277,8 @@ def test_automatic_lock_update(tmp_lock_project):
     if proc_result.returncode:
         print(proc_result.stderr.decode("utf-8"))
     assert "locking" in proc_result.stderr.decode("utf-8")
+    # check that the post-install script was run
+    assert Path(project_dir, "post-install-table-dir").exists()
 
     lock_content = load_toml(lock_file)
     assert lock_content["tool-with-known-requirements"] == locked_requirements["tool-with-known-requirements"]

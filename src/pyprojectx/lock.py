@@ -21,7 +21,7 @@ def get_locked_requirements(ctx_name: str, lock_file: Path) -> Optional[dict]:
     with lock_file.open() as f:
         toml = tomlkit.load(f)
     ctx = toml.get(ctx_name, {})
-    return {"requirements": ctx.get("requirements"), "hash": ctx.get("hash")}
+    return {"requirements": ctx.get("requirements"), "post-install": ctx.get("post-install"), "hash": ctx.get("hash")}
 
 
 def lock(config: Config, venvs_dir: Path, quiet, ctx_name=None) -> dict:
