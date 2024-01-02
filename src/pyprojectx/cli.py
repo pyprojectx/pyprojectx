@@ -215,7 +215,7 @@ def _resolve_references(alias_cmd: str, pw_args: List[str], config) -> str:
     """Resolve all @alias and pw@ references."""
     alias_refs = alias_regex.findall(alias_cmd)
     for optional_pw, alias in alias_refs:
-        if config.is_alias(alias):
+        if config.is_alias(alias) or config.get_script_path(alias).exists():
             alias_cmd = alias_cmd.replace(f"{optional_pw}@{alias}", f"pw@{alias}")
     is_path = True
     absolute_pw_args = []

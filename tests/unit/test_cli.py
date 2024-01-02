@@ -184,7 +184,7 @@ def test_run_script(tmp_dir, mocker):
     args = run_mock.call_args.args[0]
     assert len(args) == 2
     assert "python" in args[0]
-    assert args[1] == str((data / "scripts/script-a.py").absolute())
+    assert args[1] == (data / "scripts/script-a.py").absolute()
     kwargs = run_mock.call_args.kwargs
     assert kwargs["env"]["ENV_VAR1"] == "ENV_VAR1"
     assert kwargs["check"]
@@ -217,7 +217,11 @@ def test_install_non_existing_context(tmp_dir):
         _run(["path to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "--install-context", "foo"])
 
 
-def test_info_without_arg_should_not_raise_exception(tmp_dir):
+def test_info_without_arg_should_not_raise_exception(tmp_dir, capsys):
     data = Path(__file__).parent.with_name("data")
     toml = data / "test.toml"
     _run(["path to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "--info"])
+    captured = capsys.readouterr()
+    assert "alias-1" in captured.out
+    assert "script-a" in captured.out
+    assert "main" in captured.out

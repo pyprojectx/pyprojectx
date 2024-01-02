@@ -25,7 +25,7 @@ failing-list = [
 failing-shell = "go-foo-bar"
 list-files = "ls"
 say-post-install = "@post-install-pycowsay: pycowsay after-post-install"
-create-file = "touch post-install-file.txt"
+create-file = ["touch post-install-file.txt", "@call-prm"]
 
 ls-projectdir = { cwd = "@PROJECT_DIR", cmd = "ls -al" }
 ls-pyprojectx = { cwd = "@PROJECT_DIR/.pyprojectx", cmd = "ls -al" }

@@ -72,6 +72,8 @@ class Config:
                     print(f"{BLUE}and runs in the {CYAN}{alias_cmd.ctx}{BLUE} tool context", file=sys.stderr)
                 print(f"{BLUE}command:{RESET}", file=sys.stderr)
                 print(alias_cmd.cmd, file=out)
+        elif self.get_script_path(cmd).exists():
+            print(f"{cmd}{BLUE} is a script in {CYAN}{self.scripts_path.absolute()}", file=sys.stderr)
         elif self.is_ctx(cmd):
             print(f"{cmd}{BLUE} is a tool context in {CYAN}{self._toml_path.absolute()}", file=sys.stderr)
             print(f"{BLUE}requirements:{RESET}", file=sys.stderr)
@@ -88,6 +90,8 @@ class Config:
                     print(f"{cmd}{BLUE} cannot run because there is no main context.{RESET}", file=sys.stderr)
             print(f"{BLUE}available aliases:{RESET}", file=sys.stderr)
             print("\n".join(self._aliases.keys()), file=out)
+            print(f"{BLUE}available scripts:{RESET}", file=sys.stderr)
+            print("\n".join(self._get_scripts()), file=out)
             print(f"{BLUE}available tool contexts:{RESET}", file=sys.stderr)
             print("\n".join(self._contexts.keys() - ["aliases", "os"]), file=out)
 
@@ -204,7 +208,7 @@ class Config:
         return bool(self._aliases.get(key))
 
     def get_script_path(self, script):
-        return str((self.scripts_path / f"{script}.py").absolute())
+        return (self.scripts_path / f"{script}.py").absolute()
 
     def find_aliases_or_scripts(self, abbrev: str) -> List[str]:
         """Find all alias keys and/or scripts in scripts_dir that match the abbreviation.

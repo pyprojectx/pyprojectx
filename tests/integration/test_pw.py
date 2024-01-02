@@ -135,6 +135,8 @@ def test_post_install(tmp_project):
            ||----w |
            ||     ||
 
+Creating directories...
+Done.
 
   ------------------
 < after-post-install >
