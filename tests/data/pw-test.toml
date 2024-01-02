@@ -12,10 +12,11 @@ post-install = "pycowsay post-install-action && pw@create-file"
 pycowsay = "pycowsay"
 pycowsay-hi = "pycowsay hi"
 pycowsay-hello = "@pycowsay: pycowsay hello"
-combine-pw-scripts = "pw@pycowsay-hi && @pycowsay-hello"
+combine-pw-scripts = "pw@pycowsay-hi && @pycowsay-hello && @call-prm"
 combine-pw-scripts-list = [
     "pw@ pycowsay-hi",
     "pw@pycowsay-hello",
+    "@call-prm",
 ]
 failing-list = [
     "echo first-cmd-output-ok",
@@ -25,7 +26,7 @@ failing-list = [
 failing-shell = "go-foo-bar"
 list-files = "ls"
 say-post-install = "@post-install-pycowsay: pycowsay after-post-install"
-create-file = ["touch post-install-file.txt", "@call-prm"]
+create-file = "touch post-install-file.txt"
 
 ls-projectdir = { cwd = "@PROJECT_DIR", cmd = "ls -al" }
 ls-pyprojectx = { cwd = "@PROJECT_DIR/.pyprojectx", cmd = "ls -al" }

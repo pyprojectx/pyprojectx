@@ -73,6 +73,7 @@ def test_logs_and_stdout_when_alias_invoked_from_sub_directory_with_verbose(alia
         "DEBUG:pyprojectx.log:Running command in virtual environment, ctx: pycowsay, full command: pycowsay hello"
         in proc_result.stderr.decode("utf-8")
     )
+    assert (project_dir / "created-by-call-prm").exists()
 
 
 def test_alias_abbreviations(tmp_project):
@@ -135,8 +136,6 @@ def test_post_install(tmp_project):
            ||----w |
            ||     ||
 
-Creating directories...
-Done.
 
   ------------------
 < after-post-install >
