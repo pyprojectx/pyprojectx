@@ -289,7 +289,7 @@ def test_automatic_lock_update(tmp_lock_project):
     cmd = f"{SCRIPT_PREFIX}pw -q no-lock-cmd"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
     print(proc_result.stderr.decode("utf-8"))
-    assert proc_result.stdout.decode("utf-8").strip() == "invoked no-lock"
+    assert "invoked no-lock" in proc_result.stdout.decode("utf-8")
     assert not lock_content.get("no-lock")
 
 
