@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 from venv import EnvBuilder
 
-VERSION = "2.0.0b3"
+VERSION = "2.0.0"
 
 PYPROJECTX_INSTALL_DIR_ENV_VAR = "PYPROJECTX_INSTALL_DIR"
 PYPROJECTX_PACKAGE_ENV_VAR = "PYPROJECTX_PACKAGE"
@@ -88,7 +88,12 @@ def arg_parser():
         action="store_true",
         help="Force clean installation of the virtual environment used to run cmd, if any",
     )
-    parser.add_argument("--install-context", action="store", help="Install a tool context without running a command.")
+    parser.add_argument(
+        "--install-context",
+        action="store",
+        metavar="context",
+        help="Install a tool context without actually running any command.",
+    )
     parser.add_argument(
         "--verbose",
         "-v",
