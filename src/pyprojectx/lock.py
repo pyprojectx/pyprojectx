@@ -1,3 +1,4 @@
+import re
 import sys
 import tempfile
 from pathlib import Path
@@ -9,6 +10,8 @@ from pyprojectx.config import Config
 from pyprojectx.env import IsolatedVirtualEnv
 from pyprojectx.hash import calculate_hash
 from pyprojectx.wrapper import pw
+
+EDITABLE_REGEX = re.compile(r"^--?e")
 
 
 def get_locked_requirements(ctx_name: str, lock_file: Path) -> Optional[dict]:
@@ -22,6 +25,15 @@ def get_locked_requirements(ctx_name: str, lock_file: Path) -> Optional[dict]:
         toml = tomlkit.load(f)
     ctx = toml.get(ctx_name, {})
     return {"requirements": ctx.get("requirements"), "post-install": ctx.get("post-install"), "hash": ctx.get("hash")}
+
+
+def can_lock(requirements_config: dict) -> bool:
+    """Whether the requirements can be locked. If the requirements contain editable installs, they cannot be locked.
+
+    :param requirements_config: requirements config dictionary
+    :return: True if the requirements can be locked, False otherwise
+    """
+    return not any(EDITABLE_REGEX.search(req) for req in requirements_config.get("requirements", []))
 
 
 def lock(config: Config, venvs_dir: Path, quiet, ctx_name=None) -> dict:
@@ -41,7 +53,8 @@ def lock(config: Config, venvs_dir: Path, quiet, ctx_name=None) -> dict:
     ctx_names = [ctx_name] if ctx_name else config.get_context_names()
     for ctx_name in ctx_names:
         requirements = config.get_requirements(ctx_name)
-        _lock_ctx(ctx_name, requirements, toml, venvs_dir, quiet)
+        if can_lock(requirements):
+            _lock_ctx(ctx_name, requirements, toml, venvs_dir, quiet)
     with lf.open("w") as f:
         tomlkit.dump(toml, f)
     return toml

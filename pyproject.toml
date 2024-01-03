@@ -74,7 +74,7 @@ unit-test = "pdm run pytest tests/unit"
 integration-test = "pdm run pytest tests/integration"
 test = ["@unit-test", "@integration-test"]
 check = ["@lint", "@test"]
-build = ["pw@install", "pw@check", "pw@pdm build"]
+build = ["@install", "@check", "pdm build"]
 
 # used in github actions:
 publish = "pdm publish --username __token__"

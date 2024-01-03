@@ -9,7 +9,7 @@ from pyprojectx.config import MAIN, AliasCommand, Config
 from pyprojectx.env import IsolatedVirtualEnv
 from pyprojectx.hash import calculate_hash
 from pyprojectx.install_global import install_px
-from pyprojectx.lock import get_locked_requirements, lock
+from pyprojectx.lock import can_lock, get_locked_requirements, lock
 from pyprojectx.log import logger, set_verbosity
 from pyprojectx.requirements import add_requirement
 from pyprojectx.wrapper import pw
@@ -276,7 +276,7 @@ def _install_ctx(options, config):
 
 def _update_locked_requirements(ctx, config, options):
     requirements = config.get_requirements(ctx)
-    if not config.lock_file.exists():
+    if not config.lock_file.exists() or not can_lock(requirements):
         return requirements
     locked_requirements = get_locked_requirements(ctx, config.lock_file)
     if locked_requirements["hash"] == calculate_hash(requirements):

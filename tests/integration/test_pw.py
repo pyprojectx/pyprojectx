@@ -285,6 +285,13 @@ def test_automatic_lock_update(tmp_lock_project):
     assert lock_content["tool-with-known-requirements"] == locked_requirements["tool-with-known-requirements"]
     assert lock_content["main"] == locked_requirements["main"]
 
+    # requirements with editable installs should not be locked
+    cmd = f"{SCRIPT_PREFIX}pw -q no-lock-cmd"
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
+    print(proc_result.stderr.decode("utf-8"))
+    assert proc_result.stdout.decode("utf-8").strip() == "invoked no-lock"
+    assert not lock_content.get("no-lock")
+
 
 def test_requirements_from_lock_are_used(tmp_lock_project):
     project_dir, env = tmp_lock_project
