@@ -26,9 +26,12 @@ def install_px(options):
     global_dir.mkdir(parents=True, exist_ok=True)
 
     target_pw = global_dir.joinpath("pw")
-    if target_pw.exists() and "--force" not in options.cmd_args:
-        print(f"{target_pw} {BLUE} already exists, use '--init global --force' to overwrite{RESET}", file=sys.stderr)
-        return
+    print(options)
+    if target_pw.exists() and not options.force_install:
+        print(
+            f"{target_pw} {BLUE}already exists, use '--install-px --force-install' to overwrite{RESET}", file=sys.stderr
+        )
+        raise SystemExit(1)
 
     shutil.copy2(wrapper_dir.joinpath("pw.py"), target_pw)
     shutil.copy2(wrapper_dir.joinpath(f"px{SCRIPT_EXTENSION}"), global_dir.parent)
@@ -39,7 +42,7 @@ def install_px(options):
         "You can now start all your commands with 'px' in any subdirectory of your project instead of using './pw'",
         file=sys.stderr,
     )
-    if "skip-path" in options.cmd:
+    if options.cmd and "skip-path" in options.cmd:
         print(
             "Not adding the global pyprojectx directory to your PATH. You will need to add it manually.",
             file=sys.stderr,

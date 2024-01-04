@@ -90,16 +90,16 @@ This also works from subdirectories: `../../pw` can also be replaced with `px`
 To install:
 === "Linux/Mac"
     ```bash
-    ./pw --init global
+    ./pw --install-px
     ```
 
 === "Windows"
     ```powershell
-    .\pw --init global
+    .\pw --install-px
     ```
 
 ## Global tools
-Besides the `px` script, `pw --init global` also copies other files:
+Besides the `px` script, `pw --install-px` also copies other files:
 
 * `pxg` script in `~/.pyprojectx`
 * `pw` script and example `pyproject.toml` in `~/.pyprojectx/global`
