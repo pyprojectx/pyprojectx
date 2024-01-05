@@ -1,4 +1,4 @@
-![pyprojectx](docs/docs/assets/px.png)
+![pyprojectx](https://pyprojectx.github.io/assets/px.png)
 
 # Pyprojectx: All-inclusive Python Projects
 
