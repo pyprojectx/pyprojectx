@@ -172,6 +172,8 @@ def ensure_pyprojectx(options):
                 f"{CYAN}installing pyprojectx {BLUE}{options.version}: {options.pyprojectx_package} {RESET}",
                 file=sys.stderr,
             )
+        if options.version == "development":
+            pip_cmd.append("-e")
         subprocess.run([*pip_cmd, options.pyprojectx_package], stdout=out, check=True)
     return pyprojectx_script
 

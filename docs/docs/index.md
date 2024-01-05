@@ -83,10 +83,10 @@ With the wrapper scripts in place, you can generate example configuration (see [
 
     === "Linux/Mac"
         ```bash
-        ./pw --init global
+        ./pw --install-px
         ```
 
     === "Windows"
         ```powershell
-        .\pw --init global
+        .\pw --install-px
         ```
