@@ -3,8 +3,10 @@
 Aliases allow you to define shortcuts for common commands and simple shell scripts.
 
 !!! info "`px` or `pw`?"
-This section assumes that you installed the [px utility script](/usage/#install-the-global-px-script).
-Otherwise, you need to replace `px` with `./pw` (Linux, Mac) or `pw` (Windows PowerShell).
+
+    This section assumes that you installed the [px utility script](/usage/#install-the-global-px-script).
+    Otherwise, you need to replace `px` with `./pw` (Linux, Mac) or `pw` (Windows PowerShell).
+
 
 ## Defining shortcuts
 
@@ -57,7 +59,7 @@ Above `clean` alias will override the default one on Windows
 
 ## Combining aliases
 
-Use the `@` prefix to call alias from another alias.
+Use the `@` prefix to call an alias or [script](/config/scripts) from another alias.
 
 ```toml
 [tool.pyprojectx.aliases]

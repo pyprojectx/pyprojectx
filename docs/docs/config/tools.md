@@ -1,4 +1,4 @@
-# Manage Tools as Dev dependencies
+# Manage tools as dev dependencies
 
 Pyprojectx can manage all the Python tools and utilities that you use for building, testing...
 
@@ -7,7 +7,7 @@ Adding tools to the `[tool.pyprojectx]` section in `pyproject.toml` makes them a
 !!! note "Tool contexts introduced in Pyprojectx 2.0.0"
 
     Prior to Pyprojectx 2.0.0, tools were always installed in a separate virtual environment.
-    As of 2.0.0, tools are by default installed virtual environment of the _main_ tool context.
+    As of 2.0.0, tools are by default installed in the virtual environment of the _main_ tool context.
 
 !!! info "`px` or `pw`?"
     This section assumes that you installed the [px utility script](/usage/#install-the-global-px-script).
@@ -52,7 +52,7 @@ You only need to prefix them with the`px` or `pw` wrapper script:
 
 !!! note "Naming your tool context"
 
-    When running a command that has the same name as a tool context, the command will be executed inside the virtual environment of that tool context.
+    When running a command that has the same name as a tool context, the command will be executed by default inside the virtual environment of that tool context.
     Otherwise, the command will be executed in the virtual environment of the _main_ tool context.
 
 
@@ -118,10 +118,11 @@ private-tool = [
 
 ## Locking requirements
 To achieve reproducible builds, you can lock the versions of all tools that you use in your project by:
-- using a _pw.lock_ file
-- pinning tool versions in _pyproject.toml_
 
-### Locking with a _pw.lock_ file
+* creating a _pw.lock_ file
+* pinning tool versions in _pyproject.toml_
+
+### Creating a _pw.lock_ file
 When you run `px --lock`, a _pw.lock_ file is created in the root directory of your project.
 This file should be committed to version control.
 
@@ -130,10 +131,11 @@ This is the recommended way to lock tool versions to guarantee reproducible buil
 The lock file is automatically updated when the tool context requirements in _pyproject.toml_ change
 or when you run `px --lock` again.
 
-!!! tip "Tip: don't specify tool versions in _pyproject.toml_ when using a _pw.lock_ file
 
-    I no version is specified in _pyproject.toml_, the latest version of a tool will be installed and locked.
-    Updating all tools to the latest version then as simple as running `px --lock` again.
+!!! tip "Tip: don't specify tool versions in _pyproject.toml_ when using a _pw.lock_ file"
+
+    When there is no version specified for a tool, the latest version will be installed and locked.
+    Updating all tools to the latest version is then as simple as running `px --lock` again.
     In case of conflicts or issues with a new version, you can always revert to the previous version of the lock file.
 
 ### Pinning tool versions in _pyproject.toml_
@@ -143,4 +145,4 @@ You can also pin tool versions in _pyproject.toml_:
 [tool.pyprojectx]
 main = ["pdm==2.11.2", "ruff==0.1.11", "pre-commit==3.6.0", "px-utils==1.0.1"]
 ```
-Be aware that this will only lock the versions of the tools, [but not their dependencies](/dev-dependencies/#the-unreliable-pip-install)!
+Be aware that even with a fixed version, [tools can break at future installs](/dev-dependencies/#the-unreliable-pip-install)!

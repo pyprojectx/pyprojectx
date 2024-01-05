@@ -46,7 +46,7 @@ One of the key features is that there is no need to install anything explicitly 
     Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Force -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
     ```
 
-With the wrapper scripts in place, you can start adding tools (see [Adding tools to a new or existing project](/usage/#adding-tools-to-a-new-or-existing-project)):
+With the wrapper scripts in place, you can start adding tools:
 
 === "Linux/Mac"
     ```bash

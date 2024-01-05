@@ -91,7 +91,7 @@ def arg_parser():
     parser.add_argument(
         "--install-context",
         action="store",
-        metavar="context",
+        metavar="tool-context",
         help="Install a tool context without actually running any command.",
     )
     parser.add_argument(

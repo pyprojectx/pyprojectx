@@ -31,6 +31,7 @@ nav:
     - config/tools.md
     - config/aliases.md
     - config/scripts.md
+    - config/defaults.md
   - Usage: usage.md
   - Dev Dependencies: dev-dependencies.md
   - Recipes: recipes.md

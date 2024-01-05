@@ -13,6 +13,7 @@ When added to your _PATH_, you can replace `./pw` with the shorter `px`.
 This also works from subdirectories: `../../pw` can also be replaced with `px`
 
 To install:
+
 === "Linux/Mac"
     ```bash
     ./pw --install-px
@@ -24,16 +25,19 @@ To install:
     ```
 
 ## Global tools
-Besides the `px` script, `pw --install-px` also copies other files:
+Besides the `px` script, `pw --install-px` also copies adds the `pxg`.
 
-* `pxg` script in `~/.pyprojectx`
-* `pw` script and example `pyproject.toml` in `~/.pyprojectx/global`
+`pxg` can be used as a lightweight [pipx](https://pypa.github.io/pipx/) to install/run tools globally.
 
-`pxg` can be used as a lightweight [pipx](https://pypa.github.io/pipx/) to install tools globally.
-
-Example usage: `pyproject.toml` contains by default [httpie](https://httpie.io/) so you can make http requests:
+Example: make http requests with [httpie](https://httpie.io/):
 ```shell
+pxg --add httpie
 pxg http POST pie.dev/post hello=world
 ```
 
-Uninstalling all global tools is just a matter of `rm -rf ~/.pyprojectx/global/.pyprojectx`
+The global setup can be configured in _~/.pyprojectx/global/pyproject.toml_.
+
+Uninstalling all global tools is just a matter of removing the global directory:
+```shell
+rm -rf ~/.pyprojectx/global/.pyprojectx
+```

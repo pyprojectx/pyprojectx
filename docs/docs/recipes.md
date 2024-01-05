@@ -45,6 +45,7 @@ Use [Poetry](https://python-poetry.org/) or [PDM](https://pdm.fming.dev/) to fur
 With this combination, you can most likely skip makefiles altogether.
 
 Example:
+
 === "PDM"
     ```toml
     [tool.pyprojectx]
@@ -52,7 +53,6 @@ Example:
     requirements = [ "pdm", "ruff", "pre-commit", "px-utils", "mkdocs" ]
     # the first time that a pdm command is invoked, we make sure that pre-commit hooks are installed, so we can't forget it
     post-install = "pre-commit install"
-
     [tool.pyprojectx.aliases]
     # create the virtual environment and install all dependencies
     install = "pdm install"
@@ -70,11 +70,11 @@ Example:
     check = ["@lint", "@test"]
     # run the same build command on your laptop or CI/CD server
     build = [ "@install", "@check", "pdm build" ]
-
     # extract complexity from your CI/CD flows to test/run them locally
     # use comprehensible python scripts (bin/prep-release) instead of complex shell scripts
     release = ["prep-release", "pdm publish --username __token__"]
     ```
+
 === "Poetry"
     ```toml
     [tool.pyprojectx]
@@ -82,7 +82,6 @@ Example:
     requirements = [ "poetry", "ruff", "pre-commit", "px-utils", "mkdocs" ]
     # the first time that a poetry command is invoked, we make sure that pre-commit hooks are installed, so we can't forget it
     post-install = "pre-commit install"
-
     [tool.pyprojectx.aliases]
     # create the virtual environment and install all dependencies
     install = "poetry install"
@@ -100,7 +99,6 @@ Example:
     check = ["@lint", "@test"]
     # run the same build command on your laptop or CI/CD server
     build = [ "@install", "@check", "poetry build" ]
-
     # extract complexity from your CI/CD flows to test/run them locally
     # use comprehensible python scripts (bin/prep-release) instead of complex shell scripts
     release = ["prep-release", "poetry publish --username __token__"]
@@ -110,13 +108,13 @@ See Pyprojectx own [pyproject.toml](https://github.com/pyprojectx/pyprojectx/blo
 with PDM, or [px-demo](https://github.com/pyprojectx/px-demo) for another example project with PDM.
 
 !!! tip "Tip: Keep the poetry virtual environment inside your project directory"
-Add `poetry.toml` to your project:
-```toml
-[virtualenvs]
-in-project = true
-```
-This makes Poetry create a `.venv` in your project directory instead of somewhere in your home directory.
-It makes it easier to locate files and to keep your system clean when removing the project.
+    Add `poetry.toml` to your project:
+    ```toml
+    [virtualenvs]
+    in-project = true
+    ```
+    This makes Poetry create a `.venv` in your project directory instead of somewhere in your home directory.
+    It makes it easier to locate files and to keep your system clean when removing the project.
 
 ## Github actions
 By using the `pw` wrapper script, you can simplify your github actions:
