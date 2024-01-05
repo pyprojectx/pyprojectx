@@ -26,12 +26,12 @@ Projects can be build/tested/used immediately without explicit installation nor 
     ```powershell
     git clone https://github.com/pyprojectx/px-demo.git
     cd px-demo
-    .\pw build
+    pw build
     ```
 ![Clone and Build](assets/build.png)
 
 ## Installation
-One of the key features is that there is no need to install anything explicitly (except a Python 3.7+ interpreter).
+One of the key features is that there is no need to install anything explicitly (except a Python 3.8+ interpreter).
 
 `cd` into your project directory and download the
 [wrapper scripts](https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip):
@@ -46,26 +46,26 @@ One of the key features is that there is no need to install anything explicitly 
     Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Force -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
     ```
 
-With the wrapper scripts in place, you can generate example configuration (see [Initialize a new or existing project](/usage/#initialize-a-new-or-existing-project)):
+With the wrapper scripts in place, you can start adding tools (see [Adding tools to a new or existing project](/usage/#adding-tools-to-a-new-or-existing-project)):
 
 === "Linux/Mac"
     ```bash
-    # initialize a plain Python project
-    ./pw --init project
-    # initialize a project with poetry's init command
-    ./pw --init poetry
-    # initialize a project with pdm's init command
-    ./pw --init pdm
+    # initialize a PDM project
+    ./pw --add pdm
+    ./pw pdm init
+    # initialize a poetry project
+    ./pw --add poetry
+    ./pw poetry init
     ```
 
 === "Windows"
     ```powershell
-    # initialize a plain Python project
-    .\pw --init project
-    # initialize a project with poetry's init command
-    .\pw --init poetry
-    # initialize a project with pdm's init command
-    .\pw --init pdm
+    # initialize a PDM project
+    pw --add pdm
+    pw pdm init
+    # initialize a poetry project
+    pw --add poetry
+    pw poetry init
     ```
 
 !!! tip "Tip: Add the wrapper scripts to version control"
@@ -88,5 +88,5 @@ With the wrapper scripts in place, you can generate example configuration (see [
 
     === "Windows"
         ```powershell
-        .\pw --install-px
+        pw --install-px
         ```

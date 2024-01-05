@@ -1,4 +1,13 @@
-Release v2.0.0b1 (2023-06-19)
+Release v2.0.1 (2024-01-10)
+----------------------------
+### Features & Improvements
+- #63 install multiple tools together in one add command
+- Documentation for 2.0
+
+### Bug Fixes
+- #62 fix --install-px
+
+Release v2.0.0 (2024-01-03)
 ----------------------------
 ### Features & Improvements
 - #55 Optional locking of all tool dependencies

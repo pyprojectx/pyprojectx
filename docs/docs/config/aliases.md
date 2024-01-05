@@ -1,14 +1,15 @@
 # Shortcut common commands with aliases
+
 Aliases allow you to define shortcuts for common commands and simple shell scripts.
 
-Tools that expose multiple scripts, also require aliases to make all scripts available via the `pw` wrapper script.
-
 !!! info "`px` or `pw`?"
-    This section assumes that you installed the [px utility script](/usage/#install-the-global-px-script).
-    Otherwise, you need to replace `px` with `./pw` (Linux, Mac) or `.\pw` (Windows PowerShell).
+This section assumes that you installed the [px utility script](/usage/#install-the-global-px-script).
+Otherwise, you need to replace `px` with `./pw` (Linux, Mac) or `pw` (Windows PowerShell).
 
 ## Defining shortcuts
+
 You can avoid a lot of typing by aliasing commands that you use a lot. Example:
+
 ```toml
 [tool.pyprojectx.aliases]
 install = "poetry install"
@@ -22,7 +23,9 @@ All arguments are passed to the underlying command or script,
 making `px run my-script --foo` equivalent to `poetry run my-script --foo`.
 
 ## Shell scripts
+
 Shell scripts can also be aliased:
+
 ```toml
 [tool.pyprojectx.aliases]
 prepare = "mkdir build && mkdir generated"
@@ -30,6 +33,7 @@ clean = "rm -rf build generated"
 ```
 
 You can override aliases for a specific OS:
+
 ```toml
 [tool.pyprojectx.os.win.aliases]
 clean = "rd /s /q build generated"
@@ -38,57 +42,65 @@ clean = "rd /s /q build generated"
 Above `clean` alias will override the default one on Windows
 (in fact on all operating systems where `sys.platform.startswith("win")==True`).
 
+!!! tip "Tip: use px-utils for common file operations"
+
+    Use [px-utils](https://github.com/pyprojectx/px-utils) to create, copy, move, delete, ... files and directories cross-platform.
+    ```toml
+    [tool.pyprojectx.os.win.aliases]
+    clean = "pxrm build generated"
+    ```
+
 !!! note "Aliases are interpreted by the OS shell"
 
     The alias `show-path = "echo %PATH%"` will print the PATH environment variable on Windows, but will print
     literally `%PATH%` on another OS.
 
 ## Combining aliases
-Use the `pw@` prefix to call alias from another alias.
+
+Use the `@` prefix to call alias from another alias.
 
 ```toml
 [tool.pyprojectx.aliases]
 unit-test = "pdm run pytest tests/unit"
 integration-test = "pdm run pytest tests/integration"
-test = "pw@unit-test && pw@integration-test"
+test = ["@unit-test && @integration-test"]
 # a list of commands behaves the same as when combined with '&&'
 build = [
-    "pw@install",
-    "pw@test",
-    "pw@pdm build",
+    "@install",
+    "@test",
+    "@pdm build",
 ]
 ```
 
-`pw@` is substituted with the initial wrapper command + arguments.
+`[pw]@` is substituted with the initial wrapper command + arguments.
 
 So running `px -v test` will expand to
+
 ```
 px -v poetry run pytest tests/unit && px -v  poetry run pytest tests/integration
 ```
 
+## Alias configuration
 
-## Tools and packages with multiple scripts
-When installing multiple tools/packages together, or when using a tool that installs multiple scripts,
-you can define aliases to expose additional scripts besides the main script.
-
-By starting an alias with `@tool-name:`, where _tool-name_ is the key of a `[tool.pyprojectx]` entry, the alias always
-runs in the context of the virtual environment that is created for `tool-name`.
+Besides simple commands, aliases provide some configuration options:
 
 ```toml
-[tool.pyprojectx]
-# available scripts: flake8, pyflakes, black, ...
-flake8 = ["flake8 ~=4.0", "flake8-black ~=0.3"]
-
-[tool.pyprojectx.aliases]
-# expose black that is installed together with flake8-black
-black = "@flake8: black"
+notebook = { cmd = 'jupyter lab', ctx = 'jupyter', env = { JUPYTERLAB_DIR = "docs" } }
 ```
 
-Now you can run `black` as usual:
-```shell
-px black --version
-# black, 22.1.0 (compiled: yes)
-```
+- `cmd`: the command to run
+- `ctx`: the tool context in which the command is run; defaults to `main`
+- `env`: additional environment variables to set
+  - `cwd`: the working directory in which the command is run; defaults to _@PROJECT_DIR_, the directory containing
+    _pyproject.toml_. This default ensures that commands can be run from any subdirectory of the project.
+- `shell`: the shell used to run the command, overrides the default shell of the tool context
+
+!!! note "Default CWD changed in 2.0.0"
+
+    Prior to Pyprojectx 2.0.0, aliases where always executed in the current working directory.
+    As of 2.0.0, aliases run by default in the root directory of the project (where _pyproject.toml_ is located),
+    unless explicitly overridden with the `cwd` option.
+
 
 ## Abbreviations
 
@@ -98,6 +110,7 @@ As a bonus Pyprojectx also supports camel case to abbreviate an alias name.
 
 When you define an alias named either `foo-bar` or `fooBar`, then following commands are equivalent
 (provided they don't match any other alias):
+
 ```shell
 px foo-bar
 px fooBar
@@ -113,10 +126,10 @@ px f
     starts with that command. For example:
     ```toml
     [tool.pyprojectx]
-    black = "black"
+    main = ["black"]
     [tool.pyprojectx.aliases]
     black-adder = "echo 'Field Marshal Haig is about to make yet another gargantuan effort to move his drinks cabinet six inches closer to Berlin.'"
-    black = "@black: black"
+    black = "black"
     ```
     Here it would not be possible to use the `black` formatter without explicitly exposing it with the second alias.
 

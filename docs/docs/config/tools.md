@@ -2,24 +2,27 @@
 
 Pyprojectx can manage all the Python tools and utilities that you use for building, testing...
 
-Adding a tool to the `[tool.pyprojectx]` section in `pyproject.toml` makes it available inside your project.
+Adding tools to the `[tool.pyprojectx]` section in `pyproject.toml` makes them available inside your project.
+
+!!! note "Tool contexts introduced in Pyprojectx 2.0.0"
+
+    Prior to Pyprojectx 2.0.0, tools were always installed in a separate virtual environment.
+    As of 2.0.0, tools are by default installed virtual environment of the _main_ tool context.
 
 !!! info "`px` or `pw`?"
     This section assumes that you installed the [px utility script](/usage/#install-the-global-px-script).
-    Otherwise, you need to replace `px` with `./pw` (Linux, Mac) or `.\pw` (Windows PowerShell).
+    Otherwise, you need to replace `px` with `./pw` (Linux, Mac) or `pw` (Windows PowerShell).
 
-## Tool configuration
+## Tool contexts
 
-Pyprojectx creates an isolated virtual environment for each configured tool (or set of tools).
+Pyprojectx creates an isolated virtual environment for each tool context (set of tools).
 
 Inside the `[tool.pyprojectx]` section of `pyproject.toml` you specify what needs to be installed.
 
 ```toml title="pyproject.toml"
 [tool.pyprojectx]
-# require a specific poetry version
-poetry = "poetry==1.1.11"
-# install the latest version of the black formatter
-black = "black"
+# require a specific poetry version, use the latest version of black
+main = ["poetry==1.1.11", "black"]
 ```
 
 Above configuration makes the `black` and `poetry` commands available inside your project.
@@ -43,48 +46,35 @@ You only need to prefix them with the`px` or `pw` wrapper script:
 === "Windows"
 
     ```powershell
-    .\pw poetry --help
-    .\pw black my_package --diff
+    pw poetry --help
+    pw black my_package --diff
     ```
 
-## Specifying requirements
+!!! note "Naming your tool context"
 
-The entries in the `[tool.pyprojectx]` section take the form `tool = requirements`
+    When running a command that has the same name as a tool context, the command will be executed inside the virtual environment of that tool context.
+    Otherwise, the command will be executed in the virtual environment of the _main_ tool context.
 
-* _tool_: The main command or script that comes with the tool. If the tool comes with additional commands that you want
-  to use, you need to expose these via Pyprojectx [aliases](/config/aliases).
-* _requirements_: A multiline string or array of strings that adheres to
-  pip's [Requirements File Format](https://pip.pypa.io/en/stable/reference/requirements-file-format/#requirements-file-format)
+
+## Tool context configuration
+
+In its simplest form, a tool context is a multiline string or array of strings that adheres to pip's [Requirements File Format](https://pip.pypa.io/en/stable/reference/requirements-file-format/#requirements-file-format)
 
 Example:
 
 ```toml title="pyproject.toml"
 [tool.pyprojectx]
-# expose httpie's http script
+main = ["pdm","ruff","pre-commit","px-utils"]
 http = "httpie ~= 3.0"
-
-flake8 = """
-  flake8 >3
-  flake8-bugbear >=20
-"""
-
-black8 = ["flake8 ~=4.0", "flake8-black ~=0.3"]
-
-[tool.pyprojectx.aliases]
-run-flake8-with-black = "@black8: flake8"
 ```
 
 With above configuration, you can run following commands:
 
 ```bash
+px pdm --version
+# PDM, version 2.11.2
 px http www.google.com
 # HTTP/1.1 200 OK ...
-
-px flake8 --version
-# 4.0.1 (flake8-bugbear: 22.1.11, mccabe: 0.6.1, pycodestyle: 2.8.0, pyflakes: 2.4.0) CPython 3.9.6 on Darwin
-
-px run-flake8-with-black --version
-# 4.0.1 (black: 0.3.2, mccabe: 0.6.1, pycodestyle: 2.8.0, pyflakes: 2.4.0) CPython 3.9.6 on Darwin
 ```
 
 !!! tip "Tip: Specify exact versions for tools that are critical in your build flow"
@@ -93,37 +83,64 @@ px run-flake8-with-black --version
     It also ensures that you can always rebuild older versions of your project that rely on older versions of tools
     (f.e. when building a patch release).
 
+## Post-install scripts
+In some situations it can be useful to perform additional actions after a tool has been installed.
+This is achieved by configuring both requirements and post-install scripts for a tool
+
+```toml
+[tool.pyprojectx]
+[tool.pyprojectx.main]
+requirements = ["pdm", "ruff", "pre-commit", "px-utils"]
+post-install = "pre-commit install"
+```
+
+When creating your project's virtual environment with `px pdm install` for the first time in the example above,
+pre-commit is also initialised. This makes sure that pre-commit hooks are always run when committing code.
+
+!!! tip "Tip: Use toml subsections for better readability"
+
+    The example above uses a toml subsection instead of an inline table:
+    ```toml
+    main = { requirements = [...], post-install="..."}`
+    ```
+
 ## Using an alternative package index
 
 You can use pip's `--index-url` or `--extra-index-url` to install packages from alternative (private) package indexes:
 
 ```toml
 [tool.pyprojectx]
-my-private-tool = [
+private-tool = [
     "--extra-index-url https://artifactory.acme.com/artifactory/api/pypi/python-virtual/simple",
     "some-private-package"
 ]
 ```
 
-## Post-install scripts
-In some situations it can be useful to perform additional actions after a tool has been installed.
-This is achieved by configuring both requirements and post-install scripts for a tool:
+## Locking requirements
+To achieve reproducible builds, you can lock the versions of all tools that you use in your project by:
+- using a _pw.lock_ file
+- pinning tool versions in _pyproject.toml_
+
+### Locking with a _pw.lock_ file
+When you run `px --lock`, a _pw.lock_ file is created in the root directory of your project.
+This file should be committed to version control.
+
+This is the recommended way to lock tool versions to guarantee reproducible builds (see [why](/dev-dependencies/#the-unreliable-pip-install))
+
+The lock file is automatically updated when the tool context requirements in _pyproject.toml_ change
+or when you run `px --lock` again.
+
+!!! tip "Tip: don't specify tool versions in _pyproject.toml_ when using a _pw.lock_ file
+
+    I no version is specified in _pyproject.toml_, the latest version of a tool will be installed and locked.
+    Updating all tools to the latest version then as simple as running `px --lock` again.
+    In case of conflicts or issues with a new version, you can always revert to the previous version of the lock file.
+
+### Pinning tool versions in _pyproject.toml_
+You can also pin tool versions in _pyproject.toml_:
+
 ```toml
 [tool.pyprojectx]
-[tool.pyprojectx.jupyter]
-requirements = ["jupyter",	"jupyter_contrib_nbextensions"]
-post-install="""\
-jupyter contrib nbextension install --sys-prefix
-jupyter nbextension enable autoscroll/main --sys-prefix
-jupyter nbextension enable scroll_down/main --sys-prefix"""
+main = ["pdm==2.11.2", "ruff==0.1.11", "pre-commit==3.6.0", "px-utils==1.0.1"]
 ```
-
-When running `px jupyter notebook` for the first time in the example above,
-some Jupyter extensions are installed and enabled.
-
-!!! tip "Tip: Use toml subsections for better readability"
-
-    The example above uses a toml subsection instead of an inline table:
-    ```toml
-    jupyter = { requirements = [...], post-install="..."}`
-    ```
+Be aware that this will only lock the versions of the tools, [but not their dependencies](/dev-dependencies/#the-unreliable-pip-install)!

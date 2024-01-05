@@ -51,66 +51,37 @@ curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrapp
 Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
 ```
 
-## Project initialization
-Initialize a new or existing project with the _--init_ option (on Windows, replace `./pw` with `pw`):
-
-* `./pw --init project`: add pyprojectx example sections to an existing or new _pyproject.toml_ in the current directory.
-* `./pw --init pdm`: initialize a [PDM](https://pdm.fming.dev/) project and add pyprojectx example sections to _pyproject.toml_.
-* `./pw --init poetry`: initialize a [Poetry](https://python-poetry.org/) project and add pyprojectx example sections to _pyproject.toml_.
-
-## Configuration
-Add the _tool.pyprojectx_ section inside _pyproject.toml_ in your project's root directory.
-
-Each entry has the form `tool = "pip-requirements"`, where _pip-requirements_ adheres to the
-[requirements file format](https://pip.pypa.io/en/stable/reference/requirements-file-format/).
-
-Example:
-```toml
-[tool.pyprojectx]
-# require a specific poetry version
-poetry = "poetry==1.1.13"
-# use the latest black
-black = "black"
-# install flake8 in combination with plugins
-flake8 = ["flake8", "flake8-black"]
+## Getting started
+Initialize a new or existing project by adding tools (on Windows, replace `./pw` with `pw`):
+```bash
+./pw --add pdm,ruff,pre-commit,px-utils
 ```
 
-The _tool.pyprojectx.aliases_ section can contain optional commandline aliases in the form
+For reproducible builds and developer experience, it is recommended to lock the versions of the tools
+and add the generated _pw.lock_ file to your repository:
+```bash
+./pw --lock
+```
 
-`alias = [@tool_key:] command`
-
-Example:
+## Create command shortcuts
+The _tool.pyprojectx.aliases_ section in _pyproject.toml_ can contain commandline aliases:
 ```toml
 [tool.pyprojectx.aliases]
 # convenience shortcuts
 run = "poetry run"
 test = "poetry run pytest"
-
-# flake8-black also contains the black script
-black = "@flake8: black"
-
-# simple shell commands
-clean = "rm -f .coverage .pytest_cache"
-
-# when running an alias from within another alias, prefix it with `pw@`
-check = "pw@flake8 && pw@test"
+lint = ["ruff check"]
+check = ["@lint", "@test"]
 ```
 
 ## Usage
-Instead of calling the commandline of a tool directly, prefix it with `path\to\pw`.
+Instead of calling the CLI of a tool directly, prefix it with `./pw` (`pw` on Windows).
 
 Examples:
 ```shell
 ./pw poetry add -D pytest
 cd src
-../pw black *.py
-```
-
-... or on Windows:
-```shell
-pw poetry add -D pytest
-cd src
-..\pw black *.py
+../pw lint
 ```
 
 Aliases can be invoked as is or with extra arguments:
@@ -138,11 +109,13 @@ cd pyprojectx
 ./pw build
 ```
 
-* Set the path to pyprojectx in the _PYPROJECTX_PACKAGE_ environment variable
-  to use your local pyprojectx copy in another project.
+* Use your local pyprojectx copy in another project: set the path to pyprojectx in the _PYPROJECTX_PACKAGE_ environment variable
+  and create a symlink to the wrapper script.
 ```shell
 # Linux, Mac
 export PYPROJECTX_PACKAGE=path/to/pyprojectx
+ln -s $PYPROJECTX_PACKAGE/src/pyprojectx/wrapper/pw.py pw
 # windows
 set PYPROJECTX_PACKAGE=path/to/pyprojectx
+mklink %PYPROJECTX_PACKAGE%\src\pyprojectx\wrapper\pw.py pw
 ```

@@ -1,5 +1,33 @@
 # Recipes
 
+## Create a new project
+Install common tools:
+- pdm or poetry: dependency management
+- ruff: linter/formatter
+- pre-commit: git hooks for formatting and linting
+- px-utils: cross-platform file operations
+
+=== "Linux/Mac"
+```bash
+# initialize a PDM project
+./pw --add pdm,ruff,pre-commit,px-utils
+./pw pdm init
+# initialize a poetry project
+./pw --add poetry,ruff,pre-commit,px-utils
+./pw poetry init
+```
+
+=== "Windows"
+```powershell
+# initialize a PDM project
+pw --add pdm,ruff,pre-commit,px-utils
+pw pdm init
+# initialize a poetry project
+pw --add poetry,ruff,pre-commit,px-utils
+pw poetry init
+```
+
+
 ## Build scripts
 Script your development and build flow with aliases:
 
@@ -17,47 +45,78 @@ Use [Poetry](https://python-poetry.org/) or [PDM](https://pdm.fming.dev/) to fur
 With this combination, you can most likely skip makefiles altogether.
 
 Example:
-```toml
-[tool.pyprojectx]
-# the first time that a poetry command is invoked, we make sure that pre-commit hooks are installed, so we can't forget it
-poetry = { requirements = "poetry==1.1.13", post-install = "pw@pre-commit install" }
-black = "black==22.1.0"
-ruff = "ruff==0.0.291"
-pre-commit = "pre-commit"
-mkdocs = ["mkdocs ~=1.2", "mkdocs-material ~=8.2", "mkdocstrings[python] ~=0.18", "markdown-include ~=0.6", ]
+=== "PDM"
+    ```toml
+    [tool.pyprojectx]
+    [tool.pyprojectx.main]
+    requirements = [ "pdm", "ruff", "pre-commit", "px-utils", "mkdocs" ]
+    # the first time that a pdm command is invoked, we make sure that pre-commit hooks are installed, so we can't forget it
+    post-install = "pre-commit install"
 
-[tool.pyprojectx.aliases]
-install = "poetry install"
-run = "poetry run pyprojectx -t pyproject.toml "
-outdated = "poetry show --outdated"
-clean = "rm -r .venv .pytest_cache dist"
-black = "black src tests"
-ruff = "ruff src tests --fix"
-unit-test = "poetry run pytest tests/unit"
-integration-test = "poetry run pytest tests/integration"
-test = "pw@unit-test && pw@integration-test"
-check-ruff = "ruff src tests"
-check-black = "black src tests --check"
-# run check before pushing to git and your build will never break
-check = "pw@check-black && pw@check-ruff && pw@test"
-# run the same build command on your laptop or CI/CD server
-build = "pw@install && pw@check && pw@poetry build"
+    [tool.pyprojectx.aliases]
+    # create the virtual environment and install all dependencies
+    install = "pdm install"
+    # run a command in the project's virtual environment
+    run = "pdm run"
+    # show outdated dependencies
+    outdated = "pdm update --outdated"
+    clean = "pxrm .venv .pytest_cache dist .pdm-build .ruff_cache"
+    full-clean = ["@clean", "pxrm .pyprojectx"]
+    # format code and sort imports
+    format = ["ruff format", "ruff check --select I --fix"]
+    lint = ["ruff check"]
+    test = "pdm run pytest"
+    # run check before pushing to git and your build will never break
+    check = ["@lint", "@test"]
+    # run the same build command on your laptop or CI/CD server
+    build = [ "@install", "@check", "pdm build" ]
 
-# extract complexity from your CI/CD flows to test/run locally
-publish = "poetry publish --username __token__"
-prep-release = """\
-# create distributions, tag versions, etc.
-"""
+    # extract complexity from your CI/CD flows to test/run them locally
+    # use comprehensible python scripts (bin/prep-release) instead of complex shell scripts
+    release = ["prep-release", "pdm publish --username __token__"]
+    ```
+=== "Poetry"
+    ```toml
+    [tool.pyprojectx]
+    [tool.pyprojectx.main]
+    requirements = [ "poetry", "ruff", "pre-commit", "px-utils", "mkdocs" ]
+    # the first time that a poetry command is invoked, we make sure that pre-commit hooks are installed, so we can't forget it
+    post-install = "pre-commit install"
 
-# generate documentation
-generate-usage = "pw@ --help > docs/docs/usage.txt"
-serve-docs = "@mkdocs: cd docs && mkdocs serve"
-deploy-docs = "@mkdocs: cd docs && mkdocs gh-deploy"
-```
+    [tool.pyprojectx.aliases]
+    # create the virtual environment and install all dependencies
+    install = "poetry install"
+    # run a command in the project's virtual environment
+    run = "poetry run"
+    # show outdated dependencies
+    outdated = "poetry show --outdated --top-level"
+    clean = "pxrm .venv .pytest_cache dist .ruff_cache"
+    full-clean = ["@clean", "pxrm .pyprojectx"]
+    # format code and sort imports
+    format = ["ruff format", "ruff check --select I --fix"]
+    lint = ["ruff check"]
+    test = "poetry run pytest"
+    # run check before pushing to git and your build will never break
+    check = ["@lint", "@test"]
+    # run the same build command on your laptop or CI/CD server
+    build = [ "@install", "@check", "poetry build" ]
+
+    # extract complexity from your CI/CD flows to test/run them locally
+    # use comprehensible python scripts (bin/prep-release) instead of complex shell scripts
+    release = ["prep-release", "poetry publish --username __token__"]
+    ```
 
 See Pyprojectx own [pyproject.toml](https://github.com/pyprojectx/pyprojectx/blob/main/pyproject.toml) for a full example
 with PDM, or [px-demo](https://github.com/pyprojectx/px-demo) for another example project with PDM.
 
+!!! tip "Tip: Keep the poetry virtual environment inside your project directory"
+Add `poetry.toml` to your project:
+```toml
+[virtualenvs]
+in-project = true
+```
+This makes Poetry create a `.venv` in your project directory instead of somewhere in your home directory.
+It makes it easier to locate files and to keep your system clean when removing the project.
 
 ## Github actions
 By using the `pw` wrapper script, you can simplify your github actions:
@@ -67,7 +126,7 @@ By using the `pw` wrapper script, you can simplify your github actions:
 
 Some tips:
 
-* Use the same scripts on Linux and Windows by replacing `./pw` (resp. `.\pw`) with `python pw`
+* Use the same scripts on Linux and Windows by replacing `./pw` (resp. `pw`) with `python pw`
 * Speed up builds by caching `.pyprojectx`
 
 Example:
@@ -99,12 +158,17 @@ You can launch a notebook that has access to your project packages without the n
 
 ```toml
 [tool.pyprojectx]
-# install the current directory together with jupyter
-jupyter = ["jupyter", "."]
+# install the current project in editable mode, together with jupyter
+jupyter = ["jupyterlab", "-e ."]
 
 [tool.pyprojectx.aliases]
-# the notebook-dir is optional
 # -y is there to automatically answer 'yes' after quitting with ctrl+c
-notebook = "jupyter notebook --notebook-dir docs -y"
+notebook = "jupyter lab -y"
 ```
 Just run `px notebook` or even `px n`
+
+!!! note "Editable installs are not locked"
+
+    When a tool context contains an editable install, it won't be locked when running `./pw --lock`.
+    Therefore, it is recommended to add editable install to a separate tool context and lock the main
+    context fro reproducible builds.

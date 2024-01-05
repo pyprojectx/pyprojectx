@@ -14,3 +14,13 @@ will likely be downgraded to older versions. Or worse: your project fails to ins
     _pytest_ and friends need to be installed together with your code, so you will need to add them
     as Poetry or PDM dev-dependencies. Other tools and utilities can be managed by Pyprojectx in order to get
     reproducible builds.
+
+# The unreliable pip install
+One would expect that `pip install tool-x==1.2.3` always installs exactly the same version of _tool-x_.
+Unfortunately, this is not the case because a most python packages do not pin the versions of their dependencies.
+
+This means that released versions of tools **can be broken at any time** by a new release of one of their dependencies.
+
+This is exactly what happened with [PDM 2.5.3](https://github.com/pdm-project/pdm/issues/1883).
+
+For this reason, all the dependencies of pyprojectx are locked when publishing to [PyPI](https://pypi.org/project/pyprojectx/).
