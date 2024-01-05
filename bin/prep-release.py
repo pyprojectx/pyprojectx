@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -13,7 +14,8 @@ Path(".changelog.md").unlink(missing_ok=True)
 pw = Path("src/pyprojectx/wrapper/pw.py")
 pw.write_text(pw.read_text().replace("__version__", RELEASE_VERSION))
 pyproject = Path("pyproject.toml")
-pyproject.write_text(pyproject.read_text().replace("1.0.0.dev", RELEASE_VERSION))
+pyproject_content = re.sub(r'version\s*=\s*"\d.\d.\d.dev"', f'version = "{RELEASE_VERSION}"', pyproject.read_text())
+pyproject.write_text(pyproject_content)
 
 # create the distribution zip
 with ZipFile("wrappers.zip", "w") as zip_file:
