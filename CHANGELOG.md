@@ -1,4 +1,4 @@
-Release v2.0.1 (2024-01-10)
+Release v2.0.1 (2024-01-05)
 ----------------------------
 ### Features & Improvements
 - #63 install multiple tools together in one add command
