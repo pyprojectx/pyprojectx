@@ -1,5 +1,4 @@
 import re
-import sys
 from pathlib import Path
 
 import tomlkit
@@ -18,14 +17,17 @@ def add_requirement(requirement: str, toml_path: Path, venvs_dir: Path, quiet: b
     toml_file = TOMLFile(toml_path)
     toml = toml_file.read()
     if ":" in requirement:
-        ctx, req_spec = requirement.split(":", 1)
+        ctx, req_spec = re.split(r"\s*:\s*", requirement, maxsplit=1)
     else:
         ctx = MAIN
         req_spec = requirement
+    req_specs = re.split(r"\s*,\s*", req_spec)
     toml, requirements = _get_or_add_requirements(toml, ctx)
-    _check_already_met(requirements, req_spec, ctx)
-    _check_is_installable(req_spec, ctx, Config(toml_path).get_requirements(ctx), venvs_dir, quiet)
-    requirements.append(req_spec)
+    for spec in req_specs:
+        _check_already_met(requirements, spec, ctx)
+    _check_is_installable(req_specs, ctx, Config(toml_path).get_requirements(ctx), venvs_dir, quiet)
+    for spec in req_specs:
+        requirements.append(spec)
     toml_file.write(toml)
 
 
@@ -35,6 +37,8 @@ def _get_or_add_requirements(toml, ctx: str):
     if not toml["tool"].get("pyprojectx"):
         toml["tool"]["pyprojectx"] = tomlkit.table()
     pyprojectx = toml["tool"]["pyprojectx"]
+
+    requirements = None
     if not pyprojectx.get(ctx):
         pyprojectx.add(ctx, [])
         requirements = pyprojectx[ctx]
@@ -44,16 +48,18 @@ def _get_or_add_requirements(toml, ctx: str):
             pyprojectx.pop(ctx)
             pyprojectx.add(ctx, requirements_config.splitlines())
             requirements = pyprojectx[ctx]
-        if isinstance(requirements_config, list):
+        elif isinstance(requirements_config, list):
             requirements = requirements_config
-        if isinstance(requirements_config, dict):
+        elif isinstance(requirements_config, dict):
             reqs = requirements_config.get("requirements")
             if isinstance(reqs, str):
                 requirements_config.pop("requirements")
                 requirements_config.add("requirements", reqs.splitlines())
                 requirements = requirements_config["requirements"]
-            if isinstance(reqs, list):
+            elif isinstance(reqs, list):
                 requirements = reqs
+        if not requirements:
+            raise Warning(f"{pw.RED}{ctx} has invalid requirements. Check your pyproject.toml file{pw.RESET}")
     return toml, requirements
 
 
@@ -63,13 +69,12 @@ def _check_already_met(requirements, req_spec, ctx):
         req_name = match[1]
         for r in requirements:
             if r.startswith(req_name):
-                print(f"{pw.RED}{req_name} is already a requirement in {ctx}", file=sys.stderr)
-                raise SystemExit(1)
+                raise Warning(f"{pw.RED}{req_name} is already a requirement in {ctx}")
 
 
-def _check_is_installable(req_spec, ctx, requirements, venvs_dir, quiet):
+def _check_is_installable(req_specs, ctx, requirements, venvs_dir, quiet):
     env = IsolatedVirtualEnv(venvs_dir, ctx, requirements)
-    cmd = ["pip", "install", req_spec, "--dry-run"]
+    cmd = ["pip", "install", *req_specs, "--dry-run"]
     if quiet:
         cmd.append("--quiet")
     if not env.is_installed:

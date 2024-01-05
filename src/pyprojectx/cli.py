@@ -71,7 +71,7 @@ def _run(argv: List[str]) -> None:
     if _run_alias_cmds(config, cmd, pw_args, options):
         return
 
-    if _run_cmds_in_ctx(config, cmd, pw_args, options):
+    if _run_cmd_in_ctx(config, cmd, pw_args, options):
         return
 
     config.show_info(cmd, error=True)
@@ -98,7 +98,7 @@ def _run_alias_cmds(config, cmd, pw_args, options) -> bool:
     return False
 
 
-def _run_cmds_in_ctx(config, cmd, pw_args, options) -> bool:
+def _run_cmd_in_ctx(config, cmd, pw_args, options) -> bool:
     ctx = config.get_ctx_or_main(cmd)
     if ctx:
         _run_in_ctx(

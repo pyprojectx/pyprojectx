@@ -117,10 +117,10 @@ def arg_parser():
     parser.add_argument(
         "--add",
         action="store",
-        metavar="package",
-        help="Add a package to a tool context. "
-        "The package needs to be specified as [context:] <pip requirement specifier>."
-        "If no context is specified, the package is added to the main context.",
+        metavar="[context:]<package>,<package>...",
+        help="Add one or more packages to a tool context. "
+        "If no context is specified, the packages are added to the main context. "
+        "Packages can be specified as in 'pip install', except that a ',' can't be used in the version specification.",
     )
     parser.add_argument(
         "--lock",
@@ -173,6 +173,10 @@ def ensure_pyprojectx(options):
                 file=sys.stderr,
             )
         if options.version == "development":
+            print(
+                f"{RED}WARNING: {options.pyprojectx_package} is installed in editable mode{RESET}",
+                file=sys.stderr,
+            )
             pip_cmd.append("-e")
         subprocess.run([*pip_cmd, options.pyprojectx_package], stdout=out, check=True)
     return pyprojectx_script

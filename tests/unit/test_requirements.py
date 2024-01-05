@@ -8,40 +8,46 @@ PY_VER = f"py{sys.version_info.major}.{sys.version_info.minor}"
 
 
 @pytest.mark.parametrize(
-    ("package", "quiet", "ctx", "package_2"),
+    ("requirement_1", "requirement_2", "quiet", "ctx", "packages"),
     [
-        ("my-package", False, None, "another-package"),
-        ("my-package", True, None, "another-package"),
-        ("my-package==x.y.z", False, None, "another-package"),
-        ("my-package>x.y.z", False, "main", "another-package"),
-        ("my-package~=x.y.z", False, "other-ctx", "another-package"),
+        ("my-package", "another-package", False, None, ["my-package", "another-package"]),
+        ("my-package", "another-package", True, None, ["my-package", "another-package"]),
+        ("my-package==x.y.z", "another-package", False, None, ["my-package==x.y.z", "another-package"]),
+        ("main:my-package>x.y.z", "main:another-package", False, "main", ["my-package>x.y.z", "another-package"]),
+        (
+            "other-ctx:my-package~=x.y.z",
+            "other-ctx:another-package , package-3==1.0.0",
+            False,
+            "other-ctx",
+            ["my-package~=x.y.z", "another-package", "package-3==1.0.0"],
+        ),
     ],
 )
-def test_add_requirement(tmp_dir, mocker, package, quiet, ctx, package_2):  # noqa: PLR0913
-    package_prefix = f"{ctx}:" if ctx else ""
+def test_add_requirement(tmp_dir, mocker, requirement_1, requirement_2, quiet, ctx, packages):  # noqa: PLR0913
     toml = tmp_dir / "pyproject.toml"
     assert not toml.exists()
     install_mock = mocker.patch("pyprojectx.env.IsolatedVirtualEnv.install")
     run_mock = mocker.patch("pyprojectx.env.IsolatedVirtualEnv.run")
 
-    requirements.add_requirement(f"{package_prefix}{package}", toml, tmp_dir / "venvs", quiet)
+    requirements.add_requirement(requirement_1, toml, tmp_dir / "venvs", quiet)
 
     assert toml.exists()
-    assert toml.read_text() == f"[tool.pyprojectx]\n{ctx or 'main'} = [\"{package}\"]\n"
+    assert toml.read_text() == f"[tool.pyprojectx]\n{ctx or 'main'} = [\"{packages[0]}\"]\n"
     install_mock.assert_called_with(quiet)
-    run_args = ["pip", "install", package, "--dry-run"]
+    run_args = ["pip", "install", packages[0], "--dry-run"]
     if quiet:
         run_args.append("--quiet")
 
     hex_digest = calculate_hash({})
     run_mock.assert_called_with(run_args, env={}, cwd=tmp_dir / f"venvs/{ctx or 'main'}-{hex_digest}-{PY_VER}")
 
-    requirements.add_requirement(f"{package_prefix}{package_2}", toml, tmp_dir / "venvs", quiet)
+    requirements.add_requirement(requirement_2, toml, tmp_dir / "venvs", quiet)
 
-    assert toml.read_text() == f"[tool.pyprojectx]\n{ctx or 'main'} = [\"{package}\", \"{package_2}\"]\n"
+    toml_packages = '", "'.join(packages)
+    assert toml.read_text() == f"[tool.pyprojectx]\n{ctx or 'main'} = [\"{toml_packages}\"]\n"
     install_mock.assert_called_with(quiet)
-    run_args = ["pip", "install", package_2, "--dry-run"]
+    run_args = ["pip", "install", *packages[1:], "--dry-run"]
     if quiet:
         run_args.append("--quiet")
-    hex_digest = calculate_hash({"requirements": [package]})
+    hex_digest = calculate_hash({"requirements": packages[0]})
     run_mock.assert_called_with(run_args, env={}, cwd=tmp_dir / f"venvs/{ctx or 'main'}-{hex_digest}-{PY_VER}")

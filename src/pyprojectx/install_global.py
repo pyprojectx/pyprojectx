@@ -26,12 +26,8 @@ def install_px(options):
     global_dir.mkdir(parents=True, exist_ok=True)
 
     target_pw = global_dir.joinpath("pw")
-    print(options)
     if target_pw.exists() and not options.force_install:
-        print(
-            f"{target_pw} {BLUE}already exists, use '--install-px --force-install' to overwrite{RESET}", file=sys.stderr
-        )
-        raise SystemExit(1)
+        raise Warning(f"{target_pw} {BLUE} already exists, use '--install-px --force-install' to overwrite{RESET}")
 
     shutil.copy2(wrapper_dir.joinpath("pw.py"), target_pw)
     shutil.copy2(wrapper_dir.joinpath(f"px{SCRIPT_EXTENSION}"), global_dir.parent)
