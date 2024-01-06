@@ -19,12 +19,14 @@ Projects can be build/tested/used immediately without explicit installation nor 
 === "Linux/Mac"
     ```bash
     git clone https://github.com/pyprojectx/px-demo.git
+    # for the poetry version: git checkout poetry
     cd px-demo
     ./pw build
     ```
 === "Windows"
     ```powershell
     git clone https://github.com/pyprojectx/px-demo.git
+    # for the poetry version: git checkout poetry
     cd px-demo
     pw build
     ```

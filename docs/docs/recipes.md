@@ -105,7 +105,8 @@ Example:
     ```
 
 See Pyprojectx own [pyproject.toml](https://github.com/pyprojectx/pyprojectx/blob/main/pyproject.toml) for a full example
-with PDM, or [px-demo](https://github.com/pyprojectx/px-demo) for another example project with PDM.
+with PDM, or [px-demo](https://github.com/pyprojectx/px-demo) for another example project with PDM or
+the poetry [variant](https://github.com/pyprojectx/px-demo/tree/poetry).
 
 !!! tip "Tip: Keep the poetry virtual environment inside your project directory"
     Add `poetry.toml` to your project:
