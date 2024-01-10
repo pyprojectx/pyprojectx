@@ -8,6 +8,10 @@ failing-install = "pycowsay==123.456.789.0"
 requirements = "pycowsay==0.0.0.1"
 post-install = "pycowsay post-install-action && pw@create-file"
 
+[tool.pyprojectx.install-context]
+requirements = "pycowsay==0.0.0.1"
+post-install = "@install-context-post-install"
+
 [tool.pyprojectx.aliases]
 pycowsay = "pycowsay"
 pycowsay-hi = "pycowsay hi"
@@ -32,6 +36,8 @@ ls-projectdir = { cwd = "@PROJECT_DIR", cmd = "ls -al" }
 ls-pyprojectx = { cwd = "@PROJECT_DIR/.pyprojectx", cmd = "ls -al" }
 
 echo-env-var = { cmd = "echo $ALIAS_VAR", env = { ALIAS_VAR = "linux-alias-var" } }
+
+install-context-post-install = { cmd = "pycowsay install-context-post-install", ctx = "install-context" }
 
 [tool.pyprojectx.os.win.aliases]
 list-files = "dir /b"

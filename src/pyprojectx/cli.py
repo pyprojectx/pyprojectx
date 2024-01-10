@@ -50,7 +50,7 @@ def _run(argv: List[str]) -> None:
     config = Config(options.toml_path)
 
     if options.install_context:
-        _install_ctx(options, config)
+        _install_ctx(options, config, argv)
         return
 
     if options.lock:
@@ -218,15 +218,21 @@ def _resolve_references(alias_cmd: str, pw_args: List[str], config) -> str:
         if config.is_alias(alias) or config.get_script_path(alias).exists():
             alias_cmd = alias_cmd.replace(f"{optional_pw}@{alias}", f"pw@{alias}")
     is_path = True
+    skip = False
     absolute_pw_args = []
     for arg in pw_args:
-        if is_path:
-            absolute_pw_args.append(str(Path(arg).absolute()))
-            is_path = False
-        else:
-            absolute_pw_args.append(arg)
         if arg in ["-t", "--toml", "-i", "--install-dir"]:
             is_path = True
+            absolute_pw_args.append(arg)
+        elif arg in ["--install-context"]:
+            skip = True
+        elif is_path:
+            absolute_pw_args.append(str(Path(arg).absolute()))
+            is_path = False
+        elif skip:
+            skip = False
+        else:
+            absolute_pw_args.append(arg)
     replacement = " ".join([_quote(arg) for arg in absolute_pw_args]) + " "
     return alias_cmd.replace("pw@", replacement)
 
@@ -260,7 +266,7 @@ def _show_upgrade_instructions():
         print(UPGRADE_INSTRUCTIONS)
 
 
-def _install_ctx(options, config):
+def _install_ctx(options, config, pw_args):
     ctx = options.install_context
     if not config.is_ctx(ctx):
         raise Warning(f"Invalid ctx: '{options.install_context}' is not defined in [tool.pyprojectx]")
@@ -268,7 +274,7 @@ def _install_ctx(options, config):
         config,
         ctx,
         options=options,
-        pw_args=[],
+        pw_args=pw_args,
         env={},
         cwd=".",
     )

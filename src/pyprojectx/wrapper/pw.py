@@ -173,10 +173,11 @@ def ensure_pyprojectx(options):
                 file=sys.stderr,
             )
         if options.version == "development":
-            print(
-                f"{RED}WARNING: {options.pyprojectx_package} is installed in editable mode{RESET}",
-                file=sys.stderr,
-            )
+            if not options.quiet:
+                print(
+                    f"{RED}WARNING: {options.pyprojectx_package} is installed in editable mode{RESET}",
+                    file=sys.stderr,
+                )
             pip_cmd.append("-e")
         subprocess.run([*pip_cmd, options.pyprojectx_package], stdout=out, check=True)
     return pyprojectx_script

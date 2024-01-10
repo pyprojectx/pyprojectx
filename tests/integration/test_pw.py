@@ -16,12 +16,13 @@ data_dir = Path(__file__).parent.parent / "data"
 
 def test_install_ctx(tmp_project):
     project_dir, env = tmp_project
-    cmd = f"{SCRIPT_PREFIX}pw --install-context pycowsay"
+    cmd = f"{SCRIPT_PREFIX}pw --install-context install-context"
     assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
     if proc_result.returncode:
         print(proc_result.stderr.decode("utf-8"))
     assert "Successfully installed pycowsay-0.0.0.1" in proc_result.stderr.decode("utf-8")
+    assert "install-context-post-install" in proc_result.stdout.decode("utf-8")
 
 
 def test_logs_and_stdout_with_quiet(tmp_project):
