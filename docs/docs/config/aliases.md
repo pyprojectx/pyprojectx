@@ -95,6 +95,7 @@ notebook = { cmd = 'jupyter lab', ctx = 'jupyter', env = { JUPYTERLAB_DIR = "doc
 - `env`: additional environment variables to set
   - `cwd`: the working directory in which the command is run; defaults to _@PROJECT_DIR_, the directory containing
     _pyproject.toml_. This default ensures that commands can be run from any subdirectory of the project.
+    Use _@PROJECT_DIR/subdir_ to run the command in a subdirectory of the project.
 - `shell`: the shell used to run the command, overrides the default shell of the tool context
 
 !!! note "Default CWD changed in 2.0.0"
