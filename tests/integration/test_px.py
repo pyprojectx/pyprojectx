@@ -31,6 +31,8 @@ def test_install_px(tmp_project):
     assert px_dir.joinpath("global", "pw").exists()
     assert px_dir.joinpath(f"px{SCRIPT_EXTENSION}").exists()
     assert px_dir.joinpath(f"pxg{SCRIPT_EXTENSION}").exists()
+    with px_dir.joinpath("global", "pyproject.toml").open("r") as f:
+        assert f.read() == '[tool.pyprojectx]\ncwd = "."\n'
 
     # installing again should fail
     process = subprocess.run(cmd, shell=True, cwd=cwd, env=env, check=False, capture_output=True, text=True)

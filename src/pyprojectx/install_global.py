@@ -32,6 +32,8 @@ def install_px(options):
     shutil.copy2(wrapper_dir.joinpath("pw.py"), target_pw)
     shutil.copy2(wrapper_dir.joinpath(f"px{SCRIPT_EXTENSION}"), global_dir.parent)
     shutil.copy2(wrapper_dir.joinpath(f"pxg{SCRIPT_EXTENSION}"), global_dir.parent)
+    with global_dir.joinpath("pyproject.toml").open("w") as f:
+        f.write('[tool.pyprojectx]\ncwd = "."\n')
 
     print(
         f"{BLUE}Global Pyprojectx scripts are installed in your home directory. "
