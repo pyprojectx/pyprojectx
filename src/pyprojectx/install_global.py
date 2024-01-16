@@ -17,6 +17,30 @@ SCRIPT_EXTENSION = ".bat" if sys.platform.startswith("win") else ""
 
 HOME_DIR = Path(os.environ.get("PYPROJECTX_HOME_DIR", Path.home()))
 
+UPGRADE_INSTRUCTIONS = (
+    "curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip"
+    " && unzip -o wrappers.zip && rm -f wrappers.zip"
+)
+UPGRADE_INSTRUCTIONS_WIN = (
+    "Invoke-WebRequest"
+    " https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip"
+    " -OutFile wrappers.zip; Expand-Archive -Force -Path wrappers.zip -DestinationPath .;"
+    " Remove-Item -Path wrappers.zip"
+)
+
+DOWNLOAD_ALIAS = (
+    f'{{ cmd = "{UPGRADE_INSTRUCTIONS_WIN}", shell = "powershell" }}'
+    if sys.platform.startswith("win")
+    else f'"{UPGRADE_INSTRUCTIONS}"'
+)
+
+DEFAULT_GLOBAL_CONFIG = f"""[tool.pyprojectx]
+cwd = "."
+
+[tool.pyprojectx.aliases]
+download-pw = {DOWNLOAD_ALIAS}
+"""
+
 
 def install_px(options):
     """Install the global px and pxg scripts in your home directory."""
@@ -33,11 +57,14 @@ def install_px(options):
     shutil.copy2(wrapper_dir.joinpath(f"px{SCRIPT_EXTENSION}"), global_dir.parent)
     shutil.copy2(wrapper_dir.joinpath(f"pxg{SCRIPT_EXTENSION}"), global_dir.parent)
     with global_dir.joinpath("pyproject.toml").open("w") as f:
-        f.write('[tool.pyprojectx]\ncwd = "."\n')
+        f.write(DEFAULT_GLOBAL_CONFIG)
 
     print(
         f"{BLUE}Global Pyprojectx scripts are installed in your home directory. "
-        "You can now start all your commands with 'px' in any subdirectory of your project instead of using './pw'",
+        f"You can now start all your commands with {RESET}px{BLUE} in any subdirectory of your project "
+        f"instead of using {RESET}./pw{BLUE}. You can also use {RESET}pxg{BLUE} to run commands from "
+        f"the global pyprojectx directory, f.e. {RESET}pxg download-pw{BLUE} to download the latest version "
+        "of the pw script in the current directory.",
         file=sys.stderr,
     )
     if options.cmd and "skip-path" in options.cmd:
