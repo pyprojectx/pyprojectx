@@ -20,6 +20,8 @@ dependencies = [
     "tomlkit>=0.12.3",
 ]
 
+[tool.pdm]
+plugins = ["pdm-buildlocked"]
 [tool.pdm.build]
 buildlocked = true
 [tool.pdm.dev-dependencies]
@@ -59,7 +61,7 @@ requirements = [
     "mkdocstrings[python]",
     "markdown-include"
 ]
-post-install = "pdm plugin add pdm-buildlocked && pre-commit install"
+post-install = "pre-commit install"
 
 [tool.pyprojectx.aliases]
 install = "pdm install"
