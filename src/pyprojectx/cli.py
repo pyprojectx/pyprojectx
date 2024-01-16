@@ -8,22 +8,11 @@ from typing import List, Union
 from pyprojectx.config import MAIN, AliasCommand, Config
 from pyprojectx.env import IsolatedVirtualEnv
 from pyprojectx.hash import calculate_hash
-from pyprojectx.install_global import install_px
+from pyprojectx.install_global import UPGRADE_INSTRUCTIONS, UPGRADE_INSTRUCTIONS_WIN, install_px
 from pyprojectx.lock import can_lock, get_locked_requirements, lock
 from pyprojectx.log import logger, set_verbosity
 from pyprojectx.requirements import add_requirement
 from pyprojectx.wrapper import pw
-
-UPGRADE_INSTRUCTIONS = (
-    "curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip"
-    " && unzip -o wrappers.zip && rm -f wrappers.zip"
-)
-UPGRADE_INSTRUCTIONS_WIN = (
-    "Invoke-WebRequest"
-    " https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip"
-    " -OutFile wrappers.zip; Expand-Archive -Force -Path wrappers.zip -DestinationPath .;"
-    " Remove-Item -Path wrappers.zip"
-)
 
 alias_regex = re.compile(r"(pw)?@([\w-]+)")
 
