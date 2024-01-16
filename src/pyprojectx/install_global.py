@@ -55,9 +55,10 @@ def install_px(options):
 
     print(
         f"{BLUE}Global Pyprojectx scripts are installed in your home directory. "
-        "You can now start all your commands with 'px' in any subdirectory of your project instead of using './pw'. "
-        "You can also use 'pxg' to run commands from the global pyprojectx directory, f.e. 'pxg download-pw' to "
-        "download the latest version of the pw script in the current directory.{RESET}",
+        f"You can now start all your commands with {RESET}px{BLUE} in any subdirectory of your project "
+        f"instead of using {RESET}./pw{BLUE}. You can also use {RESET}pxg{BLUE} to run commands from "
+        f"the global pyprojectx directory, f.e. {RESET}pxg download-pw{BLUE} to download the latest version "
+        "of the pw script in the current directory.",
         file=sys.stderr,
     )
     if options.cmd and "skip-path" in options.cmd:
