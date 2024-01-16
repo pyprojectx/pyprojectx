@@ -28,11 +28,17 @@ UPGRADE_INSTRUCTIONS_WIN = (
     " Remove-Item -Path wrappers.zip"
 )
 
-DEFAULT_GLOBAL_CINFIG = f"""[tool.pyprojectx]
+DOWNLOAD_ALIAS = (
+    f'{{ cmd = "{UPGRADE_INSTRUCTIONS_WIN}", shell = "powershell" }}'
+    if sys.platform.startswith("win")
+    else f'"{UPGRADE_INSTRUCTIONS}"'
+)
+
+DEFAULT_GLOBAL_CONFIG = f"""[tool.pyprojectx]
 cwd = "."
 
 [tool.pyprojectx.aliases]
-download-pw = "{UPGRADE_INSTRUCTIONS if not sys.platform.startswith('win') else UPGRADE_INSTRUCTIONS_WIN}"
+download-pw = {DOWNLOAD_ALIAS}
 """
 
 
@@ -51,7 +57,7 @@ def install_px(options):
     shutil.copy2(wrapper_dir.joinpath(f"px{SCRIPT_EXTENSION}"), global_dir.parent)
     shutil.copy2(wrapper_dir.joinpath(f"pxg{SCRIPT_EXTENSION}"), global_dir.parent)
     with global_dir.joinpath("pyproject.toml").open("w") as f:
-        f.write(DEFAULT_GLOBAL_CINFIG)
+        f.write(DEFAULT_GLOBAL_CONFIG)
 
     print(
         f"{BLUE}Global Pyprojectx scripts are installed in your home directory. "
