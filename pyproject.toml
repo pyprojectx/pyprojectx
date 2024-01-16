@@ -79,7 +79,7 @@ build = ["@install", "@check", "pdm build"]
 # used in github actions:
 publish = "pdm publish --username __token__"
 
-generate-usage = "./pw --help > docs/docs/usage.txt"
+generate-usage = "pdm run python -m pyprojectx.wrapper.pw --help > docs/docs/usage.txt"
 serve-docs = { cmd = "mkdocs serve", cwd = "docs" }
 generate-docs = { cmd = "@generate-usage && mkdocs build", cwd = "docs" }
 deploy-docs = { cmd = "mkdocs gh-deploy", cwd = "docs" }
