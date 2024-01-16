@@ -253,6 +253,10 @@ def _show_upgrade_instructions():
         print(UPGRADE_INSTRUCTIONS_WIN)
     else:
         print(UPGRADE_INSTRUCTIONS)
+    print(
+        f"{pw.BLUE}If your installed {pw.CYAN}px{pw.BLUE}, you can download the latest pw scripts "
+        f"to the current directory by executing:{pw.RESET}\npxg download-pw",
+    )
 
 
 def _install_ctx(options, config, pw_args):

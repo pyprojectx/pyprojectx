@@ -1,3 +1,13 @@
+Release v2.0.3 (2024-01-16)
+----------------------------
+### Features & Improvements
+- #59 px should have an init command that adds the pw script to the current folder
+
+Release v2.0.2 (2024-01-10)
+----------------------------
+### Bug Fixes
+- #68 pxg commands don't run in the current directory
+
 Release v2.0.1 (2024-01-05)
 ----------------------------
 ### Features & Improvements
