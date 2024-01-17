@@ -219,7 +219,7 @@ def test_run_script_with_args(tmp_project):
 locked_requirements = {
     "main": {"hash": "0847ad891da4272b514080caa1eb825f", "requirements": ["px-utils==1.1.0"]},
     "tool-with-known-requirements": {
-        "hash": "2d83596ca945ef6a6aaa7e0db9ea8e57",
+        "hash": "d38ebcc846fc99fe583218af16f35eb5",
         "requirements": [
             "click==8.1.7",
             "colorama==0.4.6",
@@ -231,7 +231,7 @@ locked_requirements = {
             "userpath==1.9.1",
             "virtualenv==20.24.6",
         ],
-        "post-install": "mkdir post-install-table-dir",
+        "post-install": "@post-install-action",
     },
 }
 if not sys.platform.startswith("win"):
@@ -277,19 +277,9 @@ def test_automatic_lock_update(tmp_lock_project):
     assert re.sub(r"\s*\[notice].*\n", "", error_output).strip() == ""
     lock_content = load_toml(lock_file)
     assert lock_content["tool-with-known-requirements"] == locked_requirements["tool-with-known-requirements"]
-    assert not lock_content.get("main")
+    assert lock_content["main"] == locked_requirements["main"]
     # check that the post-install script was run
     assert Path(project_dir, "post-install-table-dir").exists()
-
-    cmd = f"{SCRIPT_PREFIX}pw pxrm foo/bar"
-    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
-    if proc_result.returncode:
-        print(proc_result.stderr.decode("utf-8"))
-    assert "locking" in proc_result.stderr.decode("utf-8")
-
-    lock_content = load_toml(lock_file)
-    assert lock_content["tool-with-known-requirements"] == locked_requirements["tool-with-known-requirements"]
-    assert lock_content["main"] == locked_requirements["main"]
 
     # requirements with editable installs should not be locked
     cmd = f"{SCRIPT_PREFIX}pw -q no-lock-cmd"

@@ -274,5 +274,6 @@ def _install_ctx(options, config, pw_args):
 def _lock_requirements(argv, config, options):
     config.lock_file.unlink(missing_ok=True)
     config.lock_file.touch()
+    argv.remove("--lock")
     for ctx in config.get_context_names():
         _ensure_ctx(config, ctx, env=config.env, options=options, pw_args=argv)
