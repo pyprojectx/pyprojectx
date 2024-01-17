@@ -1,3 +1,8 @@
+Release v2.0.6 (2024-01-17)
+----------------------------
+### Bug Fixes
+- #75 locking loops forever when the post-install action is an alias
+
 Release v2.0.5 (2024-01-17)
 ----------------------------
 ### Bug Fixes
