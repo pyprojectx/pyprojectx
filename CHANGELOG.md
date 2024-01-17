@@ -1,3 +1,8 @@
+Release v2.0.4 (2024-01-17)
+----------------------------
+### Bug Fixes
+- #70 incorrect hash in lock file
+
 Release v2.0.3 (2024-01-16)
 ----------------------------
 ### Features & Improvements
