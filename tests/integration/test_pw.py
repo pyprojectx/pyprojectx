@@ -222,6 +222,7 @@ locked_requirements = {
         "hash": "2d83596ca945ef6a6aaa7e0db9ea8e57",
         "requirements": [
             "click==8.1.7",
+            "colorama==0.4.6",
             "distlib==0.3.7",
             "filelock==3.13.1",
             "platformdirs==3.11.0",
