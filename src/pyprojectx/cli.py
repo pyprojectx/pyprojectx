@@ -7,9 +7,8 @@ from typing import List, Union
 
 from pyprojectx.config import MAIN, AliasCommand, Config
 from pyprojectx.env import IsolatedVirtualEnv
-from pyprojectx.hash import calculate_hash
 from pyprojectx.install_global import UPGRADE_INSTRUCTIONS, UPGRADE_INSTRUCTIONS_WIN, install_px
-from pyprojectx.lock import can_lock, get_locked_requirements, lock
+from pyprojectx.lock import get_or_update_locked_requirements
 from pyprojectx.log import logger, set_verbosity
 from pyprojectx.requirements import add_requirement
 from pyprojectx.wrapper import pw
@@ -43,7 +42,7 @@ def _run(argv: List[str]) -> None:
         return
 
     if options.lock:
-        lock(config, options.venvs_dir, options.quiet)
+        _lock_requirements(argv, config, options)
         return
 
     cmd = options.cmd
@@ -175,22 +174,22 @@ def _run_script(script: str, options, config) -> None:
 # ruff: noqa: PLR0913
 def _run_in_ctx(ctx: str, full_cmd: Union[str, List[str]], options, pw_args, config, env, cwd) -> None:
     logger.debug("Running command in virtual environment, ctx: %s, full command: %s", ctx, full_cmd)
-    venv = _ensure_ctx(config, ctx, cwd, env, options, pw_args)
+    venv = _ensure_ctx(config, ctx, env, options, pw_args)
     try:
         venv.run(full_cmd, env, cwd)
     except subprocess.CalledProcessError as e:
         raise SystemExit(e.returncode) from e
 
 
-def _ensure_ctx(config, ctx, cwd, env, options, pw_args):
-    requirements, modified = _update_locked_requirements(ctx, config, options)
+def _ensure_ctx(config, ctx, env, options, pw_args):
+    requirements, modified = get_or_update_locked_requirements(ctx, config, options.venvs_dir, options.quiet)
     venv = IsolatedVirtualEnv(options.venvs_dir, ctx, requirements)
     if not venv.is_installed or options.force_install or modified:
         try:
             venv.install(quiet=options.quiet)
             if requirements.get("post-install"):
                 post_install_cmd = _resolve_references(requirements["post-install"], pw_args, config=config)
-                venv.run(post_install_cmd, env, cwd)
+                venv.run(post_install_cmd, env, config.get_cwd())
         except subprocess.CalledProcessError as e:
             print(
                 f"{pw.RED}PYPROJECTX ERROR: installation of '{ctx}' failed with exit code {e.returncode}{pw.RESET}",
@@ -269,16 +268,11 @@ def _install_ctx(options, config, pw_args):
         options=options,
         pw_args=pw_args,
         env={},
-        cwd=".",
     )
 
 
-def _update_locked_requirements(ctx, config, options):
-    requirements = config.get_requirements(ctx)
-    if not config.lock_file.exists() or not can_lock(requirements):
-        return requirements, False
-    locked_requirements = get_locked_requirements(ctx, config.lock_file)
-    if locked_requirements["hash"] == calculate_hash(requirements):
-        return locked_requirements, False
-    all_requirements = lock(config, options.venvs_dir, options.quiet, ctx)
-    return all_requirements[ctx], True
+def _lock_requirements(argv, config, options):
+    config.lock_file.unlink(missing_ok=True)
+    config.lock_file.touch()
+    for ctx in config.get_context_names():
+        _ensure_ctx(config, ctx, env=config.env, options=options, pw_args=argv)

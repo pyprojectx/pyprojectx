@@ -253,6 +253,8 @@ def test_lock(tmp_lock_project):
     lock_content = load_toml(lock_file)
     assert lock_content["main"] == locked_requirements["main"]
     assert lock_content["tool-with-known-requirements"] == locked_requirements["tool-with-known-requirements"]
+    # check that the post-install script was run
+    assert Path(project_dir, "post-install-table-dir").exists()
 
 
 def test_automatic_lock_update(tmp_lock_project):
@@ -261,6 +263,9 @@ def test_automatic_lock_update(tmp_lock_project):
     lock_file = project_dir / "pw.lock"
     outdated = data_dir / "outdated.lock"
     shutil.copy(outdated, lock_file)
+    post_install_table_dir = project_dir / "post-install-table-dir"
+    if post_install_table_dir.exists():
+        post_install_table_dir.rmdir()
 
     cmd = f"{SCRIPT_PREFIX}pw -q show-version"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
