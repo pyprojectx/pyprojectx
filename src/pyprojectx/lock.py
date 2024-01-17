@@ -63,13 +63,13 @@ def lock(config: Config, venvs_dir: Path, quiet, ctx_name=None) -> dict:
 def _lock_ctx(ctx_name, requirements, toml, venvs_dir, quiet):
     if ctx_name not in toml:
         toml[ctx_name] = tomlkit.table()
-    ctx = toml[ctx_name]
+    toml_ctx = toml[ctx_name]
     locked_requirements = _freeze(ctx_name, requirements, venvs_dir, quiet)
-    ctx["requirements"] = locked_requirements
-    ctx["hash"] = calculate_hash(requirements)
+    toml_ctx["requirements"] = locked_requirements
+    toml_ctx["hash"] = calculate_hash(requirements)
     post_install = requirements.get("post-install")
     if post_install:
-        ctx["post-install"] = post_install
+        toml_ctx["post-install"] = post_install
 
 
 def _freeze(ctx_name, requirements, venvs_dir, quiet):

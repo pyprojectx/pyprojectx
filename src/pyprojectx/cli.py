@@ -183,9 +183,9 @@ def _run_in_ctx(ctx: str, full_cmd: Union[str, List[str]], options, pw_args, con
 
 
 def _ensure_ctx(config, ctx, cwd, env, options, pw_args):
-    requirements = _update_locked_requirements(ctx, config, options)
+    requirements, modified = _update_locked_requirements(ctx, config, options)
     venv = IsolatedVirtualEnv(options.venvs_dir, ctx, requirements)
-    if not venv.is_installed or options.force_install:
+    if not venv.is_installed or options.force_install or modified:
         try:
             venv.install(quiet=options.quiet)
             if requirements.get("post-install"):
@@ -276,9 +276,9 @@ def _install_ctx(options, config, pw_args):
 def _update_locked_requirements(ctx, config, options):
     requirements = config.get_requirements(ctx)
     if not config.lock_file.exists() or not can_lock(requirements):
-        return requirements
+        return requirements, False
     locked_requirements = get_locked_requirements(ctx, config.lock_file)
     if locked_requirements["hash"] == calculate_hash(requirements):
-        return locked_requirements
+        return locked_requirements, False
     all_requirements = lock(config, options.venvs_dir, options.quiet, ctx)
-    return all_requirements[ctx]
+    return all_requirements[ctx], True

@@ -219,19 +219,19 @@ def test_run_script_with_args(tmp_project):
 locked_requirements = {
     "main": {"hash": "0847ad891da4272b514080caa1eb825f", "requirements": ["px-utils==1.1.0"]},
     "tool-with-known-requirements": {
-        "hash": "1af658158bd6e34e51157b81c6b3fdd5",
+        "hash": "2d83596ca945ef6a6aaa7e0db9ea8e57",
         "requirements": [
-            "click==8.1.3",
+            "click==8.1.7",
             "colorama==0.4.6",
-            "distlib==0.3.6",
-            "filelock==3.11.0",
-            "platformdirs==3.2.0",
-            "pyprojectx==1.0.1",
-            "tomli==2.0.1",
-            "userpath==1.8.0",
-            "virtualenv==20.23.0",
+            "distlib==0.3.7",
+            "filelock==3.13.1",
+            "platformdirs==3.11.0",
+            "pyprojectx==2.0.0",
+            "tomlkit==0.12.3",
+            "userpath==1.9.1",
+            "virtualenv==20.24.6",
         ],
-        "post-install": "pxmkdirs post-install-table-dir",
+        "post-install": "mkdir post-install-table-dir",
     },
 }
 if not sys.platform.startswith("win"):
@@ -267,20 +267,20 @@ def test_automatic_lock_update(tmp_lock_project):
     if proc_result.returncode:
         print(proc_result.stderr.decode("utf-8"))
 
-    assert proc_result.stdout.decode("utf-8").strip() == "1.0.1"
+    assert proc_result.stdout.decode("utf-8").strip() == "2.0.0"
     error_output = proc_result.stderr.decode("utf-8")
     assert re.sub(r"\s*\[notice].*\n", "", error_output).strip() == ""
     lock_content = load_toml(lock_file)
     assert lock_content["tool-with-known-requirements"] == locked_requirements["tool-with-known-requirements"]
     assert not lock_content.get("main")
+    # check that the post-install script was run
+    assert Path(project_dir, "post-install-table-dir").exists()
 
     cmd = f"{SCRIPT_PREFIX}pw pxrm foo/bar"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
     if proc_result.returncode:
         print(proc_result.stderr.decode("utf-8"))
     assert "locking" in proc_result.stderr.decode("utf-8")
-    # check that the post-install script was run
-    assert Path(project_dir, "post-install-table-dir").exists()
 
     lock_content = load_toml(lock_file)
     assert lock_content["tool-with-known-requirements"] == locked_requirements["tool-with-known-requirements"]
@@ -300,7 +300,7 @@ def test_requirements_from_lock_are_used(tmp_lock_project):
     lock_file = project_dir / "pw.lock"
     test_lock_file = data_dir / "test-use-lock-requirements.lock"
     shutil.copy(test_lock_file, lock_file)
-    for path in (project_dir / ".pyprojectx/venvs/main").glob("main*"):
+    for path in (project_dir / ".pyprojectx/venvs").glob("main*"):  # remove the tool contexts from other test runs
         shutil.rmtree(path)
 
     cmd = f"{SCRIPT_PREFIX}pw prm foo/bar"  # lock file has px-utils==1.0.0 which uses prm instead of pxrm
