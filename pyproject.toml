@@ -1,6 +1,6 @@
 [project]
 name = "pyprojectx"
-version = "2.0.1.dev"
+version = "2.0.5.dev"
 description = "Execute scripts from pyproject.toml, installing tools on-the-fly"
 license = { text = "MIT" }
 authors = [{ name = "Houbie", email = "ivo@houbrechts-it.be" }]
@@ -21,7 +21,7 @@ dependencies = [
 ]
 
 [tool.pdm]
-plugins = ["pdm-buildlocked"]
+plugins = ["pdm-build-locked"]
 [tool.pdm.build]
 buildlocked = true
 [tool.pdm.dev-dependencies]

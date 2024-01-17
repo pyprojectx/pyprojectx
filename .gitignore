@@ -140,3 +140,4 @@ dmypy.json
 /.pdm-python
 /.pdm-build/
 /.ruff_cache/
+/.pdm-plugins/
