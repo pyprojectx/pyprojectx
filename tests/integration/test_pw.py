@@ -233,6 +233,8 @@ locked_requirements = {
         "post-install": "mkdir post-install-table-dir",
     },
 }
+if not sys.platform.startswith("win"):
+    locked_requirements["tool-with-known-requirements"]["requirements"].remove("colorama==0.4.6")
 
 
 def test_lock(tmp_lock_project):
