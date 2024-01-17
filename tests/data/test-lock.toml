@@ -2,8 +2,8 @@
 main = "px-utils==1.1.0"
 
 [tool.pyprojectx.tool-with-known-requirements]
-requirements = "pyprojectx==1.0.1"
-post-install = "pxmkdirs post-install-table-dir"
+requirements = "pyprojectx==2.0.0"
+post-install = "mkdir post-install-table-dir"
 
 [tool.pyprojectx.no-lock]
 # requirements with editable installs should not be locked

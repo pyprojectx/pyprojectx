@@ -26,7 +26,7 @@ class IsolatedVirtualEnv:
         """
         self._name = name
         self._base_path = base_path
-        self._hash = calculate_hash(requirements_config)
+        self._hash = requirements_config.get("hash", calculate_hash(requirements_config))
         self._requirements = requirements_config.get("requirements", [])
         self._path = self._compose_path()
         self._scripts_path_file = self._path.joinpath(".scripts_path")
