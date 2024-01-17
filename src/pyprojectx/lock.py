@@ -2,7 +2,7 @@ import re
 import sys
 import tempfile
 from pathlib import Path
-from typing import Optional
+from typing import Tuple
 
 import tomlkit
 
@@ -14,19 +14,6 @@ from pyprojectx.wrapper import pw
 EDITABLE_REGEX = re.compile(r"^--?e")
 
 
-def get_locked_requirements(ctx_name: str, lock_file: Path) -> Optional[dict]:
-    """Get the locked requirements for a context from the lock file.
-
-    :param ctx_name: The name of the context
-    :param lock_file: The path to the lock file
-    :return: The locked requirements for the context
-    """
-    with lock_file.open() as f:
-        toml = tomlkit.load(f)
-    ctx = toml.get(ctx_name, {})
-    return {"requirements": ctx.get("requirements"), "post-install": ctx.get("post-install"), "hash": ctx.get("hash")}
-
-
 def can_lock(requirements_config: dict) -> bool:
     """Whether the requirements can be locked. If the requirements contain editable installs, they cannot be locked.
 
@@ -36,40 +23,40 @@ def can_lock(requirements_config: dict) -> bool:
     return not any(EDITABLE_REGEX.search(req) for req in requirements_config.get("requirements", []))
 
 
-def lock(config: Config, venvs_dir: Path, quiet, ctx_name=None) -> dict:
-    """Lock the requirements for either a single context or all contexts.
+def get_or_update_locked_requirements(ctx: str, config: Config, venvs_dir: Path, quiet) -> Tuple[dict, bool]:
+    """Check if the locked requirements are up-to-date and lock them if needed.
 
+    :param ctx: The context name to lock
     :param config: The config object
     :param venvs_dir: The path to the venvs directory
     :param quiet: Whether to suppress output
-    :param ctx_name: The name of the context to lock. If None, lock all contexts.
-    :return: The contents of the lock file as a dictionary.
+    :return: A tuple with the contents of the requirements dictionary and a bool whether the requirements were updated.
     """
+    requirements = config.get_requirements(ctx)
     lf = config.lock_file
-    if not lf.exists():
-        lf.touch()
+
+    if not lf.exists() or not can_lock(requirements):
+        return requirements, False
+
     with lf.open() as f:
         toml = tomlkit.load(f)
-    ctx_names = [ctx_name] if ctx_name else config.get_context_names()
-    for ctx_name in ctx_names:
-        requirements = config.get_requirements(ctx_name)
-        if can_lock(requirements):
-            _lock_ctx(ctx_name, requirements, toml, venvs_dir, quiet)
-    with lf.open("w") as f:
-        tomlkit.dump(toml, f)
-    return toml
 
+    if ctx not in toml:
+        toml[ctx] = tomlkit.table()
+    toml_ctx = toml[ctx]
+    requirements_hash = calculate_hash(requirements)
+    if toml_ctx.get("hash") == requirements_hash:
+        return toml_ctx, False
 
-def _lock_ctx(ctx_name, requirements, toml, venvs_dir, quiet):
-    if ctx_name not in toml:
-        toml[ctx_name] = tomlkit.table()
-    toml_ctx = toml[ctx_name]
-    locked_requirements = _freeze(ctx_name, requirements, venvs_dir, quiet)
+    locked_requirements = _freeze(ctx, requirements, venvs_dir, quiet)
     toml_ctx["requirements"] = locked_requirements
-    toml_ctx["hash"] = calculate_hash(requirements)
+    toml_ctx["hash"] = requirements_hash
     post_install = requirements.get("post-install")
     if post_install:
         toml_ctx["post-install"] = post_install
+    with lf.open("w") as f:
+        tomlkit.dump(toml, f)
+    return toml_ctx, True
 
 
 def _freeze(ctx_name, requirements, venvs_dir, quiet):

@@ -1,3 +1,8 @@
+Release v2.0.5 (2024-01-17)
+----------------------------
+### Bug Fixes
+- #72 locking does not execute post-install scripts
+
 Release v2.0.4 (2024-01-17)
 ----------------------------
 ### Bug Fixes
