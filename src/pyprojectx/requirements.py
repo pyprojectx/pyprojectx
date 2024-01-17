@@ -8,7 +8,7 @@ from pyprojectx.config import MAIN, Config
 from pyprojectx.env import IsolatedVirtualEnv
 from pyprojectx.wrapper import pw
 
-requirment_regexp = re.compile(r"^([^=<>~!]+)")
+requirement_regexp = re.compile(r"^([^=<>~!]+)")
 
 
 def add_requirement(requirement: str, toml_path: Path, venvs_dir: Path, quiet: bool):
@@ -64,7 +64,7 @@ def _get_or_add_requirements(toml, ctx: str):
 
 
 def _check_already_met(requirements, req_spec, ctx):
-    match = requirment_regexp.match(req_spec)
+    match = requirement_regexp.match(req_spec)
     if match:
         req_name = match[1]
         for r in requirements:
