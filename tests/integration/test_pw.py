@@ -48,8 +48,6 @@ def test_logs_and_stdout_with_quiet(tmp_project):
 
 """.replace("\n", os.linesep)
     )
-    if not sys.platform.startswith("win") and not sys.version_info < (3, 9):
-        assert not _skip_pip_messages(proc_result.stderr.decode("utf-8"))
 
     cmd = f"{SCRIPT_PREFIX}pw -q list-files *.toml"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
@@ -150,8 +148,6 @@ def test_post_install(tmp_project):
 
 """.replace("\n", os.linesep)
     )
-    if not sys.platform.startswith("win") and not sys.version_info < (3, 9):
-        assert not _skip_pip_messages(proc_result.stderr.decode("utf-8"))
 
     cmd = f"{SCRIPT_PREFIX}pw -q list-files *.txt"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)

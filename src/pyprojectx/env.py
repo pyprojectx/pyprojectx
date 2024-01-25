@@ -16,7 +16,6 @@ from pyprojectx.log import logger
 class _EnvBuilder(EnvBuilder):
     def __init__(self):
         super().__init__(with_pip=True)
-        self.upgrade_deps = True  # only available in python 3.9+
         self.scripts_path = None
         self.executable = None
 
