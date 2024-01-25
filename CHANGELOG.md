@@ -1,3 +1,8 @@
+Release v2.0.7 (2024-01-25)
+----------------------------
+### Features & Improvements
+- #76 --lock also installs non-lockable tool contexts
+
 Release v2.0.6 (2024-01-17)
 ----------------------------
 ### Bug Fixes
