@@ -12,6 +12,7 @@ SCRIPT_PREFIX = ".\\" if sys.platform.startswith("win") else "./"
 
 pip_upgrade_regex = re.compile(r"\s*\[notice] A new release of pip.+upgrade pip\s*", re.DOTALL)
 pip_warning_regex = re.compile(r"\s*WARNING: There was an error checking the latest version of pip\.\s*", re.DOTALL)
+pip_warning_windows_regex = re.compile(r"\s*WARNING: You are using pip version.+--upgrade pip' command\.\s*", re.DOTALL)
 data_dir = Path(__file__).parent.parent / "data"
 
 
@@ -321,4 +322,4 @@ def load_toml(path):
 
 
 def _skip_pip_messages(output):
-    return pip_warning_regex.sub("", pip_upgrade_regex.sub("", output))
+    return pip_warning_windows_regex.sub("", pip_warning_regex.sub("", pip_upgrade_regex.sub("", output)))
