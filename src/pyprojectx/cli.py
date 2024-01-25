@@ -8,7 +8,7 @@ from typing import List, Union
 from pyprojectx.config import MAIN, AliasCommand, Config
 from pyprojectx.env import IsolatedVirtualEnv
 from pyprojectx.install_global import UPGRADE_INSTRUCTIONS, UPGRADE_INSTRUCTIONS_WIN, install_px
-from pyprojectx.lock import get_or_update_locked_requirements
+from pyprojectx.lock import can_lock, get_or_update_locked_requirements
 from pyprojectx.log import logger, set_verbosity
 from pyprojectx.requirements import add_requirement
 from pyprojectx.wrapper import pw
@@ -276,4 +276,5 @@ def _lock_requirements(argv, config, options):
     config.lock_file.touch()
     argv.remove("--lock")
     for ctx in config.get_context_names():
-        _ensure_ctx(config, ctx, env=config.env, options=options, pw_args=argv)
+        if can_lock(config.get_requirements(ctx)):
+            _ensure_ctx(config, ctx, env=config.env, options=options, pw_args=argv)

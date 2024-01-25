@@ -255,6 +255,7 @@ def test_lock(tmp_lock_project):
     assert lock_content["tool-with-known-requirements"] == locked_requirements["tool-with-known-requirements"]
     # check that the post-install script was run
     assert Path(project_dir, "post-install-table-dir").exists()
+    assert not list(Path(project_dir, ".pyprojectx/venvs").glob("no-lock*"))
 
 
 def test_automatic_lock_update(tmp_lock_project):
