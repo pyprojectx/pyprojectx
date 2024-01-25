@@ -15,8 +15,7 @@ classifiers = [
 requires-python = ">=3.8"
 
 dependencies = [
-    "userpath==1.9.1",
-    "virtualenv==20.24.6",
+    "userpath>=1.9.1",
     "tomlkit>=0.12.3",
 ]
 
@@ -26,7 +25,7 @@ plugins = ["pdm-build-locked"]
 buildlocked = true
 [tool.pdm.dev-dependencies]
 test = [
-    "pytest>=7.4.3",
+    "pytest>=7.4.4",
     "pytest-mock>=3.12.0",
 ]
 

@@ -11,6 +11,7 @@ import tomlkit
 SCRIPT_PREFIX = ".\\" if sys.platform.startswith("win") else "./"
 
 pip_upgrade_regex = re.compile(r"\s*\[notice] A new release of pip.+upgrade pip\s*", re.DOTALL)
+pip_warning_regex = re.compile(r"\s*WARNING: There was an error checking the latest version of pip\.\s*", re.DOTALL)
 data_dir = Path(__file__).parent.parent / "data"
 
 
@@ -47,8 +48,8 @@ def test_logs_and_stdout_with_quiet(tmp_project):
 
 """.replace("\n", os.linesep)
     )
-    if not sys.platform.startswith("win"):
-        assert not pip_upgrade_regex.sub("", proc_result.stderr.decode("utf-8"))
+    if not sys.platform.startswith("win") and not sys.version_info < (3, 9):
+        assert not _skip_pip_messages(proc_result.stderr.decode("utf-8"))
 
     cmd = f"{SCRIPT_PREFIX}pw -q list-files *.toml"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
@@ -149,8 +150,8 @@ def test_post_install(tmp_project):
 
 """.replace("\n", os.linesep)
     )
-    if not sys.platform.startswith("win"):
-        assert not pip_upgrade_regex.sub("", proc_result.stderr.decode("utf-8"))
+    if not sys.platform.startswith("win") and not sys.version_info < (3, 9):
+        assert not _skip_pip_messages(proc_result.stderr.decode("utf-8"))
 
     cmd = f"{SCRIPT_PREFIX}pw -q list-files *.txt"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
@@ -275,7 +276,7 @@ def test_automatic_lock_update(tmp_lock_project):
 
     assert proc_result.stdout.decode("utf-8").strip() == "2.0.0"
     error_output = proc_result.stderr.decode("utf-8")
-    assert re.sub(r"\s*\[notice].*\n", "", error_output).strip() == ""
+    assert _skip_pip_messages(error_output).strip() == ""
     lock_content = load_toml(lock_file)
     assert lock_content["tool-with-known-requirements"] == locked_requirements["tool-with-known-requirements"]
     assert lock_content["main"] == locked_requirements["main"]
@@ -321,3 +322,7 @@ def test_shell(tmp_project):
 def load_toml(path):
     with path.open() as f:
         return tomlkit.load(f)
+
+
+def _skip_pip_messages(output):
+    return pip_warning_regex.sub("", pip_upgrade_regex.sub("", output))

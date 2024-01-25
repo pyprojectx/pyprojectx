@@ -7,11 +7,23 @@ import sys
 import tempfile
 from pathlib import Path
 from typing import List, Optional, Union
-
-import virtualenv
+from venv import EnvBuilder
 
 from pyprojectx.hash import calculate_hash
 from pyprojectx.log import logger
+
+
+class _EnvBuilder(EnvBuilder):
+    def __init__(self):
+        super().__init__(with_pip=True)
+        self.upgrade_deps = True  # only available in python 3.9+
+        self.scripts_path = None
+        self.executable = None
+
+    def post_setup(self, context):
+        super().post_setup(context)
+        self.scripts_path = Path(context.bin_path).absolute()
+        self.executable = self.scripts_path / context.python_exe
 
 
 class IsolatedVirtualEnv:
@@ -70,9 +82,10 @@ class IsolatedVirtualEnv:
     def _create_virtual_env(self) -> Path:
         cmd = [str(self.path), "--no-setuptools", "--no-wheel", "--activators", ""]
         logger.debug("Calling virtualenv.cli_run: %s", " ".join(cmd))
-        result = virtualenv.cli_run(cmd, setup_logging=False)
-        scripts_dir = result.creator.script_dir
-        self._executable = result.creator.exe
+        env_builder = _EnvBuilder()
+        env_builder.create(self.path)
+        scripts_dir = env_builder.scripts_path
+        self._executable = env_builder.executable
         return scripts_dir
 
     def _install_requirements(self, quiet=False):
@@ -122,8 +135,8 @@ class IsolatedVirtualEnv:
         :return: The subprocess.CompletedProcess instance
         """
         logger.info("Running command in isolated venv %s: %s", self.name, cmd)
-        logger.debug("Adding scripts path to PATH: %s", self.scripts_path.absolute())
-        path = os.pathsep.join((str(self.scripts_path.absolute()), os.environ.get("PATH", os.defpath)))
+        logger.debug("Adding scripts path to PATH: %s", self.scripts_path)
+        path = os.pathsep.join((str(self.scripts_path), os.environ.get("PATH", os.defpath)))
         extra_environ = {"PATH": path}
         if isinstance(cmd, List):
             cmd[0] = shutil.which(cmd[0], path=path) or cmd[0]
