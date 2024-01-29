@@ -141,3 +141,4 @@ dmypy.json
 /.pdm-build/
 /.ruff_cache/
 /.pdm-plugins/
+/.release-changelog.md

@@ -1,9 +1,14 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - "[0-9]+.[0-9]+.[0-9]+*"
+  # Release is only done manually
+  workflow_dispatch:
+    branches:
+      - main
+    inputs:
+      release_version:
+        description: 'Which version to release'
+        required: true
 
 jobs:
   release-pypi:
@@ -18,13 +23,14 @@ jobs:
 
       - name: Build release
         run: |
-          ./pw prep-release
+          ./pw prep-release ${{ inputs.release_version }}
           ./pw build
+          git push origin ${{ inputs.release_version }}
 
       - name: Create github release
         uses: softprops/action-gh-release@v1
         with:
-          body_path: .changelog.md
+          body_path: .release-changelog.md
           files: wrappers.zip
 
       - name: Publish to Pypi
