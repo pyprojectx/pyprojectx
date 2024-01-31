@@ -2,7 +2,7 @@
 
 ## Create a new project
 Install common tools:
-- pdm or poetry: dependency management
+- pdm or poetry: dependency management (see [simple projects](#simple-projects) if not required).
 - ruff: linter/formatter
 - pre-commit: git hooks for formatting and linting
 - px-utils: cross-platform file operations
@@ -26,6 +26,29 @@ pw pdm init
 pw --add poetry,ruff,pre-commit,px-utils
 pw poetry init
 ```
+
+## Simple projects
+If you don't need dependency management (f.e. when you don't have any dependencies),
+Pyprojectx can create your virtual environment and install test dependencies.
+
+```toml
+[tool.pyprojectx]
+[tool.pyprojectx.main]
+requirements = ["pre-commit", "black", "isort", "mypy", "px-utils"]
+post-install = "pre-commit install && pw@ --install-context venv"
+
+[tool.pyprojectx.venv]
+dir = "@PROJECT_DIR/.venv"
+# install your project in editable mode; this assumes that your project is installable
+requirements = ["pytest==8.0.0", "-e ."]
+
+[tool.pyprojectx.aliases]
+format = ["black src", "isort src"]
+lint = "mypy --python-executable .venv/bin/python --no-incremental"
+test = { cmd = "pytest", ctx = "venv" }
+```
+
+After running any alias (f.e. `./pw test`), you can activate the virtual environment with `source .venv/bin/activate`.
 
 
 ## Build scripts

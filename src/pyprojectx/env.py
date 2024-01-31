@@ -28,7 +28,7 @@ class IsolatedVirtualEnv:
         self._base_path = base_path
         self._hash = requirements_config.get("hash", calculate_hash(requirements_config))
         self._requirements = requirements_config.get("requirements", [])
-        self._path = self._compose_path()
+        self._path = Path(requirements_config["dir"]) if requirements_config.get("dir") else self._compose_path()
         self._scripts_path_file = self._path.joinpath(".scripts_path")
         self._executable = None
 
@@ -68,7 +68,7 @@ class IsolatedVirtualEnv:
             sf.write(str(scripts_dir))
 
     def _create_virtual_env(self) -> Path:
-        cmd = [str(self.path), "--no-setuptools", "--no-wheel", "--activators", ""]
+        cmd = [str(self.path), "--no-setuptools", "--no-wheel"]
         logger.debug("Calling virtualenv.cli_run: %s", " ".join(cmd))
         result = virtualenv.cli_run(cmd, setup_logging=False)
         scripts_dir = result.creator.script_dir

@@ -20,7 +20,9 @@ def can_lock(requirements_config: dict) -> bool:
     :param requirements_config: requirements config dictionary
     :return: True if the requirements can be locked, False otherwise
     """
-    return not any(EDITABLE_REGEX.search(req) for req in requirements_config.get("requirements", []))
+    return not requirements_config.get("dir") and not any(
+        EDITABLE_REGEX.search(req) for req in requirements_config.get("requirements", [])
+    )
 
 
 def get_or_update_locked_requirements(ctx: str, config: Config, venvs_dir: Path, quiet) -> Tuple[dict, bool]:

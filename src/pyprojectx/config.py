@@ -106,6 +106,7 @@ class Config:
         """
         requirements_config = self._contexts.get(key)
         post_install = None
+        venv_dir = None
         requirements = []
         if isinstance(requirements_config, str):
             requirements = requirements_config.splitlines()
@@ -118,7 +119,10 @@ class Config:
             if isinstance(reqs, list):
                 requirements = reqs
             post_install = requirements_config.get("post-install")
-        return {"requirements": sorted(requirements), "post-install": post_install}
+            venv_dir = requirements_config.get("dir")
+            if venv_dir:
+                venv_dir = venv_dir.replace(PROJECT_DIR, self.project_dir)
+        return {"requirements": sorted(requirements), "post-install": post_install, "dir": venv_dir}
 
     def get_ctx_or_main(self, ctx=None):
         """Return the given context if it exists, otherwise return the main context if it exists.

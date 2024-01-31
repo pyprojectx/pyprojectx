@@ -20,6 +20,8 @@ tool-5-req1
 tool-5-req2
 """, post-install = "tool-5 && pw@alias-1" }
 
+venv = { requirements = "venv-requirement", dir = "venv-dir" }
+
 [tool.pyprojectx.aliases]
 alias-1 = 'tool-1 arg'
 alias-2 = 'tool-2 arg1 arg2'

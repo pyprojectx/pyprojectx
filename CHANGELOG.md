@@ -1,3 +1,6 @@
+### Features & Improvements
+- #80 add support to create a project virtual environment
+
 Release v2.0.7 (2024-01-25)
 ----------------------------
 ### Features & Improvements

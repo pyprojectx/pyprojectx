@@ -3,6 +3,7 @@ main = { requirements = ["px-utils"], post-install = "pxmkdirs post-install-dir"
 
 pycowsay = "pycowsay==0.0.0.1"
 failing-install = "pycowsay==123.456.789.0"
+venv = { requirements = "pycowsay==0.0.0.1", dir = "@PROJECT_DIR/.venv" }
 
 [tool.pyprojectx.post-install-pycowsay]
 requirements = "pycowsay==0.0.0.1"
@@ -38,6 +39,8 @@ ls-pyprojectx = { cwd = "@PROJECT_DIR/.pyprojectx", cmd = "ls -al" }
 echo-env-var = { cmd = "echo $ALIAS_VAR", env = { ALIAS_VAR = "linux-alias-var" } }
 
 install-context-post-install = { cmd = "pycowsay install-context-post-install", ctx = "install-context" }
+
+venv-pycowsay = { cmd = "pycowsay", ctx = "venv" }
 
 [tool.pyprojectx.os.win.aliases]
 list-files = "dir /b"
