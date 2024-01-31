@@ -6,7 +6,7 @@ from pyprojectx.config import MAIN, AliasCommand, Config
 
 def test_no_config():
     config = Config(Path(__file__).parent.with_name("data").joinpath("test-no-config.toml"))
-    assert config.get_requirements("tool") == {"requirements": [], "post-install": None}
+    assert config.get_requirements("tool") == {"requirements": [], "post-install": None, "dir": None}
     assert not config.is_ctx("tool")
     assert config.get_alias("alias") == []
 
@@ -25,25 +25,40 @@ def test_ctx_config():
     config = Config(Path(__file__).parent.with_name("data").joinpath("test.toml"))
 
     assert config.is_ctx("tool-1")
-    assert config.get_requirements("tool-1") == {"requirements": ["req1", "req2"], "post-install": None}
+    assert config.get_requirements("tool-1") == {"requirements": ["req1", "req2"], "post-install": None, "dir": None}
 
     assert config.is_ctx("tool-2")
-    assert config.get_requirements("tool-2") == {"requirements": ["tool2 requirement"], "post-install": None}
+    assert config.get_requirements("tool-2") == {
+        "requirements": ["tool2 requirement"],
+        "post-install": None,
+        "dir": None,
+    }
 
     assert config.is_ctx("tool-3")
-    assert config.get_requirements("tool-3") == {"requirements": ["req1", "req2", "req3"], "post-install": None}
+    assert config.get_requirements("tool-3") == {
+        "requirements": ["req1", "req2", "req3"],
+        "post-install": None,
+        "dir": None,
+    }
 
     assert config.is_ctx("tool-4")
-    assert config.get_requirements("tool-4") == {"requirements": ["tool-4-req1"], "post-install": None}
+    assert config.get_requirements("tool-4") == {"requirements": ["tool-4-req1"], "post-install": None, "dir": None}
 
     assert config.is_ctx("tool-5")
     assert config.get_requirements("tool-5") == {
         "requirements": ["tool-5-req1", "tool-5-req2"],
         "post-install": "tool-5 && pw@alias-1",
+        "dir": None,
+    }
+
+    assert config.get_requirements("venv") == {
+        "requirements": ["venv-requirement"],
+        "post-install": None,
+        "dir": "venv-dir",
     }
 
     assert not config.is_ctx("nope")
-    assert config.get_requirements("nope") == {"requirements": [], "post-install": None}
+    assert config.get_requirements("nope") == {"requirements": [], "post-install": None, "dir": None}
 
 
 def test_alias_config():
