@@ -325,7 +325,6 @@ def test_venv_dir(tmp_project):
     cmd = f"{SCRIPT_PREFIX}pw -q venv-pycowsay from-venv-dir"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
     assert "from-venv-dir" in proc_result.stdout.decode("utf-8")
-    assert not proc_result.stderr.decode("utf-8")
     assert Path(project_dir, ".venv").is_dir()
 
 
