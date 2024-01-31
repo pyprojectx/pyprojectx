@@ -50,6 +50,9 @@ test = { cmd = "pytest", ctx = "venv" }
 
 After running any alias (f.e. `./pw test`), you can activate the virtual environment with `source .venv/bin/activate`.
 
+Use the `-f` of `--force-install` flag to recreate the virtual environment
+after changing the requirements in `[tool.pyprojectx.venv]`, f.e. run `./pw -f test`.
+
 
 ## Build scripts
 Script your development and build flow with aliases:
