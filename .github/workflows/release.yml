@@ -14,6 +14,11 @@ jobs:
   release-pypi:
     name: release-pypi
     runs-on: ubuntu-latest
+    env:
+      # needed to create commit or tag
+      # see https://github.com/orgs/community/discussions/26560#discussioncomment-3531273
+      GIT_COMMITTER_NAME: "github-actions[bot]"
+      GIT_COMMITTER_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
 
     steps:
       - uses: actions/checkout@v3
@@ -25,7 +30,7 @@ jobs:
         run: |
           ./pw prep-release ${{ inputs.release_version }}
           ./pw build
-          git push origin ${{ inputs.release_version }}
+          git push ${{ inputs.release_version }}
 
       - name: Create github release
         uses: softprops/action-gh-release@v1
