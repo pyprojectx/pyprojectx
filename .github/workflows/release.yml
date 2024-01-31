@@ -26,7 +26,7 @@ jobs:
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
           ./pw prep-release ${{ inputs.release_version }}
           ./pw build
-          git push ${{ inputs.release_version }}
+          git push --follow-tags origin ${{ inputs.release_version }}
 
       - name: Create github release
         uses: softprops/action-gh-release@v1

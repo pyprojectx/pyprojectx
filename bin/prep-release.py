@@ -12,7 +12,7 @@ def main(release_version):
     replace_version_in_files(release_version)
     zip_wrappers()
     update_changelog(release_version)
-    subprocess.run(["git", "tag", release_version], check=True)
+    subprocess.run(["git", "tag", "-am", f"Release {release_version} by Github action", release_version], check=True)
 
 
 def cleanup_old_files():
