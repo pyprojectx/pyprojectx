@@ -31,6 +31,7 @@ jobs:
       - name: Create github release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ inputs.release_version }}
           body_path: .release-changelog.md
           files: wrappers.zip
 
