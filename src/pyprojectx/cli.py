@@ -253,7 +253,7 @@ def _show_upgrade_instructions():
     else:
         print(UPGRADE_INSTRUCTIONS)
     print(
-        f"{pw.BLUE}If your installed {pw.CYAN}px{pw.BLUE}, you can download the latest pw scripts "
+        f"{pw.BLUE}If you installed {pw.CYAN}px{pw.BLUE}, you can download the latest pw scripts "
         f"to the current directory by executing:{pw.RESET}\npxg download-pw",
     )
 
