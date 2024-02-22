@@ -138,6 +138,11 @@ or when you run `px --lock` again.
     Updating all tools to the latest version is then as simple as running `px --lock` again.
     In case of conflicts or issues with a new version, you can always revert to the previous version of the lock file.
 
+!!! note "Supporting multiple python versions"
+
+    Make sure to run `px --lock` using the minimum supported python version for your project.
+    This prevents the lock file from containing dependencies that are incompatible with older python versions.
+
 ### Pinning tool versions in _pyproject.toml_
 You can also pin tool versions in _pyproject.toml_:
 
