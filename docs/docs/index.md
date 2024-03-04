@@ -53,8 +53,12 @@ With the wrapper scripts in place, you can start adding tools:
 === "Linux/Mac"
     ```bash
     # initialize a PDM project
-    ./pw --add pdm
+    ./pw --add pdm,ruff,pre-commit,px-utils
     ./pw pdm init
+    # omit './pw' by activating the tool context
+    source .pyprojectx/main/activate
+    pdm --version
+    ruff check src
     # initialize a poetry project
     ./pw --add poetry
     ./pw poetry init
@@ -63,8 +67,12 @@ With the wrapper scripts in place, you can start adding tools:
 === "Windows"
     ```powershell
     # initialize a PDM project
-    pw --add pdm
+    pw --add pdm,ruff,pre-commit,px-utils
     pw pdm init
+    # omit 'pw' by activating the tool context
+    source .pyprojectx/main/activate
+    pdm --version
+    ruff check src
     # initialize a poetry project
     pw --add poetry
     pw poetry init

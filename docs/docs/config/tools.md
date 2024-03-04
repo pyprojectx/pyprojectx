@@ -65,6 +65,13 @@ This makes all the tools in the _main_ context available in your shell.
 
 Alternatively, you can add _.pyprojectx/main_ to your _PATH_.
 
+!!! note "Upgrading from Pyprojectx < 2.1.0"
+
+    If the virtual environment of a tool cotext is already present, you will need to re-create it
+    to use the new activation mechanism, either by removing the _.pyprojectx_ directory or by running
+    any command with the `--force-install` option, f.e. `./pw -f --install-context main`.
+
+
 
 ## Tool context configuration
 

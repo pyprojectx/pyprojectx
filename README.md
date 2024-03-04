@@ -21,7 +21,7 @@ All done! ✨ 🍰 ✨
 ```
 
 ## Feature highlights
-* Reproducible builds by treating tools and utilities as (versioned) dev-dependencies
+* Reproducible builds by treating tools and utilities as (locked) dev-dependencies
 * No global installs, everything is stored inside your project directory (like npm's _node_modules_)
 * Bootstrap your entire build process with a small wrapper script (like Gradle's _gradlew_ wrapper)
 * Configure shortcuts for routine tasks
@@ -55,6 +55,14 @@ Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/downl
 Initialize a new or existing project by adding tools (on Windows, replace `./pw` with `pw`):
 ```bash
 ./pw --add pdm,ruff,pre-commit,px-utils
+./pw --install-context main
+# invoke a tool via the wrapper script
+./pw pdm --version
+./pw ruff check src
+# or activate the tool context
+source .pyprojectx/main/activate
+pdm --version
+ruff check src
 ```
 
 For reproducible builds and developer experience, it is recommended to lock the versions of the tools
