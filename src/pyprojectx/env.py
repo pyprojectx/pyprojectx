@@ -1,5 +1,6 @@
 # ruff: noqa: S324
 """Creates and manages isolated build environments."""
+
 import os
 import shutil
 import subprocess
@@ -108,7 +109,7 @@ class IsolatedVirtualEnv:
     def remove(self):
         """Remove the entire virtual environment."""
         logger.info("Removing isolated environment in %s", self.path)
-        shutil.rmtree(self.path)
+        shutil.rmtree(self.path, ignore_errors=True)
 
     def run(
         self, cmd: Union[str, List[str]], env: dict, cwd: Union[str, bytes, os.PathLike], stdout=None
