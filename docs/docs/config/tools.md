@@ -56,6 +56,16 @@ You only need to prefix them with the`px` or `pw` wrapper script:
     Otherwise, the command will be executed in the virtual environment of the _main_ tool context.
 
 
+## Tool context activation
+
+If you don't want to prefix every command with `px` or `./pw`, you can activate a tool context.
+
+For example, to activate the `main` tool context run `source .pyprojectx/main/activate`.
+This makes all the tools in the _main_ context available in your shell.
+
+Alternatively, you can add _.pyprojectx/main_ to your _PATH_.
+
+
 ## Tool context configuration
 
 In its simplest form, a tool context is a multiline string or array of strings that adheres to pip's [Requirements File Format](https://pip.pypa.io/en/stable/reference/requirements-file-format/#requirements-file-format)
@@ -123,24 +133,26 @@ To achieve reproducible builds, you can lock the versions of all tools that you 
 * pinning tool versions in _pyproject.toml_
 
 ### Creating a _pw.lock_ file
-When you run `px --lock`, a _pw.lock_ file is created in the root directory of your project.
+When you run `./pw --lock`, a _pw.lock_ file is created in the root directory of your project.
 This file should be committed to version control.
 
 This is the recommended way to lock tool versions to guarantee reproducible builds (see [why](/dev-dependencies/#the-unreliable-pip-install))
 
-The lock file is automatically updated when the tool context requirements in _pyproject.toml_ change
-or when you run `px --lock` again.
+The lock file is automatically updated when the tool context requirements in _pyproject.toml_ change.
+
+To upgrade all tools to the latest version (respecting the requirements in _pyproject.toml_),
+combine the _lock_ option with the _force-install_ option: `./pw --lock -f`.
 
 
 !!! tip "Tip: don't specify tool versions in _pyproject.toml_ when using a _pw.lock_ file"
 
     When there is no version specified for a tool, the latest version will be installed and locked.
-    Updating all tools to the latest version is then as simple as running `px --lock` again.
+    Updating all tools to the latest version is then as simple as running `./pw --lock -f` again.
     In case of conflicts or issues with a new version, you can always revert to the previous version of the lock file.
 
 !!! note "Supporting multiple python versions"
 
-    Make sure to run `px --lock` using the minimum supported python version for your project.
+    Make sure to run `./pw --lock` using the minimum supported python version for your project.
     This prevents the lock file from containing dependencies that are incompatible with older python versions.
 
 ### Pinning tool versions in _pyproject.toml_
