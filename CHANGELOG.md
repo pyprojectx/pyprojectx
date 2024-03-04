@@ -1,3 +1,5 @@
+Release v2.1.0 (2024-03-04)
+----------------------------
 ### Features & Improvements
 - #23 Make tool contexts "activatable" so that all tools are available
 - #86 Make is easier to update all locked tool dependencies
