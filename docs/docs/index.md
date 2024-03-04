@@ -92,3 +92,5 @@ With the wrapper scripts in place, you can start adding tools:
         ```powershell
         pw --install-px
         ```
+
+If you don't want to prefix every command with `px` or `./pw`, you [can activate a tool context](/config/tools/#tool-context-activation).

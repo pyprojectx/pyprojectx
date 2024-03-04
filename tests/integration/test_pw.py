@@ -25,6 +25,7 @@ def test_install_ctx(tmp_project):
     assert "Successfully installed pycowsay-0.0.0.1" in proc_result.stderr.decode("utf-8")
     assert "install-context-post-install" in proc_result.stdout.decode("utf-8")
 
+    # check that symlinks to all installed tools are created in .pyprojectx/<ctx>
     pycowsay_script = Path(project_dir, f".pyprojectx/install-context/pycowsay{SCRIPT_SUFFIX}")
     assert pycowsay_script.exists()
     proc_result = subprocess.run(

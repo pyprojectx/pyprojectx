@@ -282,4 +282,6 @@ def _lock_requirements(argv, config, options):
     argv.remove("--lock")
     for ctx in config.get_context_names():
         if can_lock(config.get_requirements(ctx)):
+            if options.force_install:
+                IsolatedVirtualEnv(options.venvs_dir, ctx, config.get_requirements(ctx)).remove()
             _ensure_ctx(config, ctx, env=config.env, options=options, pw_args=argv)
