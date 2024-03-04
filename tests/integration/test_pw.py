@@ -27,7 +27,7 @@ def test_install_ctx(tmp_project):
     pycowsay_script = Path(project_dir, ".pyprojectx/install-context/pycowsay")
     assert pycowsay_script.exists()
     proc_result = subprocess.run(
-        [pycowsay_script, "From symlink!"], capture_output=True, cwd=project_dir, env=env, check=False
+        f"'{pycowsay_script}' 'From symlink!'", shell=True, capture_output=True, cwd=project_dir, env=env, check=False
     )
     if proc_result.returncode:
         print(proc_result.stderr.decode("utf-8"))
