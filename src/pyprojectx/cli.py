@@ -187,6 +187,11 @@ def _ensure_ctx(config, ctx, env, options, pw_args):
     if not venv.is_installed or options.force_install or modified:
         try:
             venv.install(quiet=options.quiet)
+            scripts_path = venv.scripts_path
+            ctx_path = options.install_path / ctx
+            ctx_path.unlink(missing_ok=True)
+            ctx_path.symlink_to(scripts_path, target_is_directory=True)
+
             if requirements.get("post-install"):
                 post_install_cmd = _resolve_references(requirements["post-install"], pw_args, config=config)
                 venv.run(post_install_cmd, env, config.get_cwd())
