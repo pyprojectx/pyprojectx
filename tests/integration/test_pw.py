@@ -9,6 +9,7 @@ import pytest
 import tomlkit
 
 SCRIPT_PREFIX = ".\\" if sys.platform.startswith("win") else "./"
+SCRIPT_SUFFIX = ".exe" if sys.platform.startswith("win") else ""
 
 pip_upgrade_regex = re.compile(r"\s*\[notice] A new release of pip.+upgrade pip\s*", re.DOTALL)
 data_dir = Path(__file__).parent.parent / "data"
@@ -24,10 +25,10 @@ def test_install_ctx(tmp_project):
     assert "Successfully installed pycowsay-0.0.0.1" in proc_result.stderr.decode("utf-8")
     assert "install-context-post-install" in proc_result.stdout.decode("utf-8")
 
-    pycowsay_script = Path(project_dir, ".pyprojectx/install-context/pycowsay")
+    pycowsay_script = Path(project_dir, f".pyprojectx/install-context/pycowsay{SCRIPT_SUFFIX}")
     assert pycowsay_script.exists()
     proc_result = subprocess.run(
-        f"'{pycowsay_script}' 'From symlink!'", shell=True, capture_output=True, cwd=project_dir, env=env, check=False
+        [pycowsay_script, "From symlink!"], capture_output=True, cwd=project_dir, env=env, check=False
     )
     if proc_result.returncode:
         print(proc_result.stderr.decode("utf-8"))
