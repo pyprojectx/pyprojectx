@@ -26,14 +26,14 @@ jobs:
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
           ./pw prep-release ${{ inputs.release_version }}
           ./pw build
-          git push --follow-tags origin ${{ inputs.release_version }}
+          git push --follow-tags origin
 
-      - name: Create github release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ inputs.release_version }}
-          body_path: .release-changelog.md
-          files: wrappers.zip
-
-      - name: Publish to Pypi
-        run: ./pw publish --password ${{ secrets.PYPI_TOKEN }}
+#      - name: Create github release
+#        uses: softprops/action-gh-release@v1
+#        with:
+#          tag_name: ${{ inputs.release_version }}
+#          body_path: .release-changelog.md
+#          files: wrappers.zip
+#
+#      - name: Publish to Pypi
+#        run: ./pw publish --password ${{ secrets.PYPI_TOKEN }}
