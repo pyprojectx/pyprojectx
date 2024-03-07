@@ -1,3 +1,6 @@
+### Bug Fixes
+- #89 Fix px install on Windows for git bash usage
+
 Release v2.1.0 (2024-03-04)
 ----------------------------
 ### Features & Improvements
