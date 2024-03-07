@@ -13,8 +13,6 @@ from pyprojectx.wrapper.pw import (
     RESET,
 )
 
-SCRIPT_EXTENSION = ".bat" if sys.platform.startswith("win") else ""
-
 HOME_DIR = Path(os.environ.get("PYPROJECTX_HOME_DIR", Path.home()))
 
 UPGRADE_INSTRUCTIONS = (
@@ -44,19 +42,20 @@ download-pw = {DOWNLOAD_ALIAS}
 
 def install_px(options):
     """Install the global px and pxg scripts in your home directory."""
-    global_dir = HOME_DIR.joinpath(DEFAULT_INSTALL_DIR, "global")
-    wrapper_dir = Path(__file__).parent.joinpath("wrapper")
+    install_dir = HOME_DIR / DEFAULT_INSTALL_DIR
+    global_dir = install_dir / "global"
+    wrapper_dir = Path(__file__).parent / "wrapper"
     logger.debug("creating global directory %s", global_dir)
     global_dir.mkdir(parents=True, exist_ok=True)
 
-    target_pw = global_dir.joinpath("pw")
+    target_pw = global_dir / "pw"
     if target_pw.exists() and not options.force_install:
         raise Warning(f"{target_pw} {BLUE} already exists, use '--install-px --force-install' to overwrite{RESET}")
 
-    shutil.copy2(wrapper_dir.joinpath("pw.py"), target_pw)
-    shutil.copy2(wrapper_dir.joinpath(f"px{SCRIPT_EXTENSION}"), global_dir.parent)
-    shutil.copy2(wrapper_dir.joinpath(f"pxg{SCRIPT_EXTENSION}"), global_dir.parent)
-    with global_dir.joinpath("pyproject.toml").open("w") as f:
+    shutil.copy2(wrapper_dir / "pw.py", target_pw)
+    for file in wrapper_dir.glob("px*"):
+        shutil.copy2(file, install_dir)
+    with (global_dir / "pyproject.toml").open("w") as f:
         f.write(DEFAULT_GLOBAL_CONFIG)
 
     print(

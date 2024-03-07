@@ -3,8 +3,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-from pyprojectx.install_global import SCRIPT_EXTENSION
-
 SCRIPT_PREFIX = ".\\" if sys.platform.startswith("win") else "./"
 
 
@@ -29,8 +27,10 @@ def test_install_px(tmp_project):
 
     px_dir = cwd.joinpath(".pyprojectx")
     assert px_dir.joinpath("global", "pw").exists()
-    assert px_dir.joinpath(f"px{SCRIPT_EXTENSION}").exists()
-    assert px_dir.joinpath(f"pxg{SCRIPT_EXTENSION}").exists()
+    assert px_dir.joinpath("px").exists()
+    assert px_dir.joinpath("pxg").exists()
+    assert px_dir.joinpath("px.bat").exists()
+    assert px_dir.joinpath("pxg.bat").exists()
     with px_dir.joinpath("global", "pyproject.toml").open("r") as f:
         toml_content = str(f.read())
         assert toml_content.startswith('[tool.pyprojectx]\ncwd = "."\n')
@@ -50,4 +50,5 @@ def test_install_px(tmp_project):
 
 def copy_px(dir_name):
     dir_name.mkdir(parents=True, exist_ok=True)
-    shutil.copy(Path(__file__).parent.parent.joinpath(f"../src/pyprojectx/wrapper/px{SCRIPT_EXTENSION}"), dir_name)
+    shutil.copy(Path(__file__).parent.parent / "../src/pyprojectx/wrapper/px", dir_name)
+    shutil.copy(Path(__file__).parent.parent / "../src/pyprojectx/wrapper/px.bat", dir_name)
