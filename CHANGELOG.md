@@ -5,6 +5,9 @@
 - #90 activate script seems to be broken on windows
 - #91 crashes on windows when symlinks are not allowed
 
+### Documentation
+- fixed windows development instructions in README.md
+
 Release v2.1.1 (2024-03-07)
 ----------------------------
 ### Bug Fixes
