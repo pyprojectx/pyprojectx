@@ -125,5 +125,7 @@ export PYPROJECTX_PACKAGE=path/to/pyprojectx
 ln -s $PYPROJECTX_PACKAGE/src/pyprojectx/wrapper/pw.py pw
 # windows
 set PYPROJECTX_PACKAGE=path/to/pyprojectx
-mklink %PYPROJECTX_PACKAGE%\src\pyprojectx\wrapper\pw.py pw
+mklink pw %PYPROJECTX_PACKAGE%\src\pyprojectx\wrapper\pw.py
+# or copy the wrapper script if you can't create a symlink on windows
+copy %PYPROJECTX_PACKAGE%\src\pyprojectx\wrapper\pw.py pw
 ```
