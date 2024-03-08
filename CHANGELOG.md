@@ -1,3 +1,10 @@
+### Features & Improvements
+- update pip when installing a tool context virtual environment
+
+### Bug Fixes
+- #90 activate script seems to be broken on windows
+- #91 crashes on windows when symlinks are not allowed
+
 Release v2.1.1 (2024-03-07)
 ----------------------------
 ### Bug Fixes
