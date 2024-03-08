@@ -11,7 +11,7 @@ import tomlkit
 SCRIPT_PREFIX = ".\\" if sys.platform.startswith("win") else "./"
 SCRIPT_SUFFIX = ".exe" if sys.platform.startswith("win") else ""
 
-pip_upgrade_regex = re.compile(r"\s*\[notice] A new release of pip.+upgrade pip\s*", re.DOTALL)
+pip_warning_regex = re.compile(r"\s*WARNING:root:pip.+\s*", re.DOTALL)
 data_dir = Path(__file__).parent.parent / "data"
 
 
@@ -60,7 +60,7 @@ def test_logs_and_stdout_with_quiet(tmp_project):
 """.replace("\n", os.linesep)
     )
     if not sys.platform.startswith("win"):
-        assert not pip_upgrade_regex.sub("", proc_result.stderr.decode("utf-8"))
+        assert not pip_warning_regex.sub("", proc_result.stderr.decode("utf-8"))
 
     cmd = f"{SCRIPT_PREFIX}pw -q list-files *.toml"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
@@ -162,7 +162,7 @@ def test_post_install(tmp_project):
 """.replace("\n", os.linesep)
     )
     if not sys.platform.startswith("win"):
-        assert not pip_upgrade_regex.sub("", proc_result.stderr.decode("utf-8"))
+        assert not pip_warning_regex.sub("", proc_result.stderr.decode("utf-8"))
 
     cmd = f"{SCRIPT_PREFIX}pw -q list-files *.txt"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)

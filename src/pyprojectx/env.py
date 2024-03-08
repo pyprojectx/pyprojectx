@@ -30,7 +30,7 @@ class IsolatedVirtualEnv:
         self._hash = requirements_config.get("hash", calculate_hash(requirements_config))
         self._requirements = requirements_config.get("requirements", [])
         self._path = Path(requirements_config["dir"]) if requirements_config.get("dir") else self._compose_path()
-        self._scripts_path_file = self._path.joinpath(".scripts_path")
+        self._scripts_path_file = self._path / ".scripts_path"
         self._executable = None
 
     @property
@@ -60,16 +60,32 @@ class IsolatedVirtualEnv:
     def is_installed(self) -> bool:
         return self.scripts_path and self.scripts_path.is_dir()
 
-    def install(self, quiet=False) -> None:
-        """Create the virtual environment and install requirements."""
+    def install(self, quiet=False, install_path=None) -> None:
+        """Create the virtual environment and install requirements.
+
+        :param quiet: suppress output
+        :param install_path: the path to .pyprojectx
+        """
         logger.debug("Installing IsolatedVirtualEnv in %s", self.path)
-        scripts_dir = self._create_virtual_env()
+        scripts_dir = self._create_virtual_env(quiet)
         self._install_requirements(quiet)
         with self._scripts_path_file.open("w") as sf:
             sf.write(str(scripts_dir))
+        if install_path:
+            # make the scripts dir available in .pyprojectx/<tool context name>
+            ctx_path = install_path / self.name
+            ctx_path.unlink(missing_ok=True)
+            if sys.platform.startswith("win"):
+                ctx_path.mkdir(exist_ok=True)
+                for file in scripts_dir.iterdir():
+                    shutil.copy2(file, ctx_path)
+            else:
+                ctx_path.symlink_to(scripts_dir, target_is_directory=True)
 
-    def _create_virtual_env(self) -> Path:
-        cmd = [str(self.path), "--no-setuptools", "--no-wheel"]
+    def _create_virtual_env(self, quiet) -> Path:
+        cmd = [str(self.path), "--no-setuptools", "--no-wheel", "--download"]
+        if quiet:
+            cmd.append("--quiet")
         logger.debug("Calling virtualenv.cli_run: %s", " ".join(cmd))
         result = virtualenv.cli_run(cmd, setup_logging=False)
         scripts_dir = result.creator.script_dir
@@ -125,6 +141,7 @@ class IsolatedVirtualEnv:
         logger.info("Running command in isolated venv %s: %s", self.name, cmd)
         logger.debug("Adding scripts path to PATH: %s", self.scripts_path.absolute())
         path = os.pathsep.join((str(self.scripts_path.absolute()), os.environ.get("PATH", os.defpath)))
+
         extra_environ = {"PATH": path}
         if isinstance(cmd, List):
             cmd[0] = shutil.which(cmd[0], path=path) or cmd[0]
@@ -139,7 +156,6 @@ class IsolatedVirtualEnv:
         return subprocess.run(cmd, env=env, shell=shell, check=True, cwd=cwd, stdout=stdout)
 
     def _compose_path(self):
-        return Path(
-            self._base_path,
-            f"{self._name.lower()}-{self._hash}-py{sys.version_info.major}.{sys.version_info.minor}",
+        return (
+            self._base_path / f"{self._name.lower()}-{self._hash}-py{sys.version_info.major}.{sys.version_info.minor}"
         ).absolute()
