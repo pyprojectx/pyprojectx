@@ -1,3 +1,5 @@
+Release v2.1.2 (2024-03-08)
+----------------------------
 ### Features & Improvements
 - update pip when installing a tool context virtual environment
 
