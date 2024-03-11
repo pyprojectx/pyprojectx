@@ -1,3 +1,6 @@
+### Bug Fixes
+- #90 fix PowerShell activate script when symlinks are allowed on Windows
+
 Release v2.1.5 (2024-03-11)
 ----------------------------
 ### Features & Improvements
