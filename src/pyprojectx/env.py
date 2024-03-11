@@ -75,7 +75,7 @@ class IsolatedVirtualEnv:
             self._copy_scripts(install_path, scripts_dir)
 
     def _create_virtual_env(self, quiet) -> Path:
-        cmd = [str(self.path), "--no-setuptools", "--no-wheel", "--download"]
+        cmd = [str(self.path), "--no-setuptools", "--no-wheel", "--download", "--prompt", f"px-{self.name}"]
         if quiet:
             cmd.append("--quiet")
         logger.debug("Calling virtualenv.cli_run: %s", " ".join(cmd))

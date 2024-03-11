@@ -1,3 +1,9 @@
+### Features & Improvements
+- use an informative prompt when activating a tool context virtual environment
+
+### Bug Fixes
+- #90 activate script doesn't work in windows PowerShell
+
 Release v2.1.4 (2024-03-11)
 ----------------------------
 ### Bug Fixes
