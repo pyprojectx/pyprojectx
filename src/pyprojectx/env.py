@@ -93,7 +93,10 @@ class IsolatedVirtualEnv:
         except Exception:  # noqa: BLE001
             logger.debug("Could not create symlink to %s, copy instead.", scripts_dir)
         if sys.platform.startswith("win") or not ctx_path.is_symlink():
-            shutil.rmtree(ctx_path, ignore_errors=True)
+            if ctx_path.is_symlink():
+                ctx_path.unlink()
+            else:
+                shutil.rmtree(ctx_path, ignore_errors=True)
             ctx_path.mkdir(exist_ok=True)
             for file in scripts_dir.iterdir():
                 shutil.copy2(file, ctx_path)
