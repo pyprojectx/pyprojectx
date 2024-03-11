@@ -1,3 +1,5 @@
+Release v2.1.4 (2024-03-11)
+----------------------------
 ### Bug Fixes
 - #90 activate script doesn't work on cygwin
 
