@@ -74,14 +74,16 @@ class IsolatedVirtualEnv:
         if install_path:
             # make the scripts dir available in .pyprojectx/<tool context name>
             ctx_path = install_path / self.name
-            if sys.platform.startswith("win"):
+            try:
+                ctx_path.unlink(missing_ok=True)
+                ctx_path.symlink_to(scripts_dir, target_is_directory=True)
+            except Exception:  # noqa: BLE001
+                logger.debug("Could not create symlink to %s, copy instead.", scripts_dir)
+            if not ctx_path.is_symlink():
                 shutil.rmtree(ctx_path, ignore_errors=True)
                 ctx_path.mkdir(exist_ok=True)
                 for file in scripts_dir.iterdir():
                     shutil.copy2(file, ctx_path)
-            else:
-                ctx_path.unlink(missing_ok=True)
-                ctx_path.symlink_to(scripts_dir, target_is_directory=True)
 
     def _create_virtual_env(self, quiet) -> Path:
         cmd = [str(self.path), "--no-setuptools", "--no-wheel", "--download"]
