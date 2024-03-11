@@ -72,18 +72,7 @@ class IsolatedVirtualEnv:
         with self._scripts_path_file.open("w") as sf:
             sf.write(str(scripts_dir))
         if install_path:
-            # make the scripts dir available in .pyprojectx/<tool context name>
-            ctx_path = install_path / self.name
-            try:
-                ctx_path.unlink(missing_ok=True)
-                ctx_path.symlink_to(scripts_dir, target_is_directory=True)
-            except Exception:  # noqa: BLE001
-                logger.debug("Could not create symlink to %s, copy instead.", scripts_dir)
-            if not ctx_path.is_symlink():
-                shutil.rmtree(ctx_path, ignore_errors=True)
-                ctx_path.mkdir(exist_ok=True)
-                for file in scripts_dir.iterdir():
-                    shutil.copy2(file, ctx_path)
+            self._copy_scripts(install_path, scripts_dir)
 
     def _create_virtual_env(self, quiet) -> Path:
         cmd = [str(self.path), "--no-setuptools", "--no-wheel", "--download"]
@@ -94,6 +83,25 @@ class IsolatedVirtualEnv:
         scripts_dir = result.creator.script_dir
         self._executable = result.creator.exe
         return scripts_dir
+
+    def _copy_scripts(self, install_path, scripts_dir):
+        # make the scripts dir available in .pyprojectx/<tool context name>
+        ctx_path = install_path / self.name
+        try:
+            ctx_path.unlink(missing_ok=True)
+            ctx_path.symlink_to(scripts_dir, target_is_directory=True)
+        except Exception:  # noqa: BLE001
+            logger.debug("Could not create symlink to %s, copy instead.", scripts_dir)
+        if not ctx_path.is_symlink():
+            shutil.rmtree(ctx_path, ignore_errors=True)
+            ctx_path.mkdir(exist_ok=True)
+            for file in scripts_dir.iterdir():
+                shutil.copy2(file, ctx_path)
+        # powershell activation script breaks when copied
+        activate_ps1 = ctx_path / "activate.ps1"
+        if activate_ps1.exists():
+            with activate_ps1.open("w") as f:
+                f.write(f". '{(scripts_dir / 'activate.ps1').absolute()}'")
 
     def _install_requirements(self, quiet=False):
         logger.info("Installing packages in isolated environment... (%s)", ", ".join(sorted(self._requirements)))
