@@ -33,8 +33,13 @@ def test_install_ctx(tmp_project):
     )
     if proc_result.returncode:
         print(proc_result.stderr.decode("utf-8"))
-
-    assert "< From symlink! >" in proc_result.stdout.decode("utf-8")
+    # check the powershell activation script
+    if sys.platform.startswith("win"):
+        activate_ps = Path(project_dir, ".pyprojectx/install-context/activate.ps1")
+        assert activate_ps.exists()
+        assert not activate_ps.is_symlink()
+        assert activate_ps.read_text().startswith(". '")
+        assert activate_ps.read_text().strip().endswith("Scripts\\activate.ps1'")
 
 
 def test_logs_and_stdout_with_quiet(tmp_project):

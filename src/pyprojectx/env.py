@@ -92,16 +92,17 @@ class IsolatedVirtualEnv:
             ctx_path.symlink_to(scripts_dir, target_is_directory=True)
         except Exception:  # noqa: BLE001
             logger.debug("Could not create symlink to %s, copy instead.", scripts_dir)
-        if not ctx_path.is_symlink():
+        if sys.platform.startswith("win") or not ctx_path.is_symlink():
             shutil.rmtree(ctx_path, ignore_errors=True)
             ctx_path.mkdir(exist_ok=True)
             for file in scripts_dir.iterdir():
                 shutil.copy2(file, ctx_path)
-        # powershell activation script breaks when copied
-        activate_ps1 = ctx_path / "activate.ps1"
-        if activate_ps1.exists():
-            with activate_ps1.open("w") as f:
-                f.write(f". '{(scripts_dir / 'activate.ps1').absolute()}'")
+            # powershell activation script breaks when copied
+            activate_ps1 = ctx_path / "activate.ps1"
+            if activate_ps1.exists():
+                activate_ps1.unlink()
+                with activate_ps1.open("w") as f:
+                    f.write(f". '{(scripts_dir / 'activate.ps1').absolute()}'")
 
     def _install_requirements(self, quiet=False):
         logger.info("Installing packages in isolated environment... (%s)", ", ".join(sorted(self._requirements)))
