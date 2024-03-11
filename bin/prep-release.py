@@ -58,7 +58,7 @@ def update_changelog(release_version):
         file.write("----------------------------\n")
         file.write(original_content)
     subprocess.run(["git", "add", "CHANGELOG.md"], check=True)
-    subprocess.run(["git", "commit", "-am", f"Release v{release_version}"], check=True)
+    subprocess.run(["git", "commit", "-m", f"Release v{release_version}"], check=True)
 
 
 if __name__ == "__main__":
