@@ -1,3 +1,5 @@
+Release v2.1.5 (2024-03-11)
+----------------------------
 ### Features & Improvements
 - use an informative prompt when activating a tool context virtual environment
 
