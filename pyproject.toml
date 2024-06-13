@@ -20,7 +20,7 @@ dependencies = [
     "tomlkit>=0.12.4",
 ]
 [project.optional-dependencies]
-# required for the pdm-build-locked plugin to work
+noextras = [] # required for the pdm-build-locked plugin to work
 
 [tool.pdm]
 plugins = ["pdm-build-locked"]
@@ -73,7 +73,7 @@ run = "pdm run pyprojectx -t pyproject.toml "
 update = "pdm update"
 outdated = "pdm update --outdated"
 clean = "pxrm .venv .pytest_cache dist .pdm-build .ruff_cache"
-full-clean = ["@clean", "pxrm .pyprojectx"]
+full-clean = ["@clean", "pxrm .pyprojectx .pdm-python"]
 format = ["ruff format", "ruff check --select I --fix"]
 lint = ["ruff check"]
 unit-test = "pdm run pytest tests/unit"

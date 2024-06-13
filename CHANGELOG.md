@@ -1,3 +1,6 @@
+### Bug Fixes
+- Omit pip warning "does not provide the extra 'locked'"
+
 Release v2.1.7 (2024-06-13)
 ----------------------------
 ### Bug Fixes
