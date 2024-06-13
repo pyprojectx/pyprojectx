@@ -20,7 +20,7 @@ dependencies = [
     "tomlkit>=0.12.4",
 ]
 [project.optional-dependencies]
-noextras = [] # required for the pdm-build-locked plugin to work
+# required for the pdm-build-locked plugin to work
 
 [tool.pdm]
 plugins = ["pdm-build-locked"]

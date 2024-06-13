@@ -2,10 +2,10 @@
 # It is not intended for manual editing.
 
 [metadata]
-groups = ["default", "noextras", "test"]
+groups = ["default", "test"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:4ed6bb6bd32ae0e1f68ae76c1b0b4564f16e65fb2e1b65b5bf16f35114231b4f"
+content_hash = "sha256:5b570959c8698874af03b9f2e042b175d2034daacf7c1bf5828521cf153f3749"
 
 [[package]]
 name = "click"
