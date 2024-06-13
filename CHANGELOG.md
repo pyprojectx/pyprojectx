@@ -1,3 +1,6 @@
+### Bug Fixes
+- #96 fix locking of pyprojectx's own dependencies
+
 Release v2.1.6 (2024-03-11)
 ----------------------------
 ### Bug Fixes

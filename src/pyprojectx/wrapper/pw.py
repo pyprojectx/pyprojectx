@@ -57,7 +57,7 @@ def get_options(args):
         options.pyprojectx_package = os.environ.get(PYPROJECTX_PACKAGE_ENV_VAR)
     else:
         options.version = VERSION
-        options.pyprojectx_package = f"pyprojectx~={VERSION}"
+        options.pyprojectx_package = f"pyprojectx[locked]=={VERSION}"
     options.verbosity = 0 if options.quiet or not options.verbosity else options.verbosity
     return options
 

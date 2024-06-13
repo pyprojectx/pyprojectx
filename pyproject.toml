@@ -19,11 +19,13 @@ dependencies = [
     "virtualenv==20.24.6",
     "tomlkit>=0.12.4",
 ]
+[project.optional-dependencies]
+# required for the pdm-build-locked plugin to work
 
 [tool.pdm]
 plugins = ["pdm-build-locked"]
 [tool.pdm.build]
-buildlocked = true
+locked = true
 [tool.pdm.dev-dependencies]
 test = [
     "pytest>=7.4.3",
@@ -54,6 +56,7 @@ ignore = ["ISC001", "ANN", "FA", "FBT", "D100", "D102", "D103", "D104", "D105", 
 [tool.pyprojectx.main]
 requirements = [
     "pdm",
+    "pdm-build-locked",
     "ruff",
     "pre-commit",
     "px-utils",
