@@ -1,11 +1,6 @@
 Release v2.1.8 (2024-06-13)
 ----------------------------
 ### Bug Fixes
-- Omit pip warning "does not provide the extra 'locked'"
-
-Release v2.1.7 (2024-06-13)
-----------------------------
-### Bug Fixes
 - #96 fix locking of pyprojectx's own dependencies
 
 Release v2.1.6 (2024-03-11)

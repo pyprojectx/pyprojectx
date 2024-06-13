@@ -83,7 +83,7 @@ check = ["@lint", "@test"]
 build = ["@install", "@check", "pdm build"]
 
 # used in github actions:
-publish = "pdm publish --username __token__"
+publish = "pdm publish --no-build --username __token__"
 
 generate-usage = "pdm run python -m pyprojectx.wrapper.pw --help > docs/docs/usage.txt"
 serve-docs = { cmd = "mkdocs serve", cwd = "docs" }
