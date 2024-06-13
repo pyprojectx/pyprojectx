@@ -35,7 +35,7 @@ class Config:
         try:
             with toml_path.open("rb") as f:
                 toml_dict = tomlkit.load(f)
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             raise Warning(f"Could not parse {toml_path}: {e}") from e
 
         project_path = toml_path.parent.absolute()
