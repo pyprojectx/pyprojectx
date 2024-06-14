@@ -19,8 +19,6 @@ dependencies = [
     "virtualenv==20.24.6",
     "tomlkit>=0.12.4",
 ]
-[project.optional-dependencies]
-# required for the pdm-build-locked plugin to work
 
 [tool.pdm]
 plugins = ["pdm-build-locked"]
@@ -36,7 +34,7 @@ test = [
 pyprojectx = "pyprojectx.cli:main"
 
 [build-system]
-requires = ["pdm-backend"]
+requires = ["pdm-backend", "pdm-build-locked"]
 build-backend = "pdm.backend"
 
 [tool.pytest.ini_options]
