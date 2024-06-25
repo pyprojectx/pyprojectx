@@ -234,7 +234,7 @@ def test_run_script_with_args(tmp_project):
 
 
 locked_requirements = {
-    "main": {"hash": "0847ad891da4272b514080caa1eb825f", "requirements": ["px-utils==1.1.0"]},
+    "main": {"hash": "9a26a0b87d70275d42f57b40bc8ddfc3", "requirements": ["pycowsay==0.0.0.2"]},
     "tool-with-known-requirements": {
         "hash": "d38ebcc846fc99fe583218af16f35eb5",
         "requirements": [
@@ -316,12 +316,19 @@ def test_requirements_from_lock_are_used(tmp_lock_project):
     for path in (project_dir / ".pyprojectx/venvs").glob("main*"):  # remove the tool contexts from other test runs
         shutil.rmtree(path)
 
-    cmd = f"{SCRIPT_PREFIX}pw prm foo/bar"  # lock file has px-utils==1.0.0 which uses prm instead of pxrm
+    cmd = f"{SCRIPT_PREFIX}pw pycowsay --version"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
     if proc_result.returncode:
         print(proc_result.stderr.decode("utf-8"))
+    assert proc_result.stdout.decode("utf-8").strip() == "0.0.0.1"
 
-    assert not proc_result.returncode
+    # when the lock file is modified, the modified requirements should be used
+    test_lock_file = data_dir / "test-use-modified-lock-requirements.lock"
+    shutil.copy(test_lock_file, lock_file)
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
+    if proc_result.returncode:
+        print(proc_result.stderr.decode("utf-8"))
+    assert proc_result.stdout.decode("utf-8").strip() == "0.0.0.2"
 
 
 def test_shell(tmp_project):
