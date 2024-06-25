@@ -1,3 +1,5 @@
+Release v2.2.0 (2024-06-25)
+----------------------------
 ### Bug Fixes
 - #98 existing tool virtual environment is reused even if pw.lock changed
 
