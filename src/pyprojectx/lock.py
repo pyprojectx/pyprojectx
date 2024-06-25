@@ -45,20 +45,21 @@ def get_or_update_locked_requirements(ctx: str, config: Config, venvs_dir: Path,
 
     if ctx not in toml:
         toml[ctx] = tomlkit.table()
-    toml_ctx = toml[ctx]
+    lf_toml_ctx = toml[ctx]
     requirements_hash = calculate_hash(requirements)
-    if toml_ctx.get("hash") == requirements_hash:
-        return toml_ctx, False
+    if lf_toml_ctx.get("hash") == requirements_hash:
+        locked_requirements = lf_toml_ctx.get("requirements")
+        return {**requirements, "requirements": locked_requirements}, False
 
     locked_requirements = _freeze(ctx, requirements, venvs_dir, quiet)
-    toml_ctx["requirements"] = locked_requirements
-    toml_ctx["hash"] = requirements_hash
+    lf_toml_ctx["requirements"] = locked_requirements
+    lf_toml_ctx["hash"] = requirements_hash
     post_install = requirements.get("post-install")
     if post_install:
-        toml_ctx["post-install"] = post_install
+        lf_toml_ctx["post-install"] = post_install
     with lf.open("w") as f:
         tomlkit.dump(toml, f)
-    return toml_ctx, True
+    return lf_toml_ctx, True
 
 
 def _freeze(ctx_name, requirements, venvs_dir, quiet):
