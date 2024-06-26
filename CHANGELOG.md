@@ -1,3 +1,5 @@
+Release v2.2.1 (2024-06-26)
+----------------------------
 ### Features & Improvements
 - #100 add --clean option to cleanup virtual environments
 
