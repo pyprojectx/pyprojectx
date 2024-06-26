@@ -1,5 +1,6 @@
 import os
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -20,7 +21,7 @@ def main() -> None:
     _run(sys.argv)
 
 
-# ruff: noqa: PLR0911
+# ruff: noqa: PLR0911 C901
 def _run(argv: List[str]) -> None:
     options = _get_options(argv[1:])
     if options.install_px:
@@ -49,6 +50,11 @@ def _run(argv: List[str]) -> None:
     if options.info:
         config.show_info(cmd)
         return
+
+    if options.clean:
+        _clean_venvs(config, options)
+        if not cmd:
+            return
 
     if not cmd:
         pw.arg_parser().print_help(file=sys.stderr)
@@ -280,3 +286,25 @@ def _lock_requirements(argv, config, options):
             if options.force_install:
                 IsolatedVirtualEnv(options.venvs_dir, ctx, config.get_requirements(ctx)).remove()
             _ensure_ctx(config, ctx, env=config.env, options=options, pw_args=argv)
+
+
+def _clean_venvs(config, options):
+    pyprojectx_dir = options.install_path / "pyprojectx"
+    pyprojectx_venv_dir = pyprojectx_dir / f"{options.version}-py{sys.version_info.major}.{sys.version_info.minor}"
+
+    for f in pyprojectx_dir.glob("*"):
+        if f.is_dir() and f.resolve() != pyprojectx_venv_dir.resolve():
+            if not options.quiet:
+                print(f"{pw.CYAN}Removing {pw.BLUE}{f.resolve()}{pw.RESET}", file=sys.stderr)
+            shutil.rmtree(f, ignore_errors=True)
+
+    ctxt_venvs = []
+    for ctx in config.get_context_names():
+        requirements, _ = get_or_update_locked_requirements(ctx, config, options.venvs_dir, options.quiet)
+        venv = IsolatedVirtualEnv(options.venvs_dir, ctx, requirements)
+        ctxt_venvs.append(venv.path.resolve())
+    for f in options.venvs_dir.glob("*"):
+        if f.is_dir() and f.resolve() not in ctxt_venvs:
+            if not options.quiet:
+                print(f"{pw.CYAN}Removing {pw.BLUE}{f.resolve()}{pw.RESET}", file=sys.stderr)
+            shutil.rmtree(f, ignore_errors=True)

@@ -23,6 +23,9 @@ def test_parse_args():
     assert _get_options(["-f", "my-cmd"]).force_install
     assert not _get_options(["my-cmd"]).force_install
 
+    assert _get_options(["-c", "my-cmd"]).clean
+    assert not _get_options(["my-cmd"]).clean
+
     assert _get_options(["--verbose", "my-cmd"]).verbosity == 1
     assert _get_options(["--verbose", "--verbose", "my-cmd"]).verbosity == 2
     assert _get_options(["my-cmd"]).verbosity == 0
@@ -225,3 +228,28 @@ def test_info_without_arg_should_not_raise_exception(tmp_dir, capsys):
     assert "alias-1" in captured.out
     assert "script-a" in captured.out
     assert "main" in captured.out
+
+
+@pytest.mark.parametrize("cmd", ["", "my-cmd"])
+def test_clean(tmp_dir, capsys, mocker, cmd):
+    data = Path(__file__).parent.with_name("data")
+    toml = data / "test.toml"
+    run_mock = mocker.patch("subprocess.run")
+
+    old_pyprojectx_dir = tmp_dir / "pyprojectx" / "old-pyprojectx"
+    old_pyprojectx_dir.mkdir(parents=True)
+    old_venv_dir = tmp_dir / "venvs" / "old-venv"
+    old_venv_dir.mkdir(parents=True)
+
+    _run(["path to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "--clean", cmd])
+
+    captured = capsys.readouterr()
+    assert captured.err == (
+        f"{pw.CYAN}Removing {pw.BLUE}{old_pyprojectx_dir.resolve()}{pw.RESET}\n"
+        f"{pw.CYAN}Removing {pw.BLUE}{old_venv_dir.resolve()}{pw.RESET}\n"
+    )
+    assert captured.out == ""
+    if cmd:
+        run_mock.assert_called_with([cmd], shell=False, check=True, env=ANY, cwd=ANY, stdout=ANY)
+    else:
+        run_mock.assert_not_called()
