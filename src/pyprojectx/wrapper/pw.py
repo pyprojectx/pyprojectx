@@ -80,13 +80,20 @@ def arg_parser():
         action="store",
         help=f"The directory where all tools (including pyprojectx) are installed; defaults to the "
         f"{PYPROJECTX_INSTALL_DIR_ENV_VAR} environment value if set, else '.pyprojectx' "
-        f"in the same directory as the invoked pw script",
+        f"in the same directory as the invoked pw script.",
     )
     parser.add_argument(
         "--force-install",
         "-f",
         action="store_true",
-        help="Force clean installation of the virtual environment used to run cmd, if any",
+        help="Force clean installation of the virtual environment used to run cmd, if any.",
+    )
+    parser.add_argument(
+        "--clean",
+        "-c",
+        action="store_true",
+        help="Clean .pyprojectx directory by removing all but the current versions "
+        "of pyprojectx and context virtual environments.",
     )
     parser.add_argument(
         "--install-context",
@@ -105,7 +112,7 @@ def arg_parser():
         "--quiet",
         "-q",
         action="store_true",
-        help="Suppress output",
+        help="Suppress output.",
     )
     parser.add_argument(
         "--info",
@@ -143,8 +150,8 @@ def arg_parser():
 
 def ensure_pyprojectx(options):
     env_builder = EnvBuilder(with_pip=True)
-    venv_dir = options.install_path.joinpath(
-        "pyprojectx", f"{options.version}-py{sys.version_info.major}.{sys.version_info.minor}"
+    venv_dir = (
+        options.install_path / "pyprojectx" / f"{options.version}-py{sys.version_info.major}.{sys.version_info.minor}"
     )
     env_context = env_builder.ensure_directories(venv_dir)
     pyprojectx_script = Path(env_context.bin_path, "pyprojectx")
