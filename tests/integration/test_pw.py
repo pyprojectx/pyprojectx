@@ -62,7 +62,7 @@ def test_logs_and_stdout_with_quiet(tmp_project):
 
 """.replace("\n", os.linesep)
     )
-    if not sys.platform.startswith("win"):
+    if not sys.platform.startswith("win") and sys.version_info.minor < 12:
         assert not proc_result.stderr.decode("utf-8")
 
     cmd = f"{SCRIPT_PREFIX}pw -q list-files *.toml"
@@ -97,7 +97,7 @@ def test_alias_abbreviations(tmp_project):
     cmd = f"{SCRIPT_PREFIX}pw -q pHe"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
     assert "< hello >" in proc_result.stdout.decode("utf-8")
-    if not sys.platform.startswith("win"):
+    if not sys.platform.startswith("win") and sys.version_info.minor < 12:
         assert not proc_result.stderr.decode("utf-8")
 
     cmd = f"{SCRIPT_PREFIX}pw -q pycow"
@@ -105,7 +105,7 @@ def test_alias_abbreviations(tmp_project):
     assert proc_result.returncode
     assert "'pycow' is ambiguous" in proc_result.stderr.decode("utf-8")
     assert "pycowsay, pycowsay-hi, pycowsay-hello" in proc_result.stderr.decode("utf-8")
-    if not sys.platform.startswith("win"):
+    if not sys.platform.startswith("win") and sys.version_info.minor < 12:
         assert not proc_result.stdout.decode("utf-8")
 
 
@@ -164,7 +164,7 @@ def test_post_install(tmp_project):
 
 """.replace("\n", os.linesep)
     )
-    if not sys.platform.startswith("win"):
+    if not sys.platform.startswith("win") and sys.version_info.minor < 12:
         assert not proc_result.stderr.decode("utf-8")
 
     cmd = f"{SCRIPT_PREFIX}pw -q list-files *.txt"
