@@ -9,10 +9,10 @@ import tempfile
 from pathlib import Path
 from typing import List, Optional, Union
 
-import virtualenv
-
 from pyprojectx.hash import calculate_hash
 from pyprojectx.log import logger
+
+PYTHON_EXE = "python.exe" if sys.platform == "win32" else "python3"
 
 
 class IsolatedVirtualEnv:
@@ -30,8 +30,6 @@ class IsolatedVirtualEnv:
         self._hash = requirements_config.get("hash", calculate_hash(requirements_config))
         self._requirements = requirements_config.get("requirements", [])
         self._path = Path(requirements_config["dir"]) if requirements_config.get("dir") else self._compose_path()
-        self._scripts_path_file = self._path / ".scripts_path"
-        self._executable = None
 
     @property
     def name(self) -> str:
@@ -44,21 +42,13 @@ class IsolatedVirtualEnv:
         return self._path
 
     @property
-    def executable(self) -> Optional[Path]:
-        """The location of the Python executable of the isolated environment."""
-        return self._executable
-
-    @property
     def scripts_path(self) -> Optional[Path]:
         """The location of the venv's scripts directory."""
-        if self._scripts_path_file.exists():
-            with self._scripts_path_file.open() as sf:
-                return Path(sf.readline())
-        return None
+        return self._path / "Scripts" if sys.platform == "win32" else self._path / "bin"
 
     @property
     def is_installed(self) -> bool:
-        return self.scripts_path and self.scripts_path.is_dir()
+        return self.scripts_path.is_dir()
 
     def install(self, quiet=False, install_path=None) -> None:
         """Create the virtual environment and install requirements.
@@ -67,22 +57,14 @@ class IsolatedVirtualEnv:
         :param install_path: the path to .pyprojectx
         """
         logger.debug("Installing IsolatedVirtualEnv in %s", self.path)
-        scripts_dir = self._create_virtual_env(quiet)
-        self._install_requirements(quiet)
-        with self._scripts_path_file.open("w") as sf:
-            sf.write(str(scripts_dir))
-        if install_path:
-            self._copy_scripts(install_path, scripts_dir)
-
-    def _create_virtual_env(self, quiet) -> Path:
-        cmd = [str(self.path), "--no-setuptools", "--no-wheel", "--download", "--prompt", f"px-{self.name}"]
+        cmd = ["uv", "venv", str(self.path), "--prompt", f"px-{self.name}"]
         if quiet:
             cmd.append("--quiet")
-        logger.debug("Calling virtualenv.cli_run: %s", " ".join(cmd))
-        result = virtualenv.cli_run(cmd, setup_logging=False)
-        scripts_dir = result.creator.script_dir
-        self._executable = result.creator.exe
-        return scripts_dir
+        logger.debug("Calling uv: %s", " ".join(cmd))
+        subprocess.run(cmd, check=True, stdout=sys.stderr)
+        self._install_requirements(quiet)
+        if install_path and self.scripts_path.exists():
+            self._copy_scripts(install_path, self.scripts_path)
 
     def _copy_scripts(self, install_path, scripts_dir):
         # make the scripts dir available in .pyprojectx/<tool context name>
@@ -115,18 +97,17 @@ class IsolatedVirtualEnv:
             req_file.write(os.linesep.join(self._requirements))
         try:
             cmd = [
-                str(self._executable),
-                "-Im",
+                "uv",
                 "pip",
                 "install",
             ]
             if quiet:
                 cmd.append("--quiet")
             cmd += [
-                "--use-pep517",
-                "--no-warn-script-location",
                 "-r",
-                Path(req_file.name).resolve(),
+                str(Path(req_file.name).resolve()),
+                "--python",
+                str(self.scripts_path / PYTHON_EXE),
             ]
 
             subprocess.run(

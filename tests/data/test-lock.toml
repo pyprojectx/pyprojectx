@@ -5,10 +5,6 @@ main = "pycowsay==0.0.0.2"
 requirements = "pyprojectx==2.0.0"
 post-install = "@post-install-action"
 
-[tool.pyprojectx.no-lock]
-# requirements with editable installs should not be locked
-requirements = "-e ."
-
 [tool.pyprojectx.aliases]
 post-install-action = "mkdir post-install-table-dir"
 show-version = { cmd = "pyprojectx --version", ctx = "tool-with-known-requirements", env = { "PYPROJECTX_PACKAGE" = "" } }

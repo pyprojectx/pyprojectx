@@ -15,9 +15,9 @@ classifiers = [
 requires-python = ">=3.8"
 
 dependencies = [
-    "userpath==1.9.1",
-    "virtualenv==20.24.6",
-    "tomlkit>=0.12.4",
+    "userpath>=1.9",
+    "tomlkit>=0.12",
+    "uv>=0.2",
 ]
 
 [tool.pdm]
@@ -47,7 +47,7 @@ select = ["ALL"]
 fixable = ["ALL"]
 ignore = ["ISC001", "ANN", "FA", "FBT", "D100", "D102", "D103", "D104", "D105", "D213", "D203", "T201", "TRY003", "EM102", "COM812", "S602", "S603", "S604", "S605", "S607", "S324"]
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["S101", "I001", "INP001"]
+"tests/*" = ["S101", "I001", "INP001", "YTT204", "PLR2004"]
 "bin/*" = ["INP001"]
 
 [tool.pyprojectx]
