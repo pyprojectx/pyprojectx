@@ -46,7 +46,7 @@ class IsolatedVirtualEnv:
 
     @property
     def is_installed(self) -> bool:
-        return self.scripts_path and self.scripts_path.is_dir()
+        return self.scripts_path.is_dir()
 
     def install(self, quiet=False, install_path=None) -> None:
         """Create the virtual environment and install requirements.
@@ -61,7 +61,7 @@ class IsolatedVirtualEnv:
         logger.debug("Calling uv: %s", " ".join(cmd))
         subprocess.run(cmd, check=True, stdout=sys.stderr)
         self._install_requirements(quiet)
-        if install_path:
+        if install_path and self.scripts_path.exists():
             self._copy_scripts(install_path, self.scripts_path)
 
     def _copy_scripts(self, install_path, scripts_dir):
