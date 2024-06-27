@@ -5,7 +5,7 @@ import sys
 from unittest.mock import ANY
 
 import pytest
-from pyprojectx.env import IsolatedVirtualEnv
+from pyprojectx.env import IsolatedVirtualEnv, PYTHON_EXE
 from pyprojectx.log import set_verbosity
 
 
@@ -50,7 +50,7 @@ def test_isolation(tmp_dir):
     env.install()
     debug_import = "import sys; import os; print(os.linesep.join(sys.path));"
     with pytest.raises(subprocess.CalledProcessError):
-        subprocess.check_call([str(env.scripts_path / "python3"), "-c", f"{debug_import} import pyprojectx.env"])
+        subprocess.check_call([str(env.scripts_path / PYTHON_EXE), "-c", f"{debug_import} import pyprojectx.env"])
 
 
 def test_isolated_env_install_arguments(mocker, tmp_dir):

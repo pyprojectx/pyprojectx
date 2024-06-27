@@ -107,7 +107,7 @@ class IsolatedVirtualEnv:
                 "-r",
                 str(Path(req_file.name).resolve()),
                 "--python",
-                str(self.scripts_path / "PYTHON_EXE"),
+                str(self.scripts_path / PYTHON_EXE),
             ]
 
             subprocess.run(

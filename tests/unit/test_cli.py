@@ -6,6 +6,7 @@ from unittest.mock import ANY, call
 
 import pytest
 from pyprojectx.cli import _get_options, _run
+from pyprojectx.env import PYTHON_EXE
 from pyprojectx.wrapper import pw
 
 PY_VER = f"py{sys.version_info.major}.{sys.version_info.minor}"
@@ -58,7 +59,7 @@ def test_run_tool(tmp_dir, mocker):
     assert pip_install_args[5] == "--python"
     assert pip_install_args[6].endswith(
         f"{tmp_dir.name}{os.sep}venvs{os.sep}tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}"
-        f"{os.sep}{SCRIPTS_DIR}{os.sep}python3"
+        f"{os.sep}{SCRIPTS_DIR}{os.sep}{PYTHON_EXE}"
     )
 
     run_args = run_mock.mock_calls[2].args[0]
