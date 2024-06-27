@@ -1,3 +1,6 @@
+### Features & Improvements
+- #95 generate platform independent lock files by using uv instead of pip (performance boost also)
+
 Release v2.2.1 (2024-06-26)
 ----------------------------
 ### Features & Improvements
