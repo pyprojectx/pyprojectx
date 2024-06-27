@@ -103,7 +103,7 @@ class IsolatedVirtualEnv:
                 cmd.append("--quiet")
             cmd += [
                 "-r",
-                Path(req_file.name).resolve(),
+                str(Path(req_file.name).resolve()),
                 "--python",
                 str(self.scripts_path / "python3"),
             ]
