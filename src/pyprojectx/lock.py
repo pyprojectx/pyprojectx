@@ -1,13 +1,11 @@
 import re
+import subprocess
 import sys
-import tempfile
-from pathlib import Path
 from typing import Tuple
 
 import tomlkit
 
 from pyprojectx.config import Config
-from pyprojectx.env import IsolatedVirtualEnv
 from pyprojectx.hash import calculate_hash
 from pyprojectx.wrapper import pw
 
@@ -25,12 +23,11 @@ def can_lock(requirements_config: dict) -> bool:
     )
 
 
-def get_or_update_locked_requirements(ctx: str, config: Config, venvs_dir: Path, quiet) -> Tuple[dict, bool]:
+def get_or_update_locked_requirements(ctx: str, config: Config, quiet) -> Tuple[dict, bool]:
     """Check if the locked requirements are up-to-date and lock them if needed.
 
     :param ctx: The context name to lock
     :param config: The config object
-    :param venvs_dir: The path to the venvs directory
     :param quiet: Whether to suppress output
     :return: A tuple with the contents of the requirements dictionary and a bool whether the requirements were updated.
     """
@@ -51,7 +48,7 @@ def get_or_update_locked_requirements(ctx: str, config: Config, venvs_dir: Path,
         locked_requirements = lf_toml_ctx.get("requirements")
         return {**requirements, "requirements": locked_requirements}, False
 
-    locked_requirements = _freeze(ctx, requirements, venvs_dir, quiet)
+    locked_requirements = _freeze(ctx, requirements, quiet)
     lf_toml_ctx["requirements"] = locked_requirements
     lf_toml_ctx["hash"] = requirements_hash
     post_install = requirements.get("post-install")
@@ -62,15 +59,14 @@ def get_or_update_locked_requirements(ctx: str, config: Config, venvs_dir: Path,
     return lf_toml_ctx, True
 
 
-def _freeze(ctx_name, requirements, venvs_dir, quiet):
-    env = IsolatedVirtualEnv(venvs_dir, ctx_name, requirements)
-    env.install(quiet)
-    cmd = ["pip", "freeze", "--local"]
+def _freeze(ctx_name, requirements, quiet):
+    cmd = ["uv", "pip", "compile", "--universal", "--no-annotate", "--no-header"]
     if quiet:
         cmd.append("--quiet")
     else:
         print(f"{pw.BLUE}locking {pw.CYAN}{ctx_name}{pw.BLUE} requirements{pw.RESET}", file=sys.stderr)
-    with tempfile.TemporaryFile() as fp:
-        env.run(cmd, env={}, cwd=env.path, stdout=fp)
-        fp.seek(0)
-        return sorted([line.decode("utf-8").strip() for line in fp.readlines() if line])
+    cmd.append("-")
+    requirements_string = "\n".join(requirements["requirements"])
+    proc_result = subprocess.run(cmd, input=requirements_string.encode("utf-8"), check=True, capture_output=True)
+    sys.stderr.buffer.write(proc_result.stderr)
+    return sorted([line.strip() for line in proc_result.stdout.decode("utf-8").splitlines() if line])

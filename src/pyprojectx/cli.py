@@ -188,7 +188,7 @@ def _run_in_ctx(ctx: str, full_cmd: Union[str, List[str]], options, pw_args, con
 
 
 def _ensure_ctx(config, ctx, env, options, pw_args):
-    requirements, modified = get_or_update_locked_requirements(ctx, config, options.venvs_dir, options.quiet)
+    requirements, modified = get_or_update_locked_requirements(ctx, config, options.quiet)
     venv = IsolatedVirtualEnv(options.venvs_dir, ctx, requirements)
     if not venv.is_installed or options.force_install or modified:
         try:
@@ -300,7 +300,7 @@ def _clean_venvs(config, options):
 
     ctxt_venvs = []
     for ctx in config.get_context_names():
-        requirements, _ = get_or_update_locked_requirements(ctx, config, options.venvs_dir, options.quiet)
+        requirements, _ = get_or_update_locked_requirements(ctx, config, options.quiet)
         venv = IsolatedVirtualEnv(options.venvs_dir, ctx, requirements)
         ctxt_venvs.append(venv.path.resolve())
     for f in options.venvs_dir.glob("*"):
