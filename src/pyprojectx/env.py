@@ -12,6 +12,8 @@ from typing import List, Optional, Union
 from pyprojectx.hash import calculate_hash
 from pyprojectx.log import logger
 
+PYTHON_EXE = "python.exe" if sys.platform == "win32" else "python3"
+
 
 class IsolatedVirtualEnv:
     """Encapsulates the location and installation of an isolated virtual environment."""
@@ -105,7 +107,7 @@ class IsolatedVirtualEnv:
                 "-r",
                 str(Path(req_file.name).resolve()),
                 "--python",
-                str(self.scripts_path / "python3"),
+                str(self.scripts_path / "PYTHON_EXE"),
             ]
 
             subprocess.run(
