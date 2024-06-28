@@ -29,6 +29,7 @@ jobs:
           git push --follow-tags origin
 
       - name: Create github release
+        if: ${{ !contains(inputs.release_version, 'rc') && !contains(inputs.release_version, 'b') }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.release_version }}
