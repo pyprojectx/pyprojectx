@@ -1,6 +1,6 @@
 [project]
 name = "pyprojectx"
-version = "3.0.0"
+version = "3.0.1.dev"
 description = "Execute scripts from pyproject.toml, installing tools on-the-fly"
 license = { text = "MIT" }
 authors = [{ name = "Houbie", email = "ivo@houbrechts-it.be" }]
