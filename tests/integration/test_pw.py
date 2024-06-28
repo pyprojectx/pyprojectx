@@ -341,6 +341,20 @@ def test_venv_dir(tmp_project):
     assert Path(project_dir, ".venv").is_dir()
 
 
+def test_add_package(tmp_project):
+    project_dir, env = tmp_project
+    assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
+
+    cmd = f"{SCRIPT_PREFIX}pw -q --add pycowsay==0.0.0.2"
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
+    assert proc_result.returncode == 0
+
+    cmd = f"{SCRIPT_PREFIX}pw main-pycowsay-version"
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
+    assert proc_result.returncode == 0
+    assert proc_result.stdout.decode("utf-8").strip() == "0.0.0.2"
+
+
 def load_toml(path):
     with path.open() as f:
         return tomlkit.load(f)

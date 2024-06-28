@@ -5,14 +5,16 @@ import os
 import shutil
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 from typing import List, Optional, Union
+
+import uv
 
 from pyprojectx.hash import calculate_hash
 from pyprojectx.log import logger
 
 PYTHON_EXE = "python.exe" if sys.platform == "win32" else "python3"
+UV_EXE = uv.find_uv_bin()
 
 
 class IsolatedVirtualEnv:
@@ -57,7 +59,7 @@ class IsolatedVirtualEnv:
         :param install_path: the path to .pyprojectx
         """
         logger.debug("Installing IsolatedVirtualEnv in %s", self.path)
-        cmd = ["uv", "venv", str(self.path), "--prompt", f"px-{self.name}"]
+        cmd = [UV_EXE, "venv", str(self.path), "--prompt", f"px-{self.name}"]
         if quiet:
             cmd.append("--quiet")
         logger.debug("Calling uv: %s", " ".join(cmd))
@@ -93,30 +95,18 @@ class IsolatedVirtualEnv:
         logger.info("Installing packages in isolated environment... (%s)", ", ".join(sorted(self._requirements)))
         # pip does not honour environment markers in command line arguments,
         # but it does for requirements from a file
-        with tempfile.NamedTemporaryFile("w+", prefix="build-reqs-", suffix=".txt", delete=False) as req_file:
-            req_file.write(os.linesep.join(self._requirements))
-        try:
-            cmd = [
-                "uv",
-                "pip",
-                "install",
-            ]
-            if quiet:
-                cmd.append("--quiet")
-            cmd += [
-                "-r",
-                str(Path(req_file.name).resolve()),
-                "--python",
-                str(self.scripts_path / PYTHON_EXE),
-            ]
+        requirements_string = "\n".join(self._requirements)
+        cmd = [UV_EXE, "pip", "install", "-r", "-", "--python", str(self.scripts_path / PYTHON_EXE)]
+        if quiet:
+            cmd.append("--quiet")
+        subprocess.run(cmd, input=requirements_string.encode("utf-8"), stdout=sys.stderr, check=True)
 
-            subprocess.run(
-                cmd,
-                stdout=sys.stderr,
-                check=True,
-            )
-        finally:
-            Path(req_file.name).unlink()
+    def check_is_installable(self, requirement_specs, quiet=False):
+        cmd = [UV_EXE, "pip", "install", "--python", str(self.scripts_path / PYTHON_EXE), "--dry-run"]
+        if quiet:
+            cmd.append("--quiet")
+        cmd += requirement_specs
+        subprocess.run(cmd, stdout=sys.stderr, check=True)
 
     def remove(self):
         """Remove the entire virtual environment."""

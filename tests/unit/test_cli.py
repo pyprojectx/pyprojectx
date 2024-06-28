@@ -47,15 +47,14 @@ def test_run_tool(tmp_dir, mocker):
     _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "tool-1"])
 
     venv_args = run_mock.mock_calls[0].args[0]
-    assert venv_args[0] == "uv"
+    assert venv_args[0].endswith("uv")
     assert venv_args[1] == "venv"
     assert venv_args[2].endswith(f"{tmp_dir.name}{os.sep}venvs{os.sep}tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}")
     assert venv_args[3:] == ["--prompt", "px-tool-1"]
 
     pip_install_args = run_mock.mock_calls[1].args[0]
-    assert pip_install_args[0] == "uv"
-    assert pip_install_args[1:4] == ["pip", "install", "-r"]
-    assert "build-reqs-" in str(pip_install_args[4])
+    assert pip_install_args[0].endswith("uv")
+    assert pip_install_args[1:5] == ["pip", "install", "-r", "-"]
     assert pip_install_args[5] == "--python"
     assert pip_install_args[6].endswith(
         f"{tmp_dir.name}{os.sep}venvs{os.sep}tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}"
@@ -216,7 +215,8 @@ def test_install_context(tmp_dir, mocker):
             check=True,
         ),
         call(
-            [ANY, "pip", "install", "-r", ANY, "--python", ANY],
+            [ANY, "pip", "install", "-r", "-", "--python", ANY],
+            input=b"main-requirement",
             stdout=ANY,
             check=True,
         ),
