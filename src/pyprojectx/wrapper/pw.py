@@ -156,7 +156,7 @@ def ensure_pyprojectx(options):
     env_context = env_builder.ensure_directories(venv_dir)
     pyprojectx_script = Path(env_context.bin_path, "pyprojectx")
     pyprojectx_exe = Path(env_context.bin_path, "pyprojectx.exe")
-    pip_cmd = [env_context.env_exe, "-m", "pip", "install"]
+    pip_cmd = [env_context.env_exe, "-m", "pip", "install", "--pre"]
 
     if options.quiet:
         out = subprocess.DEVNULL
