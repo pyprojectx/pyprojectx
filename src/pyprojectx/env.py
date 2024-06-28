@@ -6,7 +6,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 import uv
 
@@ -114,7 +114,7 @@ class IsolatedVirtualEnv:
         shutil.rmtree(self.path, ignore_errors=True)
 
     def run(
-        self, cmd: Union[str, List[str]], env: dict, cwd: Union[str, bytes, os.PathLike], stdout=None
+        self, cmd: Union[str, list[str]], env: dict, cwd: Union[str, bytes, os.PathLike], stdout=None
     ) -> subprocess.CompletedProcess:
         """Run a command inside the virtual environment.
 
@@ -129,7 +129,7 @@ class IsolatedVirtualEnv:
         path = os.pathsep.join((str(self.scripts_path.absolute()), os.environ.get("PATH", os.defpath)))
 
         extra_environ = {"PATH": path}
-        if isinstance(cmd, List):
+        if isinstance(cmd, list):
             cmd[0] = shutil.which(cmd[0], path=path) or cmd[0]
             shell = False
         else:

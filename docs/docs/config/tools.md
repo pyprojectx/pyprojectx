@@ -157,11 +157,6 @@ combine the _lock_ option with the _force-install_ option: `./pw --lock -f`.
     Updating all tools to the latest version is then as simple as running `./pw --lock -f` again.
     In case of conflicts or issues with a new version, you can always revert to the previous version of the lock file.
 
-!!! note "Supporting multiple python versions"
-
-    Make sure to run `./pw --lock` using the minimum supported python version for your project.
-    This prevents the lock file from containing dependencies that are incompatible with older python versions.
-
 ### Pinning tool versions in _pyproject.toml_
 You can also pin tool versions in _pyproject.toml_:
 
