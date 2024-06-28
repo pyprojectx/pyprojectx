@@ -5,6 +5,7 @@ import sys
 import tomlkit
 
 from pyprojectx.config import Config
+from pyprojectx.env import UV_EXE
 from pyprojectx.hash import calculate_hash
 from pyprojectx.wrapper import pw
 
@@ -59,7 +60,7 @@ def get_or_update_locked_requirements(ctx: str, config: Config, quiet) -> tuple[
 
 
 def _freeze(ctx_name, requirements, quiet):
-    cmd = ["uv", "pip", "compile", "--universal", "--no-annotate", "--no-header"]
+    cmd = [UV_EXE, "pip", "compile", "--universal", "--no-annotate", "--no-header"]
     if quiet:
         cmd.append("--quiet")
     else:
