@@ -8,10 +8,12 @@ from zipfile import ZipFile
 
 def main(release_version):
     cleanup_old_files()
-    generate_release_changelog()
-    replace_version_in_files(release_version)
-    zip_wrappers()
-    update_changelog(release_version)
+    final_release = re.match(r"^\d+.\d+.\d+$", release_version)
+    if final_release:
+        generate_release_changelog()
+        replace_version_in_files(release_version)
+        zip_wrappers()
+        update_changelog(release_version)
     subprocess.run(["git", "tag", "-am", f"Release {release_version} by Github action", release_version], check=True)
 
 

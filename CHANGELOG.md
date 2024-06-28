@@ -1,5 +1,3 @@
-Release v3.0.0rc2 (2024-06-28)
-----------------------------
 ### Features & Improvements
 - Dropped support for Python 3.8!
 - Generate platform independent pw.lock files
