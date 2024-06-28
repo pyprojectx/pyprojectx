@@ -345,7 +345,7 @@ def test_add_package(tmp_project):
     project_dir, env = tmp_project
     assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
 
-    cmd = f"{SCRIPT_PREFIX}pw -q --add 'pycowsay==0.0.0.2'"
+    cmd = f'{SCRIPT_PREFIX}pw -q --add "pycowsay==0.0.0.2"'
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
     assert proc_result.returncode == 0
 
