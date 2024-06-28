@@ -1,7 +1,8 @@
-Release v2.3.0rc1 (2024-06-27)
-----------------------------
 ### Features & Improvements
-- #95 generate platform independent lock files by using uv instead of pip (performance boost also)
+- Dropped support for Python 3.8!
+- Generate platform independent pw.lock files
+- Pyprojectx initialization of a clean project is up to 10x faster!
+- #95 use uv instead of pip
 
 Release v2.2.1 (2024-06-26)
 ----------------------------

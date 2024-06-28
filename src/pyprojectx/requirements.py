@@ -74,9 +74,6 @@ def _check_already_met(requirements, req_spec, ctx):
 
 def _check_is_installable(req_specs, ctx, requirements, venvs_dir, quiet):
     env = IsolatedVirtualEnv(venvs_dir, ctx, requirements)
-    cmd = ["pip", "install", *req_specs, "--dry-run"]
-    if quiet:
-        cmd.append("--quiet")
     if not env.is_installed:
         env.install(quiet)
-    env.run(cmd, env={}, cwd=env.path)
+    env.check_is_installable(req_specs, quiet)

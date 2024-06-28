@@ -41,6 +41,7 @@ echo-env-var = { cmd = "echo $ALIAS_VAR", env = { ALIAS_VAR = "linux-alias-var" 
 install-context-post-install = { cmd = "pycowsay install-context-post-install", ctx = "install-context" }
 
 venv-pycowsay = { cmd = "pycowsay", ctx = "venv" }
+main-pycowsay-version = { cmd = "pycowsay --version", ctx = "main" }
 
 [tool.pyprojectx.os.win.aliases]
 list-files = "dir /b"

@@ -2,7 +2,6 @@ import sys
 
 import pytest
 from pyprojectx import requirements
-from pyprojectx.hash import calculate_hash
 
 PY_VER = f"py{sys.version_info.major}.{sys.version_info.minor}"
 
@@ -27,7 +26,7 @@ def test_add_requirement(tmp_dir, mocker, requirement_1, requirement_2, quiet, c
     toml = tmp_dir / "pyproject.toml"
     assert not toml.exists()
     install_mock = mocker.patch("pyprojectx.env.IsolatedVirtualEnv.install")
-    run_mock = mocker.patch("pyprojectx.env.IsolatedVirtualEnv.run")
+    check_installable_mock = mocker.patch("pyprojectx.env.IsolatedVirtualEnv.check_is_installable")
 
     requirements.add_requirement(requirement_1, toml, tmp_dir / "venvs", quiet)
 
@@ -38,8 +37,7 @@ def test_add_requirement(tmp_dir, mocker, requirement_1, requirement_2, quiet, c
     if quiet:
         run_args.append("--quiet")
 
-    hex_digest = calculate_hash({})
-    run_mock.assert_called_with(run_args, env={}, cwd=tmp_dir / f"venvs/{ctx or 'main'}-{hex_digest}-{PY_VER}")
+    check_installable_mock.assert_called_with(packages[0:1], quiet)
 
     requirements.add_requirement(requirement_2, toml, tmp_dir / "venvs", quiet)
 
@@ -49,5 +47,4 @@ def test_add_requirement(tmp_dir, mocker, requirement_1, requirement_2, quiet, c
     run_args = ["pip", "install", *packages[1:], "--dry-run"]
     if quiet:
         run_args.append("--quiet")
-    hex_digest = calculate_hash({"requirements": packages[0]})
-    run_mock.assert_called_with(run_args, env={}, cwd=tmp_dir / f"venvs/{ctx or 'main'}-{hex_digest}-{PY_VER}")
+    check_installable_mock.assert_called_with(packages[1:], quiet)
