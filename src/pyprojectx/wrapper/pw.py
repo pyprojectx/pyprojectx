@@ -168,6 +168,11 @@ def ensure_pyprojectx(options):
         if not options.quiet:
             print(f"{CYAN}creating pyprojectx venv in {BLUE}{venv_dir}{RESET}", file=sys.stderr)
         env_builder.create(venv_dir)
+        subprocess.run(
+            [*pip_cmd, "--upgrade", "pip"],
+            stdout=out,
+            check=True,
+        )
 
         if not options.quiet:
             print(
