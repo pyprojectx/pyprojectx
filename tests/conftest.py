@@ -18,8 +18,8 @@ def tmp_dir():
 
 
 def create_tmp_project(tmp_project_dir):
-    toml = data_dir / "pw-test.toml"
-    shutil.copyfile(toml, tmp_project_dir / pw.PYPROJECT_TOML)
+    shutil.copyfile(data_dir / "pw-test.toml", tmp_project_dir / pw.PYPROJECT_TOML)
+    shutil.copy(data_dir / "pw-requirements.txt", tmp_project_dir)
     pw_copy = Path(tmp_project_dir, "pw")
     pyprojectx_project_dir = Path(__file__).parent.parent
     shutil.copyfile(pyprojectx_project_dir / "src/pyprojectx/wrapper/pw.py", pw_copy)

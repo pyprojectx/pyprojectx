@@ -94,11 +94,23 @@ px http www.google.com
 # HTTP/1.1 200 OK ...
 ```
 
-!!! tip "Tip: Specify exact versions for tools that are critical in your build flow"
+!!! tip "Tip: [Lock](/config/tools/#locking-requirements) your tool requirements"
 
-    This makes sure that your build won't break when new versions of a tool are released.
-    It also ensures that you can always rebuild older versions of your project that rely on older versions of tools
-    (f.e. when building a patch release).
+    This makes sure that your build won't break when new versions of a tool are released,or when a
+    <a href="https://upcycled-code.com/blog/the-broken-version-breakdown">tool is broken by a new release of one of its dependencies</a>.
+
+You can also include requirements from a text file or _pyproject.toml_ file with `-r`:
+
+```toml
+[tool.pyprojectx]
+main = ["-r pyproject.toml", "-r dev-requirements.txt"]
+```
+
+If you want to install a prerelease version of a tool, you need to configure it:
+```toml
+[tool.pyprojectx]
+prerelease = "allow"
+```
 
 ## Post-install scripts
 In some situations it can be useful to perform additional actions after a tool has been installed.
@@ -154,7 +166,7 @@ combine the _lock_ option with the _force-install_ option: `./pw --lock -f`.
 !!! tip "Tip: don't specify tool versions in _pyproject.toml_ when using a _pw.lock_ file"
 
     When there is no version specified for a tool, the latest version will be installed and locked.
-    Updating all tools to the latest version is then as simple as running `./pw --lock -f` again.
+    Updating all tools to the latest version is then as simple as running `./pw --lock` again.
     In case of conflicts or issues with a new version, you can always revert to the previous version of the lock file.
 
 ### Pinning tool versions in _pyproject.toml_

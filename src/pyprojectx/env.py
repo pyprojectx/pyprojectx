@@ -2,6 +2,7 @@
 """Creates and manages isolated build environments."""
 
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -94,10 +95,12 @@ class IsolatedVirtualEnv:
 
     def _install_requirements(self, quiet=False):
         logger.info("Installing packages in isolated environment... (%s)", ", ".join(sorted(self._requirements)))
-        # pip does not honour environment markers in command line arguments,
-        # but it does for requirements from a file
-        requirements_string = "\n".join(self._requirements)
+        requirements_file_regex = re.compile(r"^-r\s+(.+)$")
+        file_requirements = [r for r in self._requirements if requirements_file_regex.match(r)]
+        regular_requirements = [r for r in self._requirements if not requirements_file_regex.match(r)]
+        requirements_string = "\n".join(regular_requirements)
         cmd = [UV_EXE, "pip", "install", "-r", "-", "--python", str(self.scripts_path / PYTHON_EXE)]
+        cmd += [param for f in file_requirements for param in f.split()]
         if quiet:
             cmd.append("--quiet")
         if self.prerelease:

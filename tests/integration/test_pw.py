@@ -169,7 +169,10 @@ def test_post_install(tmp_project):
 
     cmd = f"{SCRIPT_PREFIX}pw -q list-files *.txt"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
-    assert proc_result.stdout.decode("utf-8").strip() == "post-install-file.txt"
+    assert sorted(proc_result.stdout.decode("utf-8").strip().split()) == [
+        "post-install-file.txt",
+        "pw-requirements.txt",
+    ]
 
 
 def test_alias_with_quoted_args(tmp_project):
