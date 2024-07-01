@@ -1,8 +1,10 @@
 ### Features & Improvements
-- Dropped support for Python 3.8!
 - Generate platform independent pw.lock files
 - Pyprojectx initialization of a clean project is up to 10x faster!
 - #95 use uv instead of pip
+- #104 support requirements from a pyproject.toml file or a text file with `-r`
+- #105 allow installing prerelease versions of tools with `prerelease = "allow"`
+- Dropped support for Python 3.8!
 
 Release v2.2.1 (2024-06-26)
 ----------------------------

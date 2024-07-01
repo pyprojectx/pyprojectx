@@ -1,4 +1,5 @@
 [tool.pyprojectx]
+prerelease = "allow"
 main = { requirements = ["px-utils"], post-install = "pxmkdirs post-install-dir" }
 
 pycowsay = "pycowsay==0.0.0.1"
@@ -10,7 +11,7 @@ requirements = "pycowsay==0.0.0.1"
 post-install = "pycowsay post-install-action && pw@create-file"
 
 [tool.pyprojectx.install-context]
-requirements = "pycowsay==0.0.0.1"
+requirements = "-r pw-requirements.txt"
 post-install = "@install-context-post-install"
 
 [tool.pyprojectx.aliases]

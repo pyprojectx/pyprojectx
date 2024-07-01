@@ -19,7 +19,8 @@ will likely be downgraded to older versions. Or worse: your project fails to ins
 One would expect that `pip install tool-x==1.2.3` always installs exactly the same version of _tool-x_.
 Unfortunately, this is not the case because a most python packages do not pin the versions of their dependencies.
 
-This means that released versions of tools **can be broken at any time** by a new release of one of their dependencies.
+This means that released versions of tools **can be [broken at any time](https://upcycled-code.com/blog/the-broken-version-breakdown)**
+by a new release of one of their dependencies.
 
 This is exactly what happened with [PDM 2.5.3](https://github.com/pdm-project/pdm/issues/1883).
 
