@@ -28,15 +28,15 @@ def _run(argv: list[str]) -> None:
         install_px(options)
         return
 
-    if options.add:
-        add_requirement(options.add, options.toml_path, options.venvs_dir, options.quiet)
-        return
-
     if options.upgrade:
         _show_upgrade_instructions()
         return
 
     config = Config(options.toml_path)
+
+    if options.add:
+        add_requirement(options.add, options.toml_path, options.venvs_dir, options.quiet, config.prerelease)
+        return
 
     if options.install_context:
         _install_ctx(options, config, argv)
@@ -189,7 +189,7 @@ def _run_in_ctx(ctx: str, full_cmd: Union[str, list[str]], options, pw_args, con
 
 def _ensure_ctx(config, ctx, env, options, pw_args):
     requirements, modified = get_or_update_locked_requirements(ctx, config, options.quiet)
-    venv = IsolatedVirtualEnv(options.venvs_dir, ctx, requirements)
+    venv = IsolatedVirtualEnv(options.venvs_dir, ctx, requirements, prerelease=config.prerelease)
     if not venv.is_installed or options.force_install or modified:
         try:
             venv.install(quiet=options.quiet, install_path=options.install_path)

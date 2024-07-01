@@ -11,7 +11,7 @@ from pyprojectx.wrapper import pw
 requirement_regexp = re.compile(r"^([^=<>~!]+)")
 
 
-def add_requirement(requirement: str, toml_path: Path, venvs_dir: Path, quiet: bool):
+def add_requirement(requirement: str, toml_path: Path, venvs_dir: Path, quiet: False, prerelease=None):
     if not toml_path.exists():
         toml_path.touch()
     toml_file = TOMLFile(toml_path)
@@ -25,7 +25,7 @@ def add_requirement(requirement: str, toml_path: Path, venvs_dir: Path, quiet: b
     toml, requirements = _get_or_add_requirements(toml, ctx)
     for spec in req_specs:
         _check_already_met(requirements, spec, ctx)
-    _check_is_installable(req_specs, ctx, Config(toml_path).get_requirements(ctx), venvs_dir, quiet)
+    _check_is_installable(req_specs, ctx, Config(toml_path).get_requirements(ctx), venvs_dir, quiet, prerelease)
     for spec in req_specs:
         requirements.append(spec)
     toml_file.write(toml)
@@ -72,8 +72,8 @@ def _check_already_met(requirements, req_spec, ctx):
                 raise Warning(f"{pw.RED}{req_name} is already a requirement in {ctx}")
 
 
-def _check_is_installable(req_specs, ctx, requirements, venvs_dir, quiet):
-    env = IsolatedVirtualEnv(venvs_dir, ctx, requirements)
+def _check_is_installable(req_specs, ctx, requirements, venvs_dir, quiet, prerelease):  # noqa: PLR0913
+    env = IsolatedVirtualEnv(venvs_dir, ctx, requirements, prerelease)
     if not env.is_installed:
-        env.install(quiet)
+        env.install(quiet=quiet)
     env.check_is_installable(req_specs, quiet)

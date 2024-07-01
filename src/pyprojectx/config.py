@@ -43,6 +43,7 @@ class Config:
         self._contexts = toml_dict.get("tool", {}).get("pyprojectx", {}).copy()
         self._aliases = self._contexts.pop("aliases", {})
         self.env = self._contexts.pop("env", {})
+        self.prerelease = self._contexts.pop("prerelease", None)
         if not isinstance(self.env, dict):
             msg = "Invalid config: 'env' must be a dictionary"
             raise Warning(msg)

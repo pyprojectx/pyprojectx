@@ -20,7 +20,7 @@ UV_EXE = uv.find_uv_bin()
 class IsolatedVirtualEnv:
     """Encapsulates the location and installation of an isolated virtual environment."""
 
-    def __init__(self, base_path: Path, name: str, requirements_config: dict) -> None:
+    def __init__(self, base_path: Path, name: str, requirements_config: dict, prerelease=None) -> None:
         """Construct an IsolatedVirtualEnv.
 
         :param base_path: The base path for all environments
@@ -32,6 +32,7 @@ class IsolatedVirtualEnv:
         self._hash = requirements_config.get("hash", calculate_hash(requirements_config))
         self._requirements = requirements_config.get("requirements", [])
         self._path = Path(requirements_config["dir"]) if requirements_config.get("dir") else self._compose_path()
+        self.prerelease = prerelease
 
     @property
     def name(self) -> str:
@@ -99,6 +100,8 @@ class IsolatedVirtualEnv:
         cmd = [UV_EXE, "pip", "install", "-r", "-", "--python", str(self.scripts_path / PYTHON_EXE)]
         if quiet:
             cmd.append("--quiet")
+        if self.prerelease:
+            cmd += ["--prerelease", self.prerelease]
         subprocess.run(cmd, input=requirements_string.encode("utf-8"), stdout=sys.stderr, check=True)
 
     def check_is_installable(self, requirement_specs, quiet=False):
