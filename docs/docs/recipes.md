@@ -32,27 +32,32 @@ If you don't need dependency management (f.e. when you don't have any dependenci
 Pyprojectx can create your virtual environment and install test dependencies.
 
 ```toml
-[tool.pyprojectx]
-[tool.pyprojectx.main]
-requirements = ["pre-commit", "black", "isort", "mypy", "px-utils"]
-post-install = "pre-commit install && pw@ --install-context venv"
-
 [tool.pyprojectx.venv]
-dir = "@PROJECT_DIR/.venv"
-# install your project in editable mode; this assumes that your project is installable
-requirements = ["pytest==8.0.0", "-e ."]
+# venv and .venv don't have any special meaning, you can choose any name
+requirements = [
+    "-r pyproject.toml", # install project.dependencies from pyproject.toml
+    "pytest" # test dependencies (keep your other dev dependencies in the main requirements)
+]
+dir = ".venv"
 
-[tool.pyprojectx.aliases]
-format = ["black src", "isort src"]
-lint = "mypy --python-executable .venv/bin/python --no-incremental"
+[tool.pyprojectx.main]
+requirements = ["ruff", "pre-commit", "px-utils", "httpie", "build"]
+post-install = "pre-commit install"
+
+install = "pw@ --install-context venv"
 test = { cmd = "pytest", ctx = "venv" }
+format = ["ruff format", "ruff check --select I --fix"]
+lint = ["ruff check"]
+check = ["@lint", "@test"]
+build = ["@install", "@check", "python -m build"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 ```
 
 After running any alias (f.e. `./pw test`), you can activate the virtual environment with `source .venv/bin/activate`.
-
-Use the `-f` of `--force-install` flag to recreate the virtual environment
-after changing the requirements in `[tool.pyprojectx.venv]`, f.e. run `./pw -f test`.
-
+See also [px-demo](https://github.com/pyprojectx/px-demo/tree/simple) for a full example.
 
 ## Build scripts
 Script your development and build flow with aliases:
