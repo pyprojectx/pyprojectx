@@ -1,3 +1,5 @@
+Release v3.0.1 (2024-07-03)
+----------------------------
 ### Features & Improvements
 - Generate platform independent pw.lock files
 - Pyprojectx initialization of a clean project is up to 10x faster!
