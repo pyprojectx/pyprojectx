@@ -55,7 +55,7 @@ def install_px(options):
     shutil.copy2(wrapper_dir / "pw.py", target_pw)
     for file in wrapper_dir.glob("px*"):
         shutil.copy2(file, install_dir)
-    with (global_dir / "pyproject.toml").open("w") as f:
+    with (global_dir / "pyproject.toml").open("w", encoding="utf-8") as f:
         f.write(DEFAULT_GLOBAL_CONFIG)
 
     print(

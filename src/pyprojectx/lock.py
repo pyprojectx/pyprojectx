@@ -37,7 +37,7 @@ def get_or_update_locked_requirements(ctx: str, config: Config, quiet) -> tuple[
     if not lf.exists() or not can_lock(requirements):
         return requirements, False
 
-    with lf.open() as f:
+    with lf.open(encoding="utf-8") as f:
         toml = tomlkit.load(f)
 
     if ctx not in toml:
@@ -54,7 +54,7 @@ def get_or_update_locked_requirements(ctx: str, config: Config, quiet) -> tuple[
     post_install = requirements.get("post-install")
     if post_install:
         lf_toml_ctx["post-install"] = post_install
-    with lf.open("w") as f:
+    with lf.open("w", encoding="utf-8", newline="") as f:
         tomlkit.dump(toml, f)
     return lf_toml_ctx, True
 
