@@ -1,3 +1,5 @@
+Release v3.0.2 (2024-07-08)
+----------------------------
 ### Bug Fixes
 - #108 preserve line endings in pw.lock file on windows
 - #109 show useful error output when --lock fails instead of crashing
