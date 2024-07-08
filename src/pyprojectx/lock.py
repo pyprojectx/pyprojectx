@@ -67,6 +67,8 @@ def _freeze(ctx_name, requirements, quiet):
         print(f"{pw.BLUE}locking {pw.CYAN}{ctx_name}{pw.BLUE} requirements{pw.RESET}", file=sys.stderr)
     cmd.append("-")
     requirements_string = "\n".join(requirements["requirements"])
-    proc_result = subprocess.run(cmd, input=requirements_string.encode("utf-8"), check=True, capture_output=True)
+    proc_result = subprocess.run(cmd, input=requirements_string.encode("utf-8"), check=False, capture_output=True)
     sys.stderr.buffer.write(proc_result.stderr)
+    if proc_result.returncode != 0:
+        raise Warning(f"Failed to lock {ctx_name} requirements.")
     return sorted([line.strip() for line in proc_result.stdout.decode("utf-8").splitlines() if line])
