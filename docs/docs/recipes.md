@@ -201,4 +201,4 @@ Just run `px notebook` or even `px n`
 
     When a tool context contains an editable install, it won't be locked when running `./pw --lock`.
     Therefore, it is recommended to add editable install to a separate tool context and lock the main
-    context fro reproducible builds.
+    context for reproducible builds.

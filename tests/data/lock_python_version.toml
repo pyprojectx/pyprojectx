@@ -1,0 +1,12 @@
+[tool.pyprojectx]
+lock-python-version = "3.7"
+main = "pycowsay==0.0.0.2"
+
+[tool.pyprojectx.tool-with-known-requirements]
+requirements = "pyprojectx==2.0.0"
+post-install = "@post-install-action"
+
+[tool.pyprojectx.aliases]
+post-install-action = "mkdir post-install-table-dir"
+show-version = { cmd = "pyprojectx --version", ctx = "tool-with-known-requirements", env = { "PYPROJECTX_PACKAGE" = "" } }
+no-lock-cmd = { cmd = "echo 'invoked no-lock'", ctx = "no-lock", env = { "PYPROJECTX_PACKAGE" = "" } }
