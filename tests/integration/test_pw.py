@@ -8,6 +8,8 @@ from pathlib import Path
 import pytest
 import tomlkit
 
+from pyprojectx.wrapper import pw
+
 SCRIPT_PREFIX = ".\\" if sys.platform.startswith("win") else "./"
 SCRIPT_SUFFIX = ".exe" if sys.platform.startswith("win") else ""
 
@@ -259,6 +261,8 @@ def test_lock(tmp_lock_project):
     assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
     lock_file = project_dir / "pw.lock"
     assert not lock_file.exists()
+    post_install_table_dir = project_dir / "post-install-table-dir"
+    shutil.rmtree(post_install_table_dir, ignore_errors=True)
 
     cmd = f"{SCRIPT_PREFIX}pw --lock"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
@@ -270,19 +274,33 @@ def test_lock(tmp_lock_project):
     assert lock_content["main"] == locked_requirements["main"]
     assert lock_content["tool-with-known-requirements"] == locked_requirements["tool-with-known-requirements"]
     # check that the post-install script was run
-    assert Path(project_dir, "post-install-table-dir").exists()
+    assert post_install_table_dir.exists()
     assert not list(Path(project_dir, ".pyprojectx/venvs").glob("no-lock*"))
+
+
+def test_lock_python_version(tmp_lock_project):
+    project_dir, env = tmp_lock_project
+    assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
+    toml = project_dir / pw.PYPROJECT_TOML
+    lock_python_version = data_dir / "lock_python_version.toml"
+    shutil.copy(lock_python_version, toml)
+
+    cmd = f"{SCRIPT_PREFIX}pw --lock"
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
+    assert proc_result.returncode == 1
+    assert "No solution found when resolving dependencies" in proc_result.stderr.decode("utf-8")
 
 
 def test_automatic_lock_update(tmp_lock_project):
     project_dir, env = tmp_lock_project
+    toml = data_dir / "test-lock.toml"
+    shutil.copyfile(toml, project_dir / pw.PYPROJECT_TOML)
     assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
     lock_file = project_dir / "pw.lock"
     outdated = data_dir / "outdated.lock"
     shutil.copy(outdated, lock_file)
     post_install_table_dir = project_dir / "post-install-table-dir"
-    if post_install_table_dir.exists():
-        post_install_table_dir.rmdir()
+    shutil.rmtree(post_install_table_dir, ignore_errors=True)
 
     cmd = f"{SCRIPT_PREFIX}pw -q show-version"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)

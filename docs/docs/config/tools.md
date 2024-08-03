@@ -162,6 +162,15 @@ The lock file is automatically updated when the tool context requirements in _py
 To upgrade all tools to the latest version (respecting the requirements in _pyproject.toml_),
 combine the _lock_ option with the _force-install_ option: `./pw --lock -f`.
 
+!!! note "Supporting multiple Python versions"
+
+    When generating the lock file, the version of the current Python interpreter is used as minimum
+    version that should be supported by the resolved requirements.
+    You can override this by configuring the _lock-python-version_, e.g., `3.8` or `3.8.17`:
+    ```toml
+    [tool.pyprojectx]
+    lock-python-version = "3.8"
+    ```
 
 !!! tip "Tip: don't specify tool versions in _pyproject.toml_ when using a _pw.lock_ file"
 

@@ -80,7 +80,7 @@ files = [
 
 [[package]]
 name = "pytest"
-version = "8.2.2"
+version = "8.3.2"
 requires_python = ">=3.8"
 summary = "pytest: simple powerful testing with Python"
 groups = ["test"]
@@ -89,12 +89,12 @@ dependencies = [
     "exceptiongroup>=1.0.0rc8; python_version < \"3.11\"",
     "iniconfig",
     "packaging",
-    "pluggy<2.0,>=1.5",
+    "pluggy<2,>=1.5",
     "tomli>=1; python_version < \"3.11\"",
 ]
 files = [
-    {file = "pytest-8.2.2-py3-none-any.whl", hash = "sha256:c434598117762e2bd304e526244f67bf66bbd7b5d6cf22138be51ff661980343"},
-    {file = "pytest-8.2.2.tar.gz", hash = "sha256:de4bb8104e201939ccdc688b27a89a7be2079b22e2bd2b07f806b6ba71117977"},
+    {file = "pytest-8.3.2-py3-none-any.whl", hash = "sha256:4ba08f9ae7dcf84ded419494d229b48d0903ea6407b030eaec46df5e6a73bba5"},
+    {file = "pytest-8.3.2.tar.gz", hash = "sha256:c132345d12ce551242c87269de812483f5bcc87cdbb4722e48487ba194f9fdce"},
 ]
 
 [[package]]
@@ -125,13 +125,13 @@ files = [
 
 [[package]]
 name = "tomlkit"
-version = "0.12.5"
-requires_python = ">=3.7"
+version = "0.13.0"
+requires_python = ">=3.8"
 summary = "Style preserving TOML library"
 groups = ["default"]
 files = [
-    {file = "tomlkit-0.12.5-py3-none-any.whl", hash = "sha256:af914f5a9c59ed9d0762c7b64d3b5d5df007448eb9cd2edc8a46b1eafead172f"},
-    {file = "tomlkit-0.12.5.tar.gz", hash = "sha256:eef34fba39834d4d6b73c9ba7f3e4d1c417a4e56f89a7e96e090dd0d24b8fb3c"},
+    {file = "tomlkit-0.13.0-py3-none-any.whl", hash = "sha256:7075d3042d03b80f603482d69bf0c8f345c2b30e41699fd8883227f89972b264"},
+    {file = "tomlkit-0.13.0.tar.gz", hash = "sha256:08ad192699734149f5b97b45f1f18dad7eb1b6d16bc72ad0c2335772650d7b72"},
 ]
 
 [[package]]
@@ -150,27 +150,27 @@ files = [
 
 [[package]]
 name = "uv"
-version = "0.2.21"
+version = "0.2.33"
 requires_python = ">=3.8"
 summary = "An extremely fast Python package installer and resolver, written in Rust."
 groups = ["default"]
 files = [
-    {file = "uv-0.2.21-py3-none-linux_armv6l.whl", hash = "sha256:4a4c5e18c586ca8440092591b823a5f791479f7831653bc976bef12f556492df"},
-    {file = "uv-0.2.21-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:ed98df620ef6c089455e56dcd9fd09047ca936874fd160bd237d949f562c1953"},
-    {file = "uv-0.2.21-py3-none-macosx_11_0_arm64.whl", hash = "sha256:69760dc3bc83285d3104d0349454b8c4c689badcce8dac6f4e99f78085dda82e"},
-    {file = "uv-0.2.21-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.musllinux_1_1_aarch64.whl", hash = "sha256:2990e913bcf67e12a2a651cb084371aa94a4a9c04728b7072c519951e6ddf6b5"},
-    {file = "uv-0.2.21-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:ca326e67201dfd4e91ebecd09d909eaca63ae762e5a579c5143ba7679f5c8981"},
-    {file = "uv-0.2.21-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:131dcf8082407acd4ac6d1f448c7945b3e371a4e5fee658f45128f0a2147c4cf"},
-    {file = "uv-0.2.21-py3-none-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:3caa21b935d61d5ac68e1751b434d637852047e74d72321c1059d6cbcf367f0e"},
-    {file = "uv-0.2.21-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:cd6b17738d2345ffc171bdb661e4adc026ef112658b0cb7d5f2eafe53cc51854"},
-    {file = "uv-0.2.21-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:a44d5fb5d5c42becb60a85d120108919d85f84a48ab4202b482bfedd671906ee"},
-    {file = "uv-0.2.21-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5521fddb33d13bfa83bdae3c4376eceff43f4b347575edbeb16415c4331c17c1"},
-    {file = "uv-0.2.21-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:542b5418701384daba3f64744fb398c4d9152260385c56fe9d39f4d8ad3e58e3"},
-    {file = "uv-0.2.21-py3-none-musllinux_1_1_armv7l.whl", hash = "sha256:78d5973f9ae817bafdbd91987968038c3fb194be9186badf4e57ffd6167bbf48"},
-    {file = "uv-0.2.21-py3-none-musllinux_1_1_i686.whl", hash = "sha256:7ba4d9e8a088e0096d0f7b261878d51da346313f7f5004beb66f8cff1948566f"},
-    {file = "uv-0.2.21-py3-none-musllinux_1_1_ppc64le.whl", hash = "sha256:1304115ec3b3d93418de893f9303b910e0afa13204912d98ed6cf095947a7000"},
-    {file = "uv-0.2.21-py3-none-musllinux_1_1_x86_64.whl", hash = "sha256:74f221e41f80d43122fba66cadbd5fe77975a42ff14af6d76ee86815cef89e02"},
-    {file = "uv-0.2.21-py3-none-win32.whl", hash = "sha256:f3b67e1d85104bb4e6f62a0df044e3dc5778283feeaf937c5ec102404f3120ec"},
-    {file = "uv-0.2.21-py3-none-win_amd64.whl", hash = "sha256:402f5b4c17eb616d21f66cb65bf3698b1deb7b2bb313734be423b4fd07e3132d"},
-    {file = "uv-0.2.21.tar.gz", hash = "sha256:f9c4f9e2597adcaab87bfc68b88dbd85ec04acd51e36aae7d9b6f51c9fc5ebb3"},
+    {file = "uv-0.2.33-py3-none-linux_armv6l.whl", hash = "sha256:42b65bbf78b5186a40ea4423fab030fb01c9354432a7c0a3b5db67a3f4e246c5"},
+    {file = "uv-0.2.33-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:181ccdb22058465c6690dca22e506fec234dcae5bcbe6389fd5330971910250e"},
+    {file = "uv-0.2.33-py3-none-macosx_11_0_arm64.whl", hash = "sha256:ace6cb8383203fdfeaf8dbbc1ecb3bb945e040ca10558e233b63c84af82f6636"},
+    {file = "uv-0.2.33-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.musllinux_1_1_aarch64.whl", hash = "sha256:86f6237102deedbb17201804eb821833c5bad3f551f16f2695ae2b85e9f066de"},
+    {file = "uv-0.2.33-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:ede51de6795f9571b182c104d6078690c3a10b3fbe6fcf414b2e38c8d394e575"},
+    {file = "uv-0.2.33-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:02ed3b62049ea1f40404d33a02a69d3808f3b0e001e5565938804ca76beafbc4"},
+    {file = "uv-0.2.33-py3-none-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:73031edf35195289f02f6f1a603c512b57c8f921cb62fd442dbb63fd2a77c801"},
+    {file = "uv-0.2.33-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:2fe685e73f198b2630e08e89ece0d858d58646a038a6d9cb2b06126dcca856d1"},
+    {file = "uv-0.2.33-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:fb6f282ac92fbc05e82fa3a93e6515ad5b044e8c845ba16d815b5889799eebd1"},
+    {file = "uv-0.2.33-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:48cfdb8efd237eb00086b8f0d0dc7281e517fd8afb55f698538087379bf45a8d"},
+    {file = "uv-0.2.33-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:8eba96cbff1bc492c270e143235b39cfbe6dddebd842228ea14124d6b7d944e8"},
+    {file = "uv-0.2.33-py3-none-musllinux_1_1_armv7l.whl", hash = "sha256:90b74796ce75594e63345c8e090fbac832a8f6db876691ae2b57b0b8d6011559"},
+    {file = "uv-0.2.33-py3-none-musllinux_1_1_i686.whl", hash = "sha256:676231a93001db051ecf98cb380f2d48d3f6b95add66ff4546073e30911a737a"},
+    {file = "uv-0.2.33-py3-none-musllinux_1_1_ppc64le.whl", hash = "sha256:744eb9743e4b850af5de9f3c727d84a60a763ae0f4f5183dcdfa8a065879694d"},
+    {file = "uv-0.2.33-py3-none-musllinux_1_1_x86_64.whl", hash = "sha256:37924a3b502117fd74b1ddf08e9288b397da7895dd8cad46005422eefffe6e88"},
+    {file = "uv-0.2.33-py3-none-win32.whl", hash = "sha256:dbe497a1a16be9569d42cf4a7562e14bb3c3d9b33cc65e59095f1c3f8ab983df"},
+    {file = "uv-0.2.33-py3-none-win_amd64.whl", hash = "sha256:93c45d07ab440c03f2796540d646c34e58b4707feebfb9f70ded1306830408b0"},
+    {file = "uv-0.2.33.tar.gz", hash = "sha256:714351e10f27e41052897e26cd4acfe66e35250903fdc20f762d29461cf3ec4a"},
 ]

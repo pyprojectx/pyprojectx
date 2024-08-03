@@ -44,6 +44,7 @@ class Config:
         self._aliases = self._contexts.pop("aliases", {})
         self.env = self._contexts.pop("env", {})
         self.prerelease = self._contexts.pop("prerelease", None)
+        self.lock_python_version = self._contexts.pop("lock-python-version", None)
         if not isinstance(self.env, dict):
             msg = "Invalid config: 'env' must be a dictionary"
             raise Warning(msg)

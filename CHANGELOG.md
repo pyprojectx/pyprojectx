@@ -1,3 +1,6 @@
+### Features & Improvements
+- #110 add lock-python-version configuration option
+
 Release v3.0.2 (2024-07-08)
 ----------------------------
 ### Bug Fixes
