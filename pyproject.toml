@@ -1,6 +1,6 @@
 [project]
 name = "pyprojectx"
-version = "3.0.1.dev"
+version = "3.0.4.dev"
 description = "Execute scripts from pyproject.toml, installing tools on-the-fly"
 license = { text = "MIT" }
 authors = [{ name = "Houbie", email = "ivo@houbrechts-it.be" }]
@@ -12,11 +12,11 @@ classifiers = [
     "Topic :: Software Development :: Build Tools",
     "Topic :: Software Development :: Libraries :: Python Modules"
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.8"
 
 dependencies = [
     "userpath>=1.9",
-    "tomlkit>=0.12",
+    "tomlkit>=0.13",
     "uv>=0.2",
 ]
 
@@ -56,7 +56,7 @@ requirements = [
     "pdm",
     "pdm-build-locked",
     "ruff",
-    "pre-commit",
+    "pre-commit<3.6",
     "px-utils",
     "mkdocs",
     "mkdocs-material",
