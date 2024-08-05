@@ -1,3 +1,5 @@
+Release v3.0.4 (2024-08-05)
+----------------------------
 ### Features & Improvements
 - revert constraint on python >=3.9 back to >=3.8
 
