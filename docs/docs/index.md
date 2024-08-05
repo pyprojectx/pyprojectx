@@ -33,7 +33,7 @@ Projects can be build/tested/used immediately without explicit installation nor 
 ![Clone and Build](assets/build.png)
 
 ## Installation
-One of the key features is that there is no need to install anything explicitly (except a Python 3.9+ interpreter).
+One of the key features is that there is no need to install anything explicitly (except a Python 3.8+ interpreter).
 
 `cd` into your project directory and download the
 [wrapper scripts](https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip):

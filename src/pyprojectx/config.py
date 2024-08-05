@@ -1,10 +1,9 @@
 import re
 import sys
-from collections.abc import Iterable
 from dataclasses import dataclass, field
 from itertools import zip_longest
 from pathlib import Path
-from typing import Optional
+from typing import Dict, Iterable, List, Optional
 
 import tomlkit
 
@@ -23,7 +22,7 @@ class AliasCommand:
     cmd: str
     cwd: Optional[str] = None
     shell: Optional[str] = None
-    env: dict[str, str] = field(default_factory=dict)
+    env: Dict[str, str] = field(default_factory=dict)
     ctx: Optional[str] = None
 
 
@@ -150,7 +149,7 @@ class Config:
         """
         return key and self._contexts.get(key) is not None
 
-    def get_alias(self, key) -> list[AliasCommand]:
+    def get_alias(self, key) -> List[AliasCommand]:
         """Get an alias command configured in the [tool.pyprojectx.alias] section.
 
         The alias is considered to be part of a tool context if:
@@ -217,7 +216,7 @@ class Config:
     def get_script_path(self, script):
         return (self.scripts_path / f"{script}.py").absolute()
 
-    def find_aliases_or_scripts(self, abbrev: str) -> list[str]:
+    def find_aliases_or_scripts(self, abbrev: str) -> List[str]:
         """Find all alias keys and/or scripts in scripts_dir that match the abbreviation.
 
         The abbreviation can use camel case patterns that are expanded to match camel case and kebab case names.

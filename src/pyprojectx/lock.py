@@ -1,6 +1,7 @@
 import re
 import subprocess
 import sys
+from typing import Tuple
 
 import tomlkit
 
@@ -23,7 +24,7 @@ def can_lock(requirements_config: dict) -> bool:
     )
 
 
-def get_or_update_locked_requirements(ctx: str, config: Config, quiet) -> tuple[dict, bool]:
+def get_or_update_locked_requirements(ctx: str, config: Config, quiet) -> Tuple[dict, bool]:
     """Check if the locked requirements are up-to-date and lock them if needed.
 
     :param ctx: The context name to lock
