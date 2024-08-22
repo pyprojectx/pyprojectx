@@ -17,7 +17,7 @@ requires-python = ">=3.8"
 dependencies = [
     "userpath>=1.9",
     "tomlkit>=0.13",
-    "uv>=0.2",
+    "uv==0.3.1",
 ]
 
 [tool.pdm]
