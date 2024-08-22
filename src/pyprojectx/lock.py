@@ -49,7 +49,7 @@ def get_or_update_locked_requirements(ctx: str, config: Config, quiet) -> Tuple[
         locked_requirements = lf_toml_ctx.get("requirements")
         return {**requirements, "requirements": locked_requirements}, False
 
-    locked_requirements = _freeze(ctx, requirements, config.lock_python_version, quiet)
+    locked_requirements = _freeze(ctx, requirements, config.lock_python_version, config.prerelease, quiet)
     lf_toml_ctx["requirements"] = locked_requirements
     lf_toml_ctx["hash"] = requirements_hash
     post_install = requirements.get("post-install")
@@ -60,10 +60,12 @@ def get_or_update_locked_requirements(ctx: str, config: Config, quiet) -> Tuple[
     return lf_toml_ctx, True
 
 
-def _freeze(ctx_name, requirements, lock_python_version, quiet):
+def _freeze(ctx_name, requirements, lock_python_version, prerelease, quiet):
     cmd = [UV_EXE, "pip", "compile", "--universal", "--no-annotate", "--no-header"]
     if lock_python_version:
         cmd += ["--python-version", lock_python_version]
+    if prerelease:
+        cmd += ["--prerelease", prerelease]
     if quiet:
         cmd.append("--quiet")
     else:

@@ -1,3 +1,6 @@
+### Bug Fixes
+- #114 prerelease is not propagated when locking dependencies
+
 Release v3.0.4 (2024-08-05)
 ----------------------------
 ### Features & Improvements
