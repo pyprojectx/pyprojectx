@@ -75,7 +75,7 @@ def test_run(tmp_dir, capfd):
     )
     env.install()
     captured = capfd.readouterr()
-    assert "Creating virtualenv" in captured.err
+    assert "Creating virtual environment" in captured.err
 
     env.run("virtualenv --version", env={}, cwd=".")
     captured = capfd.readouterr()

@@ -3,22 +3,18 @@
 
 [metadata]
 groups = ["default", "test"]
-strategy = ["inherit_metadata"]
-lock_version = "4.5.0"
-content_hash = "sha256:be6d1c411544707244d3a5ace1da94531a40f83565c747c064ca87564f8a2b19"
-
-[[metadata.targets]]
-requires_python = ">=3.8"
+cross_platform = true
+static_urls = false
+lock_version = "4.3"
+content_hash = "sha256:79e021b9a4b31ba1e7e806346834c1c62a948898241e113f7a214bbb336deb3e"
 
 [[package]]
 name = "click"
 version = "8.1.7"
 requires_python = ">=3.7"
 summary = "Composable command line interface toolkit"
-groups = ["default"]
 dependencies = [
     "colorama; platform_system == \"Windows\"",
-    "importlib-metadata; python_version < \"3.8\"",
 ]
 files = [
     {file = "click-8.1.7-py3-none-any.whl", hash = "sha256:ae74fb96c20a0277a1d615f1e4d73c8414f5a98db8b799a7931d1582f3390c28"},
@@ -30,8 +26,6 @@ name = "colorama"
 version = "0.4.6"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
 summary = "Cross-platform colored terminal text."
-groups = ["default", "test"]
-marker = "sys_platform == \"win32\" or platform_system == \"Windows\""
 files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
@@ -42,8 +36,6 @@ name = "exceptiongroup"
 version = "1.2.2"
 requires_python = ">=3.7"
 summary = "Backport of PEP 654 (exception groups)"
-groups = ["test"]
-marker = "python_version < \"3.11\""
 files = [
     {file = "exceptiongroup-1.2.2-py3-none-any.whl", hash = "sha256:3111b9d131c238bec2f8f516e123e14ba243563fb135d3fe885990585aa7795b"},
     {file = "exceptiongroup-1.2.2.tar.gz", hash = "sha256:47c2edf7c6738fafb49fd34290706d1a1a2f4d1c6df275526b62cbb4aa5393cc"},
@@ -54,7 +46,6 @@ name = "iniconfig"
 version = "2.0.0"
 requires_python = ">=3.7"
 summary = "brain-dead simple config-ini parsing"
-groups = ["test"]
 files = [
     {file = "iniconfig-2.0.0-py3-none-any.whl", hash = "sha256:b6a85871a79d2e3b22d2d1b94ac2824226a63c6b741c88f7ae975f18b6778374"},
     {file = "iniconfig-2.0.0.tar.gz", hash = "sha256:2d91e135bf72d31a410b17c16da610a82cb55f6b0477d1a902134b24a455b8b3"},
@@ -65,7 +56,6 @@ name = "packaging"
 version = "24.1"
 requires_python = ">=3.8"
 summary = "Core utilities for Python packages"
-groups = ["test"]
 files = [
     {file = "packaging-24.1-py3-none-any.whl", hash = "sha256:5b8f2217dbdbd2f7f384c41c628544e6d52f2d0f53c6d0c3ea61aa5d1d7ff124"},
     {file = "packaging-24.1.tar.gz", hash = "sha256:026ed72c8ed3fcce5bf8950572258698927fd1dbda10a5e981cdf0ac37f4f002"},
@@ -76,7 +66,6 @@ name = "pluggy"
 version = "1.5.0"
 requires_python = ">=3.8"
 summary = "plugin and hook calling mechanisms for python"
-groups = ["test"]
 files = [
     {file = "pluggy-1.5.0-py3-none-any.whl", hash = "sha256:44e1ad92c8ca002de6377e165f3e0f1be63266ab4d554740532335b9d75ea669"},
     {file = "pluggy-1.5.0.tar.gz", hash = "sha256:2cffa88e94fdc978c4c574f15f9e59b7f4201d439195c3715ca9e2486f1d0cf1"},
@@ -84,10 +73,9 @@ files = [
 
 [[package]]
 name = "pytest"
-version = "8.3.2"
+version = "8.3.3"
 requires_python = ">=3.8"
 summary = "pytest: simple powerful testing with Python"
-groups = ["test"]
 dependencies = [
     "colorama; sys_platform == \"win32\"",
     "exceptiongroup>=1.0.0rc8; python_version < \"3.11\"",
@@ -97,8 +85,8 @@ dependencies = [
     "tomli>=1; python_version < \"3.11\"",
 ]
 files = [
-    {file = "pytest-8.3.2-py3-none-any.whl", hash = "sha256:4ba08f9ae7dcf84ded419494d229b48d0903ea6407b030eaec46df5e6a73bba5"},
-    {file = "pytest-8.3.2.tar.gz", hash = "sha256:c132345d12ce551242c87269de812483f5bcc87cdbb4722e48487ba194f9fdce"},
+    {file = "pytest-8.3.3-py3-none-any.whl", hash = "sha256:a6853c7375b2663155079443d2e45de913a911a11d669df02a50814944db57b2"},
+    {file = "pytest-8.3.3.tar.gz", hash = "sha256:70b98107bd648308a7952b06e6ca9a50bc660be218d53c257cc1fc94fda10181"},
 ]
 
 [[package]]
@@ -106,7 +94,6 @@ name = "pytest-mock"
 version = "3.14.0"
 requires_python = ">=3.8"
 summary = "Thin-wrapper around the mock package for easier use with pytest"
-groups = ["test"]
 dependencies = [
     "pytest>=6.2.5",
 ]
@@ -120,8 +107,6 @@ name = "tomli"
 version = "2.0.1"
 requires_python = ">=3.7"
 summary = "A lil' TOML parser"
-groups = ["test"]
-marker = "python_version < \"3.11\""
 files = [
     {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
     {file = "tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},
@@ -132,7 +117,6 @@ name = "tomlkit"
 version = "0.13.2"
 requires_python = ">=3.8"
 summary = "Style preserving TOML library"
-groups = ["default"]
 files = [
     {file = "tomlkit-0.13.2-py3-none-any.whl", hash = "sha256:7a974427f6e119197f670fbbbeae7bef749a6c14e793db934baefc1b5f03efde"},
     {file = "tomlkit-0.13.2.tar.gz", hash = "sha256:fff5fe59a87295b278abd31bec92c15d9bc4a06885ab12bcea52c71119392e79"},
@@ -143,7 +127,6 @@ name = "userpath"
 version = "1.9.2"
 requires_python = ">=3.7"
 summary = "Cross-platform tool for adding locations to the user PATH"
-groups = ["default"]
 dependencies = [
     "click",
 ]
@@ -154,27 +137,26 @@ files = [
 
 [[package]]
 name = "uv"
-version = "0.3.1"
+version = "0.4.30"
 requires_python = ">=3.8"
 summary = "An extremely fast Python package and project manager, written in Rust."
-groups = ["default"]
 files = [
-    {file = "uv-0.3.1-py3-none-linux_armv6l.whl", hash = "sha256:800de54a9208821a3e3217e93c0312eebfcb321888cd8bcfe7ca52defc9f8d45"},
-    {file = "uv-0.3.1-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:c1dd0d641858a9ad5c3cdac4e54cf179377e441ce436db215f874ac32d6d562d"},
-    {file = "uv-0.3.1-py3-none-macosx_11_0_arm64.whl", hash = "sha256:af573bd796750c7156642992e5e333aa81c9c45e7b835e2d540597c715009619"},
-    {file = "uv-0.3.1-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.musllinux_1_1_aarch64.whl", hash = "sha256:c54f5d3dd3a031f7533779ca6edbf5a62bfa2f9c23e434415e04ae48af40710e"},
-    {file = "uv-0.3.1-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:4cd0bdcbd316496434acf5a3bfd848610fb423a8f18e3f10b34ba0388b72b533"},
-    {file = "uv-0.3.1-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:03c04124b5a5167c12c3de2b8119c0d9b3c3ace36ee8a497f266f458b023acd9"},
-    {file = "uv-0.3.1-py3-none-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:03e2dfdcf6d2d346add95507f71588c2f5aeb62dccf879bcf7aca088c6b94d10"},
-    {file = "uv-0.3.1-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:1f1f2142c3023ad0ab7a2611215e0d7d1824d3daa703b2d91c8892192ebe0d2c"},
-    {file = "uv-0.3.1-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:9a8161b9ea8746ebfb2638887f9dc29244c97d06d20b581f3c14ace7e0a61afc"},
-    {file = "uv-0.3.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b2f4430d7313648fc188fab2f44c03edb32428723ba16d77fbc2d789d2d37538"},
-    {file = "uv-0.3.1-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:405af8ad457c73f8ebb902664f5596a217081dd4565a54db93d4281072a9f9aa"},
-    {file = "uv-0.3.1-py3-none-musllinux_1_1_armv7l.whl", hash = "sha256:9c1e6b1528724c90d73a586a3ac24adc84eb5aa351eba68db95f74ef3bef1e76"},
-    {file = "uv-0.3.1-py3-none-musllinux_1_1_i686.whl", hash = "sha256:f2fcf5a23da4fc4f8a96df43a8f8de201aaac7c75fa2cab35fc0841a48e63e78"},
-    {file = "uv-0.3.1-py3-none-musllinux_1_1_ppc64le.whl", hash = "sha256:eefce6a0764036f91695bbb375efa65b278057ccd783397ccd397ed7bd2f74b5"},
-    {file = "uv-0.3.1-py3-none-musllinux_1_1_x86_64.whl", hash = "sha256:81ba2f257757b1127531cbed3e49debfbd2ff06ddcf1631d9512bab5be878268"},
-    {file = "uv-0.3.1-py3-none-win32.whl", hash = "sha256:3b0677c4cdf63c4cdbd10c60387ab62304e49fde7d9457fe2509552f4adc4caf"},
-    {file = "uv-0.3.1-py3-none-win_amd64.whl", hash = "sha256:112494d6a9a1a729806b948ad3c2e266ebe3dd33c6591d6720c4eccdaf0700dd"},
-    {file = "uv-0.3.1.tar.gz", hash = "sha256:5a6bd30a3a2f1bb76dcdc085594dc7576979c6ed2006230d51974686f91cc700"},
+    {file = "uv-0.4.30-py3-none-linux_armv6l.whl", hash = "sha256:4ddad09385221fa5c609169e4a0dd5bee27cf56c1dc450d4cdc113122c54bb09"},
+    {file = "uv-0.4.30-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:f63d6646acdf2f38a5afca9fb9eeac62efa663a57f3c134f735a5f575b4e748f"},
+    {file = "uv-0.4.30-py3-none-macosx_11_0_arm64.whl", hash = "sha256:353617bfcf72e1eabade426d83fb86a69d11273d1612aabc3f4566d41c596c97"},
+    {file = "uv-0.4.30-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.musllinux_1_1_aarch64.whl", hash = "sha256:dedcae3619f0eb181459b597fefefd99cb21fe5a5a48a530be6f5ad934399bfb"},
+    {file = "uv-0.4.30-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:232575f30ed971ea32d4a525b7146c4b088a07ed6e70a31da63792d563fcac44"},
+    {file = "uv-0.4.30-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:0c89f2eff63a08d04e81629611f43b1ffa668af6de0382b95a71599af7d4b77c"},
+    {file = "uv-0.4.30-py3-none-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:4d41d09cabba1988728c2d9b9ad25f79233c2aa3d6ecd724c36f4678c4c89711"},
+    {file = "uv-0.4.30-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:9ed0183e747065b9b1bcfb699ff10df671ebe6259709ce83e709f86cea564aee"},
+    {file = "uv-0.4.30-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:9e17a799c6279800996828e10288ca8ccc40cc883d8998802b938aa671dfa9ce"},
+    {file = "uv-0.4.30-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:63196143f45018364c450ba94279a5bcff8562c14ba63deb41a92ed30baa6e22"},
+    {file = "uv-0.4.30-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:6395820540f368f622e818735862abd633dfe7e729c450fca56b65bab4b46661"},
+    {file = "uv-0.4.30-py3-none-musllinux_1_1_armv7l.whl", hash = "sha256:1a83df281c5d900b4758b1a3969b3cff57231f9027db8508b71dce1f2da78684"},
+    {file = "uv-0.4.30-py3-none-musllinux_1_1_i686.whl", hash = "sha256:4aecd9fb39cf018e129627090a1d35af2b0184bb87078d573c9998f5e4072416"},
+    {file = "uv-0.4.30-py3-none-musllinux_1_1_ppc64le.whl", hash = "sha256:444468ad0e94b35cbf6acfc8a28589cfe1247136d43895e60a18955ff89a07ad"},
+    {file = "uv-0.4.30-py3-none-musllinux_1_1_x86_64.whl", hash = "sha256:ea55ca0fe5bdd04e46deaf395b3daf4fa92392f774e83610d066a2b272af5d3f"},
+    {file = "uv-0.4.30-py3-none-win32.whl", hash = "sha256:7f09bd6a853767863e2fb905f0eb1a0ed7afa9ea118852e5c02d2b451944e1cf"},
+    {file = "uv-0.4.30-py3-none-win_amd64.whl", hash = "sha256:44c5aeb5b374f9fd1083959934daa9020db3610f0405198c5e3d8ec1f23d961d"},
+    {file = "uv-0.4.30.tar.gz", hash = "sha256:d9de718380e2f167243ca5e1dccea781e06404158442491255fec5955d57fed9"},
 ]
