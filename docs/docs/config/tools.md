@@ -172,12 +172,6 @@ combine the _lock_ option with the _force-install_ option: `./pw --lock -f`.
     lock-python-version = "3.8"
     ```
 
-!!! note "When locking fails"
-
-    Due to an open issue in [uv](https://github.com/astral-sh/uv/issues/4668), locking might fail when you have a
-    (indirect) dependency that has a lower bound for the Python version.
-    See [issue #112](https://github.com/pyprojectx/pyprojectx/issues/112) for a workaround.
-
 !!! tip "Tip: don't specify tool versions in _pyproject.toml_ when using a _pw.lock_ file"
 
     When there is no version specified for a tool, the latest version will be installed and locked.
