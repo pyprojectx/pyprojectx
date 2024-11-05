@@ -69,7 +69,7 @@ def test_run(tmp_dir, capfd):
         "env-name",
         {
             "requirements": [
-                "virtualenv==20.10.0",
+                "uv==0.4.30",
             ]
         },
     )
@@ -77,13 +77,13 @@ def test_run(tmp_dir, capfd):
     captured = capfd.readouterr()
     assert "Creating virtual environment" in captured.err
 
-    env.run("virtualenv --version", env={}, cwd=".")
+    env.run("uv --version", env={}, cwd=".")
     captured = capfd.readouterr()
-    assert captured.out.startswith("virtualenv")
+    assert captured.out.startswith("uv 0.4.30")
 
-    env.run(["virtualenv", "--version"], env={}, cwd=".")
+    env.run(["uv", "--version"], env={}, cwd=".")
     captured = capfd.readouterr()
-    assert captured.out.startswith("virtualenv")
+    assert captured.out.startswith("uv 0.4.30")
 
     env.run("echo hello world", env={}, cwd=".")
     captured = capfd.readouterr()
