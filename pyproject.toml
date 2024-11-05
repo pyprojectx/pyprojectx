@@ -51,6 +51,7 @@ ignore = ["ISC001", "ANN", "FA", "FBT", "D100", "D102", "D103", "D104", "D105", 
 "bin/*" = ["INP001"]
 
 [tool.pyprojectx]
+lock-python-version = "3.8"
 [tool.pyprojectx.main]
 requirements = [
     "pdm",
