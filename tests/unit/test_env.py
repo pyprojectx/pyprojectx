@@ -55,12 +55,32 @@ def test_isolation(tmp_dir):
 
 def test_isolated_env_install_arguments(mocker, tmp_dir):
     run_mock = mocker.patch("subprocess.run")
-    env = IsolatedVirtualEnv(tmp_dir, "env-name", {"requirements": ["some", "requirements"]})
+    os.environ["INDEX_USR"] = "_user_"
+    os.environ["INDEX_URL"] = "_url_"
+    os.environ["REQ_VERSION"] = "_version_"
+    env = IsolatedVirtualEnv(
+        tmp_dir,
+        "env-name",
+        {
+            "requirements": [
+                "--index-url=https://${INDEX_USR}:${INDEX_URL}/simple",
+                "$my-$req=$REQ_VERSION",
+                "another-req=${REQ_VERSION}",
+                "some",
+                "requirements",
+            ]
+        },
+    )
     env.install()
 
     run_mock.assert_called()
     args = run_mock.call_args[0][0]
     assert args == [ANY, "pip", "install", "-r", ANY, "--python", ANY]
+    install_input = run_mock.call_args[1]["input"]
+    assert (
+        install_input
+        == b"--index-url=https://_user_:_url_/simple\n$my-$req=$REQ_VERSION\nanother-req=_version_\nsome\nrequirements"
+    )
 
 
 def test_run(tmp_dir, capfd):
