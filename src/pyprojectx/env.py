@@ -16,6 +16,7 @@ from pyprojectx.log import logger
 
 PYTHON_EXE = "python.exe" if sys.platform == "win32" else "python3"
 UV_EXE = uv.find_uv_bin()
+ENV_VAR_RE = re.compile(r"(?P<var>\$\{(?P<name>[A-Z0-9_]+)\})")
 
 
 class IsolatedVirtualEnv:
@@ -97,7 +98,9 @@ class IsolatedVirtualEnv:
         logger.info("Installing packages in isolated environment... (%s)", ", ".join(sorted(self._requirements)))
         requirements_file_regex = re.compile(r"^-r\s+(.+)$")
         file_requirements = [r for r in self._requirements if requirements_file_regex.match(r)]
-        regular_requirements = [r for r in self._requirements if not requirements_file_regex.match(r)]
+        regular_requirements = [
+            expand_env_variables(r) for r in self._requirements if not requirements_file_regex.match(r)
+        ]
         requirements_string = "\n".join(regular_requirements)
         cmd = [UV_EXE, "pip", "install", "-r", "-", "--python", str(self.scripts_path / PYTHON_EXE)]
         cmd += [param for f in file_requirements for param in f.split()]
@@ -151,3 +154,14 @@ class IsolatedVirtualEnv:
         return (
             self._base_path / f"{self._name.lower()}-{self._hash}-py{sys.version_info.major}.{sys.version_info.minor}"
         ).absolute()
+
+
+def expand_env_variables(line):
+    for env_var, var_name in ENV_VAR_RE.findall(line):
+        value = os.getenv(var_name)
+        if not value:
+            continue
+
+        line = line.replace(env_var, value)
+
+    return line
