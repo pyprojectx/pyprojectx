@@ -1,3 +1,5 @@
+Release v3.0.6 (2024-11-05)
+----------------------------
 ### Bug Fixes
 - #112 generated lock file does not respect the python version markers
 - #120 uv fails to install python 3.13 when using python 3.12
