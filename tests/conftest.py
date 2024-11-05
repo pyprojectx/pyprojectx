@@ -10,7 +10,7 @@ from pyprojectx.wrapper import pw
 data_dir = Path(__file__).with_name("data")
 
 
-@pytest.fixture()
+@pytest.fixture
 def tmp_dir():
     path = tempfile.mkdtemp(prefix="build env")
     yield Path(path)
