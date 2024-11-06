@@ -3,6 +3,7 @@ import re
 import shutil
 import subprocess
 import sys
+from logging import INFO
 from pathlib import Path
 from typing import List, Union
 
@@ -21,7 +22,7 @@ def main() -> None:
     _run(sys.argv)
 
 
-# ruff: noqa: PLR0911 C901
+# ruff: noqa: PLR0911 PLR0912 C901
 def _run(argv: List[str]) -> None:
     options = _get_options(argv[1:])
     if options.install_px:
@@ -65,8 +66,12 @@ def _run(argv: List[str]) -> None:
     if _run_alias_cmds(config, cmd, pw_args, options):
         return
 
-    if _run_cmd_in_ctx(config, cmd, pw_args, options):
-        return
+    try:
+        if _run_cmd_in_ctx(config, cmd, pw_args, options):
+            return
+    except FileNotFoundError:
+        if logger.getEffectiveLevel() < INFO:
+            logger.exception(f"Error running command {cmd}")
 
     config.show_info(cmd, error=True)
     raise SystemExit(1)

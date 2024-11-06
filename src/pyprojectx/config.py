@@ -83,7 +83,8 @@ class Config:
         else:
             if cmd:
                 print(
-                    f"{cmd}{BLUE} is not configured as tool context or alias in {self._toml_path.absolute()}:{RESET}",
+                    f"{cmd}{BLUE} is not configured as tool context,"
+                    f" alias or script in {self._toml_path.absolute()}:{RESET}",
                     file=sys.stderr,
                 )
                 if self.is_ctx(MAIN):
