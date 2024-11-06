@@ -1,3 +1,7 @@
+### Features & Improvements
+- #116 expand/substitute environment variables in requirements
+- #117 improve error output
+
 Release v3.0.6 (2024-11-05)
 ----------------------------
 ### Bug Fixes
