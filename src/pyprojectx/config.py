@@ -10,6 +10,7 @@ import tomlkit
 from pyprojectx.wrapper.pw import BLUE, CYAN, RESET
 
 MAIN = "main"
+DEFAULT_TOOLS = ["uv"]
 PROJECT_DIR = "@PROJECT_DIR"
 DEFAULT_SCRIPTS_DIR = "bin"
 LOCK_FILE = "pw.lock"
@@ -29,17 +30,29 @@ class AliasCommand:
 class Config:
     """Encapsulates the PyprojectX config inside a toml file."""
 
+    # ruff: noqa: C901
     def __init__(self, toml_path: Path) -> None:
         """:param toml_path: The toml config file"""
         self._toml_path = toml_path
         try:
             with toml_path.open("rb") as f:
                 toml_dict = tomlkit.load(f)
+        except FileNotFoundError:
+            print(f"{CYAN}{toml_path}{BLUE} does not exist{RESET}", file=sys.stderr)
+            toml_dict = {}
         except Exception as e:
             raise Warning(f"Could not parse {toml_path}: {e}") from e
 
         project_path = toml_path.parent.absolute()
-        self._contexts = toml_dict.get("tool", {}).get("pyprojectx", {}).copy()
+        if not toml_dict.get("tool", {}).get("pyprojectx"):
+            print(
+                f"{BLUE}No configuration found, providing {CYAN}{MAIN}{BLUE} context with default tools:"
+                f" {CYAN}{DEFAULT_TOOLS}{RESET}",
+                file=sys.stderr,
+            )
+            self._contexts = {MAIN: DEFAULT_TOOLS}
+        else:
+            self._contexts = toml_dict.get("tool", {}).get("pyprojectx", {}).copy()
         self._aliases = self._contexts.pop("aliases", {})
         self.env = self._contexts.pop("env", {})
         self.prerelease = self._contexts.pop("prerelease", None)
@@ -59,6 +72,13 @@ class Config:
         scripts_dir = self._contexts.pop("scripts_dir", DEFAULT_SCRIPTS_DIR)
         if not isinstance(scripts_dir, str):
             msg = "Invalid config: 'scripts_dir' must be a string"
+            raise Warning(msg)
+        self.scripts_context = self._contexts.pop("scripts_ctx", None)
+        if self.scripts_context is None:
+            if self._contexts.get(MAIN):
+                self.scripts_context = MAIN
+        elif not isinstance(self.scripts_context, str) and not self.is_ctx(self.scripts_context):
+            msg = "Invalid config: 'scripts_ctx' must be the name of a tool context"
             raise Warning(msg)
         self._merge_os_config()
         self.scripts_path = project_path / scripts_dir
