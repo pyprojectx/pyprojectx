@@ -190,7 +190,7 @@ Then you can make that context the default one for running scripts.
 ```toml
 [tool.pyprojectx]
 scripts_ctx = "project"
-# install the current project in editable mode
+# install the current project in editable mode; this requires that your project is installable
 project = ["-e ."] # you can add more dependencies here but editable installs are not locked (see note below)
 ```
 Having a script `my-script.py` in the scripts directory, you can just run `px my-script` or even `px mS`.
@@ -200,7 +200,7 @@ You can launch a notebook that has access to your project packages without the n
 
 ```toml
 [tool.pyprojectx]
-# install the current project in editable mode, together with jupyter
+# install the current project in editable mode, together with jupyter; this requires that your project is installable
 jupyter = ["jupyterlab", "-e ."]
 
 [tool.pyprojectx.aliases]
