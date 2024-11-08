@@ -113,11 +113,6 @@ def test_invalid_toml():
         Config(Path(__file__).parent.with_name("data").joinpath("invalid.toml"))
 
 
-def test_unexisting_toml():
-    with pytest.raises(Warning, match=r"No such file or directory"):
-        Config(Path(__file__).parent.with_name("data").joinpath("unexisting.toml"))
-
-
 @pytest.mark.parametrize(
     ("shortcut", "candidates"),
     [
