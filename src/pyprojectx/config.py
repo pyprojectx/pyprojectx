@@ -60,6 +60,13 @@ class Config:
         if not isinstance(scripts_dir, str):
             msg = "Invalid config: 'scripts_dir' must be a string"
             raise Warning(msg)
+        self.scripts_context = self._contexts.pop("scripts_ctx", None)
+        if self.scripts_context is None:
+            if self._contexts.get(MAIN):
+                self.scripts_context = MAIN
+        elif not isinstance(self.scripts_context, str) and not self.is_ctx(self.scripts_context):
+            msg = "Invalid config: 'scripts_ctx' must be the name of a tool context"
+            raise Warning(msg)
         self._merge_os_config()
         self.scripts_path = project_path / scripts_dir
         self.lock_file = project_path / LOCK_FILE

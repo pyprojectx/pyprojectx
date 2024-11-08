@@ -7,7 +7,7 @@ from logging import INFO
 from pathlib import Path
 from typing import List, Union
 
-from pyprojectx.config import MAIN, AliasCommand, Config
+from pyprojectx.config import AliasCommand, Config
 from pyprojectx.env import IsolatedVirtualEnv
 from pyprojectx.install_global import UPGRADE_INSTRUCTIONS, UPGRADE_INSTRUCTIONS_WIN, install_px
 from pyprojectx.lock import can_lock, get_or_update_locked_requirements
@@ -164,9 +164,9 @@ def _run_script(script: str, options, config) -> None:
     file = config.get_script_path(script)
     logger.debug("Running script: %s, arguments: %s", file, options.cmd_args)
     full_cmd = ["python", file, *options.cmd_args]
-    if config.is_ctx(MAIN):
+    if config.scripts_context:
         _run_in_ctx(
-            MAIN,
+            config.scripts_context,
             full_cmd,
             options=options,
             pw_args=[],

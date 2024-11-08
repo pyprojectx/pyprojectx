@@ -196,6 +196,7 @@ def test_run_script(tmp_dir, mocker):
     assert "python" in args[0]
     assert args[1] == (data / "scripts/script-a.py").absolute()
     kwargs = run_mock.call_args.kwargs
+    assert "tool-1" in kwargs["env"]["PATH"], "the path of the scripts_ctx should be in the PATH"
     assert kwargs["env"]["ENV_VAR1"] == "ENV_VAR1"
     assert kwargs["check"]
     assert kwargs["cwd"] == "/cwd"
