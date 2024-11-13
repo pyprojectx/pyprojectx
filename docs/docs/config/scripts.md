@@ -16,7 +16,7 @@ To run a script in a different tool context, you either:
 generate-data = { cmd = 'generate-data', ctx = 'jupyter' }
 ```
 
-* or specify the `scripts_ctx` in _pyproject.toml_ (notice how to :
+* or specify the `scripts_ctx` in _pyproject.toml_ (see [recipes](/recipes/#run-scripts-that-use-the-projects-packages)) :
 
 ```toml
 [tool.pyprojectx]
