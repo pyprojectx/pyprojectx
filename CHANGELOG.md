@@ -1,3 +1,5 @@
+Release v3.1.0 (2024-11-13)
+----------------------------
 ### Features & Improvements
 - #127 easy initialisation of a uv project
 - #126 make scripts_dir work with a venv
