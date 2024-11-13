@@ -1,3 +1,5 @@
+Release v3.1.1 (2024-11-13)
+----------------------------
 ### Features & Improvements
 - update to uv 0.5.1
 
