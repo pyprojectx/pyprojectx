@@ -4,7 +4,7 @@ Aliases allow you to define shortcuts for common commands and simple shell scrip
 
 !!! info "`px` or `pw`?"
 
-    This section assumes that you installed the [px utility script](/usage/#install-the-global-px-script).
+    This section assumes that you installed the [px utility script](/usage#install-the-global-px-script).
     Otherwise, you need to replace `px` with `./pw` (Linux, Mac) or `pw` (Windows PowerShell).
 
 
@@ -19,7 +19,7 @@ run = "poetry run"
 ```
 
 With above aliases, you can type `px install` instead of the usual `poetry install`. Depending on your other aliases,
-this can be even shortened to `px i` (see [alias abbreviations](/config/aliases/#abbreviations)).
+this can be even shortened to `px i` (see [alias abbreviations](/config/aliases#abbreviations)).
 
 All arguments are passed to the underlying command or script,
 making `px run my-script --foo` equivalent to `poetry run my-script --foo`.

@@ -94,7 +94,7 @@ px http www.google.com
 # HTTP/1.1 200 OK ...
 ```
 
-!!! tip "Tip: [Lock](/config/tools/#locking-requirements) your tool requirements"
+!!! tip "Tip: [Lock](#locking-requirements) your tool requirements"
 
     This makes sure that your build won't break when new versions of a tool are released,or when a
     <a href="https://upcycled-code.com/blog/the-broken-version-breakdown">tool is broken by a new release of one of its dependencies</a>.
@@ -155,7 +155,7 @@ To achieve reproducible builds, you can lock the versions of all tools that you 
 When you run `./pw --lock`, a _pw.lock_ file is created in the root directory of your project.
 This file should be committed to version control.
 
-This is the recommended way to lock tool versions to guarantee reproducible builds (see [why](/dev-dependencies/#the-unreliable-pip-install))
+This is the recommended way to lock tool versions to guarantee reproducible builds (see [why](/dev-dependencies#the-unreliable-pip-install))
 
 The lock file is automatically updated when the tool context requirements in _pyproject.toml_ change.
 
@@ -185,4 +185,4 @@ You can also pin tool versions in _pyproject.toml_:
 [tool.pyprojectx]
 main = ["pdm==2.11.2", "ruff==0.1.11", "pre-commit==3.6.0", "px-utils==1.0.1"]
 ```
-Be aware that even with a fixed version, [tools can break at future installs](/dev-dependencies/#the-unreliable-pip-install)!
+Be aware that even with a fixed version, [tools can break at future installs](/dev-dependencies#the-unreliable-pip-install)!

@@ -16,14 +16,14 @@ To run a script in a different tool context, you either:
 generate-data = { cmd = 'generate-data', ctx = 'jupyter' }
 ```
 
-* or specify the `scripts_ctx` in _pyproject.toml_ (see [recipes](/recipes/#run-scripts-that-use-the-projects-packages)) :
+* or specify the `scripts_ctx` in _pyproject.toml_ (see [recipes](/recipes#run-scripts-that-use-the-projects-packages)) :
 
 ```toml
 [tool.pyprojectx]
 scripts_ctx = "scripts"
 ```
 
-The default script directory can be changed by specifying the `scripts_dir` in _pyproject.toml_:
+The default script directory (_bin_) can be changed by specifying the `scripts_dir` in _pyproject.toml_:
 
 ```toml
 [tool.pyprojectx]
