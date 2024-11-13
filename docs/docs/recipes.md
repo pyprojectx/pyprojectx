@@ -148,11 +148,11 @@ the poetry [variant](https://github.com/pyprojectx/px-demo/tree/poetry).
     This makes Poetry create a `.venv` in your project directory instead of somewhere in your home directory.
     It makes it easier to locate files and to keep your system clean when removing the project.
 
-## Github actions
-By using the `pw` wrapper script, you can simplify your github actions:
+## GitHub actions
+By using the `pw` wrapper script, you can simplify your GitHub actions:
 
 * no explicitly tool installations or docker images (for Python tools)
-* use the same commands and scripts in github actions as on your laptop
+* use the same commands and scripts in GitHub actions as on your laptop
 
 Some tips:
 
@@ -183,12 +183,24 @@ jobs:
 See Pyprojectx own [build](https://github.com/pyprojectx/pyprojectx/blob/main/.github/workflows/build.yml)
 and [release](https://github.com/pyprojectx/pyprojectx/blob/main/.github/workflows/release.yml) workflows for a full example.
 
+## Run scripts that use the project's packages
+You can set up a tool context that includes the project code and dependencies by using an editable install.
+Then you can make that context the default one for running scripts.
+
+```toml
+[tool.pyprojectx]
+scripts_ctx = "project"
+# install the current project in editable mode; this requires that your project is installable
+project = ["-e ."] # you can add more dependencies here but editable installs are not locked (see note below)
+```
+Having a script `my-script.py` in the scripts directory, you can just run `px my-script` or even `px mS`.
+
 ## Experiment with your project in a Jupyter notebook
 You can launch a notebook that has access to your project packages without the need to install anything upfront.
 
 ```toml
 [tool.pyprojectx]
-# install the current project in editable mode, together with jupyter
+# install the current project in editable mode, together with jupyter; this requires that your project is installable
 jupyter = ["jupyterlab", "-e ."]
 
 [tool.pyprojectx.aliases]

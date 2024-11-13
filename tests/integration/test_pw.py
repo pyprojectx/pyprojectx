@@ -376,6 +376,14 @@ def test_add_package(tmp_project):
     assert proc_result.stdout.decode("utf-8").strip() == "0.0.0.2"
 
 
+def test_default_tools(tmp_project):
+    project_dir, env = tmp_project
+    cmd = f"{SCRIPT_PREFIX}pw --toml no.toml uv --version"
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
+    assert proc_result.returncode == 0
+    assert re.search(r"\d+.\d+.\d+", proc_result.stdout.decode("utf-8"))
+
+
 def load_toml(path):
     with path.open() as f:
         return tomlkit.load(f)

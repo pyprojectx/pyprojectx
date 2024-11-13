@@ -5,7 +5,10 @@ These can be called from aliases or from the command line with `pw <script-name>
 
 The scripts run by default in the main tool context and hence can use all libraries installed in the main tool context.
 
-To run a script in a different tool context, you need to define an alias:
+
+To run a script in a different tool context, you either:
+
+* define an alias:
 
 ```toml
 [tool.pyprojectx.aliases]
@@ -13,7 +16,14 @@ To run a script in a different tool context, you need to define an alias:
 generate-data = { cmd = 'generate-data', ctx = 'jupyter' }
 ```
 
-The script directory can be changed with the `scripts_dir` option in _pyproject.toml_:
+* or specify the `scripts_ctx` in _pyproject.toml_ (see [recipes](/recipes/#run-scripts-that-use-the-projects-packages)) :
+
+```toml
+[tool.pyprojectx]
+scripts_ctx = "scripts"
+```
+
+The default script directory can be changed by specifying the `scripts_dir` in _pyproject.toml_:
 
 ```toml
 [tool.pyprojectx]

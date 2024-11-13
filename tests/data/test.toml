@@ -2,6 +2,7 @@
 env = { ENV_VAR1 = "ENV_VAR1" }
 cwd = "/cwd"
 scripts_dir = "scripts"
+scripts_ctx = "tool-1"
 
 main = { requirements = "main-requirement", post-install = "main-post-install" }
 
