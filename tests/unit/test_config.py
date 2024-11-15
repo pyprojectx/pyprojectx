@@ -127,7 +127,7 @@ def test_invalid_toml():
         ("aC", []),
         ("A", []),
         ("E", ["E"]),
-        ("a", ["aaa-bbb-ccc", "aaaBbbDdd"]),
+        ("a", ["aaa-bbb-ccc", "aaaBbbDdd", "aliased-script"]),
         ("aB", ["aaa-bbb-ccc", "aaaBbbDdd"]),
         ("b", ["b123-c123-d123"]),
         ("bCD", ["b123-c123-d123"]),

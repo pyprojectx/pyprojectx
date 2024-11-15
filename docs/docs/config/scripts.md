@@ -14,6 +14,8 @@ To run a script in a different tool context, you either:
 [tool.pyprojectx.aliases]
 # run the generate-data script in the 'jupyter' tool context
 generate-data = { cmd = 'generate-data', ctx = 'jupyter' }
+# run a script in the project's venv when using uv (also works for pdm and poetry)
+script-with-project-dependency = "uv run bin/script-with-project-dependency.py"
 ```
 
 * or specify the `scripts_ctx` in _pyproject.toml_ (see [recipes](/recipes#run-scripts-that-use-the-projects-packages)) :

@@ -49,5 +49,7 @@ backward-compatible-tool-ref = 'tool-1: command arg'
 os-specific = "cmd"
 os = "foo"
 
+aliased-script = "python aliased-script.py --some-option"
+
 [tool.pyprojectx.os.my-os.aliases]
 os-specific = "my-os-cmd"
