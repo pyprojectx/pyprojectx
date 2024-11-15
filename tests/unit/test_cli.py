@@ -203,6 +203,16 @@ def test_run_script(tmp_dir, mocker):
     assert not kwargs["shell"]
 
 
+def test_run_aliased_script(tmp_dir, mocker):
+    data = Path(__file__).parent.with_name("data")
+    toml = data / "test.toml"
+    run_mock = mocker.patch("subprocess.run")
+
+    _run(["path to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "aS"])
+
+    assert run_mock.call_args.args[0] == "python aliased-script.py --some-option"
+
+
 def test_install_context(tmp_dir, mocker):
     data = Path(__file__).parent.with_name("data")
     toml = data / "test.toml"

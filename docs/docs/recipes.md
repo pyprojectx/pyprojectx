@@ -2,29 +2,78 @@
 
 ## Create a new project
 Install common tools:
-- pdm or poetry: dependency management (see [simple projects](#simple-projects) if not required).
+- uv, pdm or poetry: dependency management
 - ruff: linter/formatter
 - pre-commit: git hooks for formatting and linting
 - px-utils: cross-platform file operations
 
+### uv based projects
+`uv` only allows to initialize a project when there is no `pyproject.toml` present in the project dir.
+Fortunately, uv is available by default in the main tool context, so we can use it to initialize the project.
+
 === "Linux/Mac"
 ```bash
+# download the wrapper scripts
+curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip -o wrappers.zip && rm -f wrappers.zip
+# initialize a uv project in a (empty) directory without pyproject.toml
+./pw uv init
+# add common tools to the project, including uv
+./pw --add uv,ruff,pre-commit,px-utils
+# have uv create the virtual environment and install the dependencies
+./pw uv sync
+# call the hello script to show that the project is set up correctly
+./pw uv run hello.py
+# lock the tool versions for reproducible builds
+./pw --lock
+```
+
+=== "Windows"
+```powershell
+# download the wrapper scripts
+Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Force -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
+# initialize a uv project in a (empty) directory without pyproject.toml
+pw uv init
+# add common tools to the project, including uv
+pw --add uv,ruff,pre-commit,px-utils
+# have uv create the virtual environment and install the dependencies
+pw uv sync
+# call the hello script to show that the project is set up correctly
+pw uv run hello.py
+# lock the tool versions for reproducible builds
+./pw --lock
+```
+
+You can run `./pw uv init --help` to see the available options or consult the [uv documentation](https://docs.astral.sh/uv/reference/cli/#uv-init).
+See also [px-demo](https://github.com/pyprojectx/px-demo) for a full example.
+
+### PDM or Poetry based projects
+
+=== "Linux/Mac"
+```bash
+# download the wrapper scripts
+curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip -o wrappers.zip && rm -f wrappers.zip
 # initialize a PDM project
 ./pw --add pdm,ruff,pre-commit,px-utils
 ./pw pdm init
 # initialize a poetry project
 ./pw --add poetry,ruff,pre-commit,px-utils
 ./pw poetry init
+# lock the tool versions for reproducible builds
+./pw --lock
 ```
 
 === "Windows"
 ```powershell
+# download the wrapper scripts
+Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Force -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
 # initialize a PDM project
 pw --add pdm,ruff,pre-commit,px-utils
 pw pdm init
 # initialize a poetry project
 pw --add poetry,ruff,pre-commit,px-utils
 pw poetry init
+# lock the tool versions for reproducible builds
+./pw --lock
 ```
 
 ## Simple projects
@@ -35,7 +84,7 @@ Pyprojectx can create your virtual environment and install test dependencies.
 [tool.pyprojectx.venv]
 # venv and .venv don't have any special meaning, you can choose any name
 requirements = [
-    "-r pyproject.toml", # install project.dependencies from pyproject.toml
+    "-r pyproject.toml", # optional: install project.dependencies from pyproject.toml
     "pytest" # test dependencies (keep your other dev dependencies in the main requirements)
 ]
 dir = ".venv"
@@ -184,14 +233,17 @@ See Pyprojectx own [build](https://github.com/pyprojectx/pyprojectx/blob/main/.g
 and [release](https://github.com/pyprojectx/pyprojectx/blob/main/.github/workflows/release.yml) workflows for a full example.
 
 ## Run scripts that use the project's packages
-You can set up a tool context that includes the project code and dependencies by using an editable install.
+You can set up a tool context that uses the project's virtual environment to run scripts.
 Then you can make that context the default one for running scripts.
 
 ```toml
 [tool.pyprojectx]
-scripts_ctx = "project"
-# install the current project in editable mode; this requires that your project is installable
-project = ["-e ."] # you can add more dependencies here but editable installs are not locked (see note below)
+scripts_ctx = "venv"
+[tool.pyprojectx.venv]
+dir = ".venv" # not (directly) managed by pyprojectx
+post-install = "install" # optional: make sure the venv is ready to use
+[tool.pyprojectx.aliases]
+install = "uv sync" # optional: initialize the project's virtual environment using your preferred tool
 ```
 Having a script `my-script.py` in the scripts directory, you can just run `px my-script` or even `px mS`.
 

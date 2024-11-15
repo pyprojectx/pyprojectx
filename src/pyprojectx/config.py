@@ -247,11 +247,11 @@ class Config:
         :param abbrev: abbreviated or full alias key to search for
         :return: a list of matching alias keys and/or scripts
         """
-        aliases_and_scripts = [*self._aliases.keys(), *self._get_scripts()]
+        aliases_and_scripts = {*self._aliases.keys(), *self._get_scripts()}
         if abbrev in aliases_and_scripts:
             return [abbrev]
 
-        return [name for name in aliases_and_scripts if camel_match(abbrev, name)]
+        return sorted([name for name in aliases_and_scripts if camel_match(abbrev, name)])
 
     def get_cwd(self, cwd=None):
         _cwd = cwd or self.cwd

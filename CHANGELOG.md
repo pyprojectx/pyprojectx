@@ -1,3 +1,7 @@
+### Features & Improvements
+- #131 creating an alias for a script with the same name gives errors
+- #130 scripts_ctx isn't optimal and needs two venvs
+
 Release v3.1.1 (2024-11-13)
 ----------------------------
 ### Features & Improvements

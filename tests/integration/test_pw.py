@@ -106,7 +106,7 @@ def test_alias_abbreviations(tmp_project):
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
     assert proc_result.returncode
     assert "'pycow' is ambiguous" in proc_result.stderr.decode("utf-8")
-    assert "pycowsay, pycowsay-hi, pycowsay-hello" in proc_result.stderr.decode("utf-8")
+    assert "pycowsay, pycowsay-hello, pycowsay-hi" in proc_result.stderr.decode("utf-8")
     if not sys.platform.startswith("win") and sys.version_info.minor < 12:
         assert not proc_result.stdout.decode("utf-8")
 
