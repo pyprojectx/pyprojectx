@@ -1,3 +1,5 @@
+Release v3.1.2 (2024-11-15)
+----------------------------
 ### Features & Improvements
 - #131 creating an alias for a script with the same name gives errors
 - #130 scripts_ctx isn't optimal and needs two venvs
