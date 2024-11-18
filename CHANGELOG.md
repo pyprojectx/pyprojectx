@@ -1,3 +1,6 @@
+### Bug Fixes
+- fix post-install actions that run an alias command
+
 Release v3.1.2 (2024-11-15)
 ----------------------------
 ### Features & Improvements
