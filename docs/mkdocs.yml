@@ -7,12 +7,35 @@ remote_branch: main
 
 theme:
   name: material
+  features:
+    - navigation.indexes
+    - content.code.copy
+    - navigation.top
+    - navigation.instant
   palette:
-    - scheme: default
+    # Palette toggle for automatic mode
+    - media: '(prefers-color-scheme)'
       primary: white
-  font:
-    text: Open Sans
-    code: Fira Code
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: '(prefers-color-scheme: light)'
+      primary: white
+      scheme: default
+
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: '(prefers-color-scheme: dark)'
+      primary: white
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
   logo: assets/px.svg
   favicon: assets/px.svg
   custom_dir: overrides
@@ -55,7 +78,5 @@ extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/pyprojectx/pyprojectx
-    - icon: fontawesome/brands/twitter
-      link: https://twitter.com/IvoHoubrechts
 
 extra_css: [assets/extra.css]
