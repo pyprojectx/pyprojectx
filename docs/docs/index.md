@@ -1,5 +1,4 @@
-![Pyprojectx](assets/px.png)
-
+<img alt="Pyprojectx" src="assets/px.png" style="background-color: white">
 <i class="md-typeset md-header">
 ALL-INCLUSIVE PYTHON PROJECTS
 </i>
