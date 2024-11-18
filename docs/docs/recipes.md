@@ -241,7 +241,7 @@ Then you can make that context the default one for running scripts.
 scripts_ctx = "venv"
 [tool.pyprojectx.venv]
 dir = ".venv" # not (directly) managed by pyprojectx
-post-install = "install" # optional: make sure the venv is ready to use
+post-install = "@install" # optional: make sure the venv is ready to use
 [tool.pyprojectx.aliases]
 install = "uv sync" # optional: initialize the project's virtual environment using your preferred tool
 ```

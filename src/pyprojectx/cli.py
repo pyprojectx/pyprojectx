@@ -92,7 +92,7 @@ def _run_alias_cmds(config, cmd, pw_args, options) -> bool:
                     config=config,
                 )
         else:
-            _run_script(candidates[0], options, config)
+            _run_script(candidates[0], pw_args, options, config)
         return True
     return False
 
@@ -160,7 +160,7 @@ def _run_alias(alias_cmd: AliasCommand, pw_args: List[str], options, config) -> 
             raise SystemExit(e.returncode) from e
 
 
-def _run_script(script: str, options, config) -> None:
+def _run_script(script: str, pw_args: List[str], options, config) -> None:
     file = config.get_script_path(script)
     logger.debug("Running script: %s, arguments: %s", file, options.cmd_args)
     full_cmd = ["python", file, *options.cmd_args]
@@ -169,7 +169,7 @@ def _run_script(script: str, options, config) -> None:
             config.scripts_context,
             full_cmd,
             options=options,
-            pw_args=[],
+            pw_args=pw_args,
             config=config,
             env=config.env,
             cwd=config.cwd,
