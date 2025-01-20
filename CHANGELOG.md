@@ -1,3 +1,6 @@
+### Features & Improvements
+- bump uv to uv 0.5.21
+
 Release v3.1.3 (2024-11-18)
 ----------------------------
 ### Bug Fixes
