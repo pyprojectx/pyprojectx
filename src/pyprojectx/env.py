@@ -62,7 +62,15 @@ class IsolatedVirtualEnv:
         :param install_path: the path to .pyprojectx
         """
         logger.debug("Installing IsolatedVirtualEnv in %s", self.path)
-        cmd = [UV_EXE, "venv", str(self.path), "--prompt", f"px-{self.name}"]
+        cmd = [
+            UV_EXE,
+            "venv",
+            str(self.path),
+            "--prompt",
+            f"px-{self.name}",
+            "--python",
+            f"{sys.version_info.major}.{sys.version_info.minor}",
+        ]
         if quiet:
             cmd.append("--quiet")
         logger.debug("Calling uv: %s", " ".join(cmd))
