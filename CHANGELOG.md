@@ -1,3 +1,6 @@
+### Bug Fixes
+- #137 the version of uv used by pyprojectx should not use the project's requires-python version
+
 Release v3.1.4 (2025-01-20)
 ----------------------------
 ### Features & Improvements

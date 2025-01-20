@@ -51,7 +51,7 @@ def test_run_tool(tmp_dir, mocker):
     assert venv_args[0].endswith(UV_EXE)
     assert venv_args[1] == "venv"
     assert venv_args[2].endswith(f"{tmp_dir.name}{os.sep}venvs{os.sep}tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}")
-    assert venv_args[3:] == ["--prompt", "px-tool-1"]
+    assert venv_args[3:] == ["--prompt", "px-tool-1", "--python", f"{sys.version_info.major}.{sys.version_info.minor}"]
 
     pip_install_args = run_mock.mock_calls[1].args[0]
     assert pip_install_args[0].endswith(UV_EXE)
@@ -222,7 +222,7 @@ def test_install_context(tmp_dir, mocker):
 
     calls = [
         call(
-            [ANY, "venv", ANY, "--prompt", "px-main"],
+            [ANY, "venv", ANY, "--prompt", "px-main", "--python", f"{sys.version_info.major}.{sys.version_info.minor}"],
             stdout=ANY,
             check=True,
         ),
