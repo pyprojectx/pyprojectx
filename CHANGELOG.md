@@ -1,3 +1,5 @@
+Release v3.1.4 (2025-01-20)
+----------------------------
 ### Features & Improvements
 - bump uv to uv 0.5.21
 
