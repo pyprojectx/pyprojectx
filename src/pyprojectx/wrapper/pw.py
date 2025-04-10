@@ -9,11 +9,12 @@
 # Licensed under the MIT license                                                 #
 ##################################################################################
 import argparse
+import fileinput
 import os
 import subprocess
 import sys
+import sysconfig
 from pathlib import Path
-from venv import EnvBuilder
 
 VERSION = "__version__"
 
@@ -21,6 +22,7 @@ PYPROJECTX_INSTALL_DIR_ENV_VAR = "PYPROJECTX_INSTALL_DIR"
 PYPROJECTX_PACKAGE_ENV_VAR = "PYPROJECTX_PACKAGE"
 PYPROJECT_TOML = "pyproject.toml"
 DEFAULT_INSTALL_DIR = ".pyprojectx"
+SCRIPTS_DIR = Path(sysconfig.get_path("scripts")).name
 
 CYAN = "\033[96m"
 BLUE = "\033[94m"
@@ -149,14 +151,13 @@ def arg_parser():
 
 
 def ensure_pyprojectx(options):
-    env_builder = EnvBuilder(with_pip=True)
     venv_dir = (
-        options.install_path / "pyprojectx" / f"{options.version}-py{sys.version_info.major}.{sys.version_info.minor}"
+        Path(options.install_path)
+        / "pyprojectx"
+        / f"{options.version}-py{sys.version_info.major}.{sys.version_info.minor}"
     )
-    env_context = env_builder.ensure_directories(venv_dir)
-    pyprojectx_script = Path(env_context.bin_path, "pyprojectx")
-    pyprojectx_exe = Path(env_context.bin_path, "pyprojectx.exe")
-    pip_cmd = [env_context.env_exe, "-m", "pip", "install", "--pre"]
+    pyprojectx_script = venv_dir / SCRIPTS_DIR / f"pyprojectx{sysconfig.get_config_var("EXE")}"
+    pip_cmd = [sys.executable, "-m", "pip", "install", "--pre", "--target", str(venv_dir)]
 
     if options.quiet:
         out = subprocess.DEVNULL
@@ -164,16 +165,7 @@ def ensure_pyprojectx(options):
     else:
         out = sys.stderr
 
-    if not pyprojectx_script.is_file() and not pyprojectx_exe.is_file():
-        if not options.quiet:
-            print(f"{CYAN}creating pyprojectx venv in {BLUE}{venv_dir}{RESET}", file=sys.stderr)
-        env_builder.create(venv_dir)
-        subprocess.run(
-            [*pip_cmd, "--upgrade", "pip"],
-            stdout=out,
-            check=True,
-        )
-
+    if not pyprojectx_script.is_file():
         if not options.quiet:
             print(
                 f"{CYAN}installing pyprojectx {BLUE}{options.version}: {options.pyprojectx_package} {RESET}",
@@ -186,7 +178,13 @@ def ensure_pyprojectx(options):
                     file=sys.stderr,
                 )
             pip_cmd.append("-e")
+        subprocess.run([sys.executable, "-m", "ensurepip"], stdout=out, check=True)
         subprocess.run([*pip_cmd, options.pyprojectx_package], stdout=out, check=True)
+        with fileinput.FileInput(files=pyprojectx_script, inplace=True) as fi:
+            for line in fi:
+                print(line, end="")
+                if line.startswith("import sys"):
+                    print(f"sys.path.append('{venv_dir.absolute()}')")
     return pyprojectx_script
 
 
