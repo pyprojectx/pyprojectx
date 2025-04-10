@@ -23,6 +23,7 @@ PYPROJECTX_PACKAGE_ENV_VAR = "PYPROJECTX_PACKAGE"
 PYPROJECT_TOML = "pyproject.toml"
 DEFAULT_INSTALL_DIR = ".pyprojectx"
 SCRIPTS_DIR = Path(sysconfig.get_path("scripts")).name
+LONG_PATH_PREFIX = "\\\\?\\" if sys.platform.startswith("win") else ""
 
 CYAN = "\033[96m"
 BLUE = "\033[94m"
@@ -156,7 +157,7 @@ def ensure_pyprojectx(options):
         / "pyprojectx"
         / f"{options.version}-py{sys.version_info.major}.{sys.version_info.minor}"
     )
-    pyprojectx_script = venv_dir / SCRIPTS_DIR / f"pyprojectx{sysconfig.get_config_var("EXE")}"
+    pyprojectx_script = venv_dir / SCRIPTS_DIR / f"pyprojectx{sysconfig.get_config_var('EXE')}"
     pip_cmd = [sys.executable, "-m", "pip", "install", "--pre", "--target", str(venv_dir)]
 
     if options.quiet:
@@ -180,7 +181,7 @@ def ensure_pyprojectx(options):
             pip_cmd.append("-e")
         subprocess.run([sys.executable, "-m", "ensurepip"], stdout=out, check=True)
         subprocess.run([*pip_cmd, options.pyprojectx_package], stdout=out, check=True)
-        with fileinput.FileInput(files=pyprojectx_script, inplace=True) as fi:
+        with fileinput.FileInput(files=LONG_PATH_PREFIX + str(pyprojectx_script.absolute()), inplace=True) as fi:
             for line in fi:
                 print(line, end="")
                 if line.startswith("import sys"):
