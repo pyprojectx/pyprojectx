@@ -199,8 +199,8 @@ def ensure_pyprojectx(options):
                     file=sys.stderr,
                 )
             install_cmd.append("-e")
-        if not uv.exists():
-            print(*uv.parent.glob("*"))
+        print(*uv.parent.glob("*"))
+        print(*venv_cmd)
         subprocess.run(venv_cmd, stdout=out, check=True)
         subprocess.run([*install_cmd, options.pyprojectx_package], stdout=out, check=True)
     return pyprojectx_script
