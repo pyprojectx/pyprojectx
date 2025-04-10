@@ -9,7 +9,6 @@
 # Licensed under the MIT license                                                 #
 ##################################################################################
 import argparse
-import fileinput
 import os
 import subprocess
 import sys
@@ -17,13 +16,14 @@ import sysconfig
 from pathlib import Path
 
 VERSION = "__version__"
+UV_VERSION = "__uv_version__"
 
 PYPROJECTX_INSTALL_DIR_ENV_VAR = "PYPROJECTX_INSTALL_DIR"
 PYPROJECTX_PACKAGE_ENV_VAR = "PYPROJECTX_PACKAGE"
 PYPROJECT_TOML = "pyproject.toml"
 DEFAULT_INSTALL_DIR = ".pyprojectx"
 SCRIPTS_DIR = Path(sysconfig.get_path("scripts")).name
-LONG_PATH_PREFIX = "\\\\?\\" if sys.platform.startswith("win") else ""
+EXE = sysconfig.get_config_var("EXE")
 
 CYAN = "\033[96m"
 BLUE = "\033[94m"
@@ -157,16 +157,36 @@ def ensure_pyprojectx(options):
         / "pyprojectx"
         / f"{options.version}-py{sys.version_info.major}.{sys.version_info.minor}"
     )
-    pyprojectx_script = venv_dir / SCRIPTS_DIR / f"pyprojectx{sysconfig.get_config_var('EXE')}"
-    pip_cmd = [sys.executable, "-m", "pip", "install", "--pre", "--target", str(venv_dir)]
-
-    if options.quiet:
-        out = subprocess.DEVNULL
-        pip_cmd.append("--quiet")
-    else:
-        out = sys.stderr
+    pyprojectx_script = venv_dir / SCRIPTS_DIR / f"pyprojectx{EXE}"
 
     if not pyprojectx_script.is_file():
+        uv_dir = Path(options.install_path) / f"uv-{UV_VERSION}"
+        uv = uv_dir / SCRIPTS_DIR / f"uv{EXE}"
+        install_uv_cmd = [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--target",
+            uv_dir,
+            "uv" if UV_VERSION == "__uv_version__" else f"uv=={UV_VERSION}",
+        ]
+        venv_cmd = [uv, "venv", str(venv_dir), "--python", f"{sys.version_info.major}.{sys.version_info.minor}"]
+        install_cmd = [uv, "pip", "install", "--pre", "--python", str(venv_dir / SCRIPTS_DIR / f"python{EXE}")]
+        if options.quiet:
+            out = subprocess.DEVNULL
+            install_uv_cmd.append("--quiet")
+            install_uv_cmd.append("--quiet")
+            venv_cmd.append("--quiet")
+            install_cmd.append("--quiet")
+        else:
+            out = sys.stderr
+            print(f"{CYAN}creating pyprojectx venv in {BLUE}{venv_dir}{RESET}", file=sys.stderr)
+
+        if not uv.is_file():
+            subprocess.run([sys.executable, "-m", "ensurepip"], stdout=out, check=True)
+            subprocess.run(install_uv_cmd, stdout=out, check=True)
+
         if not options.quiet:
             print(
                 f"{CYAN}installing pyprojectx {BLUE}{options.version}: {options.pyprojectx_package} {RESET}",
@@ -178,14 +198,9 @@ def ensure_pyprojectx(options):
                     f"{RED}WARNING: {options.pyprojectx_package} is installed in editable mode{RESET}",
                     file=sys.stderr,
                 )
-            pip_cmd.append("-e")
-        subprocess.run([sys.executable, "-m", "ensurepip"], stdout=out, check=True)
-        subprocess.run([*pip_cmd, options.pyprojectx_package], stdout=out, check=True)
-        with fileinput.FileInput(files=LONG_PATH_PREFIX + str(pyprojectx_script.absolute()), inplace=True) as fi:
-            for line in fi:
-                print(line, end="")
-                if line.startswith("import sys"):
-                    print(f"sys.path.append('{venv_dir.absolute()}')")
+            install_cmd.append("-e")
+        subprocess.run(venv_cmd, stdout=out, check=True)
+        subprocess.run([*install_cmd, options.pyprojectx_package], stdout=out, check=True)
     return pyprojectx_script
 
 
