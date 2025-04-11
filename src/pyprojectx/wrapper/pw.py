@@ -14,6 +14,7 @@ import subprocess
 import sys
 import sysconfig
 from pathlib import Path
+from subprocess import CalledProcessError
 
 VERSION = "__version__"
 UV_VERSION = "__uv_version__"
@@ -161,7 +162,7 @@ def ensure_pyprojectx(options):
 
     if not pyprojectx_script.is_file():
         uv_dir = Path(options.install_path) / f"uv-{UV_VERSION}"
-        uv = uv_dir / SCRIPTS_DIR / f"uv{EXE}"
+        uv = uv_dir / "bin" / f"uv{EXE}"
         install_uv_cmd = [
             sys.executable,
             "-m",
@@ -184,7 +185,11 @@ def ensure_pyprojectx(options):
             print(f"{CYAN}creating pyprojectx venv in {BLUE}{venv_dir}{RESET}", file=sys.stderr)
 
         if not uv.is_file():
-            subprocess.run([sys.executable, "-m", "ensurepip"], stdout=out, check=True)
+            try:
+                subprocess.run([sys.executable, "-m", "ensurepip"], stdout=out, check=True)
+            except CalledProcessError:
+                msg = "pip is not installed. Please install pip and try again."
+                raise SystemExit(msg) from None
             subprocess.run(install_uv_cmd, stdout=out, check=True)
 
         if not options.quiet:
@@ -199,8 +204,6 @@ def ensure_pyprojectx(options):
                     file=sys.stderr,
                 )
             install_cmd.append("-e")
-        print(*uv.parent.glob("*"))
-        print(*venv_cmd)
         subprocess.run(venv_cmd, stdout=out, check=True)
         subprocess.run([*install_cmd, options.pyprojectx_package], stdout=out, check=True)
     return pyprojectx_script
