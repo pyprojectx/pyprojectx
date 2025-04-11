@@ -5,6 +5,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from zipfile import ZipFile
 
+import tomlkit
+
 
 def main(release_version):
     cleanup_old_files()
@@ -23,10 +25,14 @@ def cleanup_old_files():
 
 
 def replace_version_in_files(release_version):
+    pyproject = Path("pyproject.toml")
+    with pyproject.open("rb") as f:
+        pyproject_dict = tomlkit.load(f)
+        uv_version = next(i for i in pyproject_dict["project"]["dependencies"] if i.startswith("uv")).split("==")[1]
+
     # replace __version__ in wrapper and pyproject.toml
     pw = Path("src/pyprojectx/wrapper/pw.py")
-    pw.write_text(pw.read_text().replace("__version__", release_version))
-    pyproject = Path("pyproject.toml")
+    pw.write_text(pw.read_text().replace("__version__", release_version).replace("__uv_version__", uv_version))
     pyproject_content = re.sub(r'version\s*=\s*"\d.\d.\d.dev"', f'version = "{release_version}"', pyproject.read_text())
     pyproject.write_text(pyproject_content)
 

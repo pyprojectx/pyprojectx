@@ -12,15 +12,19 @@ import argparse
 import os
 import subprocess
 import sys
+import sysconfig
 from pathlib import Path
-from venv import EnvBuilder
+from subprocess import CalledProcessError
 
 VERSION = "__version__"
+UV_VERSION = "__uv_version__"
 
 PYPROJECTX_INSTALL_DIR_ENV_VAR = "PYPROJECTX_INSTALL_DIR"
 PYPROJECTX_PACKAGE_ENV_VAR = "PYPROJECTX_PACKAGE"
 PYPROJECT_TOML = "pyproject.toml"
 DEFAULT_INSTALL_DIR = ".pyprojectx"
+SCRIPTS_DIR = Path(sysconfig.get_path("scripts")).name
+EXE = sysconfig.get_config_var("EXE")
 
 CYAN = "\033[96m"
 BLUE = "\033[94m"
@@ -149,30 +153,44 @@ def arg_parser():
 
 
 def ensure_pyprojectx(options):
-    env_builder = EnvBuilder(with_pip=True)
     venv_dir = (
-        options.install_path / "pyprojectx" / f"{options.version}-py{sys.version_info.major}.{sys.version_info.minor}"
+        Path(options.install_path)
+        / "pyprojectx"
+        / f"{options.version}-py{sys.version_info.major}.{sys.version_info.minor}"
     )
-    env_context = env_builder.ensure_directories(venv_dir)
-    pyprojectx_script = Path(env_context.bin_path, "pyprojectx")
-    pyprojectx_exe = Path(env_context.bin_path, "pyprojectx.exe")
-    pip_cmd = [env_context.env_exe, "-m", "pip", "install", "--pre"]
+    pyprojectx_script = venv_dir / SCRIPTS_DIR / f"pyprojectx{EXE}"
 
-    if options.quiet:
-        out = subprocess.DEVNULL
-        pip_cmd.append("--quiet")
-    else:
-        out = sys.stderr
-
-    if not pyprojectx_script.is_file() and not pyprojectx_exe.is_file():
-        if not options.quiet:
+    if not pyprojectx_script.is_file():
+        uv_dir = Path(options.install_path) / f"uv-{UV_VERSION}"
+        uv = uv_dir / "bin" / f"uv{EXE}"
+        install_uv_cmd = [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--target",
+            uv_dir,
+            "uv" if UV_VERSION == "__uv_version__" else f"uv=={UV_VERSION}",
+        ]
+        venv_cmd = [uv, "venv", str(venv_dir), "--python", f"{sys.version_info.major}.{sys.version_info.minor}"]
+        install_cmd = [uv, "pip", "install", "--pre", "--python", str(venv_dir / SCRIPTS_DIR / f"python{EXE}")]
+        if options.quiet:
+            out = subprocess.DEVNULL
+            install_uv_cmd.append("--quiet")
+            install_uv_cmd.append("--quiet")
+            venv_cmd.append("--quiet")
+            install_cmd.append("--quiet")
+        else:
+            out = sys.stderr
             print(f"{CYAN}creating pyprojectx venv in {BLUE}{venv_dir}{RESET}", file=sys.stderr)
-        env_builder.create(venv_dir)
-        subprocess.run(
-            [*pip_cmd, "--upgrade", "pip"],
-            stdout=out,
-            check=True,
-        )
+
+        if not uv.is_file():
+            try:
+                subprocess.run([sys.executable, "-m", "ensurepip"], stdout=out, check=True)
+            except CalledProcessError:
+                msg = "pip is not installed. Please install pip and try again."
+                raise SystemExit(msg) from None
+            subprocess.run(install_uv_cmd, stdout=out, check=True)
 
         if not options.quiet:
             print(
@@ -185,8 +203,9 @@ def ensure_pyprojectx(options):
                     f"{RED}WARNING: {options.pyprojectx_package} is installed in editable mode{RESET}",
                     file=sys.stderr,
                 )
-            pip_cmd.append("-e")
-        subprocess.run([*pip_cmd, options.pyprojectx_package], stdout=out, check=True)
+            install_cmd.append("-e")
+        subprocess.run(venv_cmd, stdout=out, check=True)
+        subprocess.run([*install_cmd, options.pyprojectx_package], stdout=out, check=True)
     return pyprojectx_script
 
 
