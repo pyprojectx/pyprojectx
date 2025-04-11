@@ -19,7 +19,11 @@ alias_regex = re.compile(r"(pw)?@([\w-]+)")
 
 
 def main() -> None:
-    _run(sys.argv)
+    try:
+        _run(sys.argv)
+    except KeyboardInterrupt:
+        sys.tracebacklimit = -1
+        raise
 
 
 # ruff: noqa: PLR0911 PLR0912 C901

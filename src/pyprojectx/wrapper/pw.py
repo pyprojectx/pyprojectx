@@ -177,7 +177,6 @@ def ensure_pyprojectx(options):
         if options.quiet:
             out = subprocess.DEVNULL
             install_uv_cmd.append("--quiet")
-            install_uv_cmd.append("--quiet")
             venv_cmd.append("--quiet")
             install_cmd.append("--quiet")
         else:
@@ -210,4 +209,8 @@ def ensure_pyprojectx(options):
 
 
 if __name__ == "__main__":
-    run(sys.argv[1:])
+    try:
+        run(sys.argv[1:])
+    except KeyboardInterrupt:
+        sys.tracebacklimit = -1
+        raise
