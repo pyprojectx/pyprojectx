@@ -1,3 +1,5 @@
+Release v3.2.0 (2025-04-11)
+----------------------------
 ### Features & Improvements
 - #139 reduce the noise when terminating a command with Ctrl+C
 - #140 use uv to manage pyprojectx venvs instead of the standard venv package
