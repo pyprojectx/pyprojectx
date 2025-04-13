@@ -14,7 +14,6 @@ import subprocess
 import sys
 import sysconfig
 from pathlib import Path
-from subprocess import CalledProcessError
 
 VERSION = "__version__"
 UV_VERSION = "__uv_version__"
@@ -162,21 +161,27 @@ def ensure_pyprojectx(options):
 
     if not pyprojectx_script.is_file():
         uv_dir = Path(options.install_path) / f"uv-{UV_VERSION}"
-        uv = uv_dir / "bin" / f"uv{EXE}"
-        install_uv_cmd = [
-            sys.executable,
-            "-m",
-            "pip",
-            "install",
-            "--target",
-            uv_dir,
-            "uv" if UV_VERSION == "__uv_version__" else f"uv=={UV_VERSION}",
-        ]
+        uv = uv_dir / f"uv{EXE}"
+        # this is a bit hacky but since the uv install script installs it globally, but we only want to install it to
+        # the .pyprojectx folder, we temporarily change XDG_BIN_HOME which is respected by the install script, then
+        # change it back after
+        uv_install_dir_env_var = "XDG_BIN_HOME"
+        xdg_bin_home = os.environ.get(uv_install_dir_env_var)
+        os.environ[uv_install_dir_env_var] = str(uv_dir)
+        if sys.platform == "win32":
+            install_uv_cmd = (
+                "powershell -ExecutionPolicy Bypass -c "
+                f'"irm https://github.com/astral-sh/uv/releases/download/{UV_VERSION}/uv-installer.ps1 | iex"'
+            )
+        else:
+            install_uv_cmd = (
+                "curl --proto '=https' --tlsv1.2 -LsSf "
+                f"https://github.com/astral-sh/uv/releases/download/{UV_VERSION}/uv-installer.sh | sh"
+            )
         venv_cmd = [uv, "venv", str(venv_dir), "--python", f"{sys.version_info.major}.{sys.version_info.minor}"]
         install_cmd = [uv, "pip", "install", "--pre", "--python", str(venv_dir / SCRIPTS_DIR / f"python{EXE}")]
         if options.quiet:
             out = subprocess.DEVNULL
-            install_uv_cmd.append("--quiet")
             venv_cmd.append("--quiet")
             install_cmd.append("--quiet")
         else:
@@ -185,11 +190,12 @@ def ensure_pyprojectx(options):
 
         if not uv.is_file():
             try:
-                subprocess.run([sys.executable, "-m", "ensurepip"], stdout=out, check=True)
-            except CalledProcessError:
-                msg = "pip is not installed. Please install pip and try again."
-                raise SystemExit(msg) from None
-            subprocess.run(install_uv_cmd, stdout=out, check=True)
+                subprocess.run(install_uv_cmd, stdout=out, check=True, shell=True)
+            finally:
+                if xdg_bin_home is None:
+                    del os.environ[uv_install_dir_env_var]
+                else:
+                    os.environ[uv_install_dir_env_var] = xdg_bin_home
 
         if not options.quiet:
             print(
