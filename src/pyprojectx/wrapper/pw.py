@@ -174,11 +174,11 @@ def ensure_pyprojectx(options):
             if UV_VERSION == "__uv_version__"
             else f"https://github.com/astral-sh/uv/releases/download/{UV_VERSION}"
         )
-        install_uv_cmd = (
-            f'powershell -ExecutionPolicy Bypass -c "irm {release_base_url}/uv-installer.ps1 | iex"'
-            if sys.platform == "win32"
-            else f"curl --proto '=https' --tlsv1.2 -LsSf irm {release_base_url}/uv-installer.sh | sh"
-        )
+        if sys.platform == "win32":
+            os.environ["PSMODULEPATH"] = "" # https://github.com/PowerShell/PowerShell/issues/18530#issuecomment-1325691850
+            install_uv_cmd = f'powershell -ExecutionPolicy Bypass -c "irm {release_base_url}/uv-installer.ps1 | iex"'
+        else:
+            install_uv_cmd = f"curl --proto '=https' --tlsv1.2 -LsSf irm {release_base_url}/uv-installer.sh | sh"
         venv_cmd = [uv, "venv", str(venv_dir), "--python", f"{sys.version_info.major}.{sys.version_info.minor}"]
         install_cmd = [uv, "pip", "install", "--pre", "--python", str(venv_dir / SCRIPTS_DIR / f"python{EXE}")]
         if options.quiet:
