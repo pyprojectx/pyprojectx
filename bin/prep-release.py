@@ -32,7 +32,7 @@ def replace_version_in_files(release_version):
 
     # replace __version__ in wrapper and pyproject.toml
     pw = Path("src/pyprojectx/wrapper/pw.py")
-    pw.write_text(pw.read_text().replace("__version__", release_version).replace("__uv_version__", uv_version))
+    pw.write_text(pw.read_text().replace("__version__", release_version).replace("__uv_version__", uv_version, 1))
     pyproject_content = re.sub(r'version\s*=\s*"\d.\d.\d.dev"', f'version = "{release_version}"', pyproject.read_text())
     pyproject.write_text(pyproject_content)
 
