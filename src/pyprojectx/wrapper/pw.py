@@ -168,6 +168,7 @@ def ensure_pyprojectx(options):
         uv_install_dir_env_var = "XDG_BIN_HOME"
         xdg_bin_home = os.environ.get(uv_install_dir_env_var)
         os.environ[uv_install_dir_env_var] = str(uv_dir)
+        os.environ["UV_NO_MODIFY_PATH"] = "1"
         if sys.platform == "win32":
             install_uv_cmd = (
                 "powershell -ExecutionPolicy Bypass -c "
