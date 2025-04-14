@@ -169,16 +169,16 @@ def ensure_pyprojectx(options):
         xdg_bin_home = os.environ.get(uv_install_dir_env_var)
         os.environ[uv_install_dir_env_var] = str(uv_dir)
         os.environ["UV_NO_MODIFY_PATH"] = "1"
-        if sys.platform == "win32":
-            install_uv_cmd = (
-                "powershell -ExecutionPolicy Bypass -c "
-                f'"irm https://github.com/astral-sh/uv/releases/download/{UV_VERSION}/uv-installer.ps1 | iex"'
-            )
-        else:
-            install_uv_cmd = (
-                "curl --proto '=https' --tlsv1.2 -LsSf "
-                f"https://github.com/astral-sh/uv/releases/download/{UV_VERSION}/uv-installer.sh | sh"
-            )
+        release_base_url = (
+            "https://github.com/astral-sh/uv/releases/latest/download"
+            if UV_VERSION == "__uv_version__"
+            else f"https://github.com/astral-sh/uv/releases/download/{UV_VERSION}"
+        )
+        install_uv_cmd = (
+            f'powershell -ExecutionPolicy Bypass -c "irm {release_base_url}/uv-installer.ps1 | iex"'
+            if sys.platform == "win32"
+            else f"curl --proto '=https' --tlsv1.2 -LsSf irm {release_base_url}/uv-installer.sh | sh"
+        )
         venv_cmd = [uv, "venv", str(venv_dir), "--python", f"{sys.version_info.major}.{sys.version_info.minor}"]
         install_cmd = [uv, "pip", "install", "--pre", "--python", str(venv_dir / SCRIPTS_DIR / f"python{EXE}")]
         if options.quiet:
