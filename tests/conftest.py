@@ -37,6 +37,12 @@ def tmp_project(tmp_path_factory):
     return tmp_project_dir, env
 
 
+@pytest.fixture
+def sessionless_tmp_project(tmp_path_factory):
+    tmp_project_dir, env = create_tmp_project(tmp_path_factory.mktemp("project dir"))
+    return tmp_project_dir, env
+
+
 @pytest.fixture(scope="session")
 def tmp_lock_project(tmp_path_factory):
     tmp_project_dir, env = create_tmp_project(tmp_path_factory.mktemp("lock dir"))

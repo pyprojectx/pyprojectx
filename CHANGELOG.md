@@ -1,3 +1,6 @@
+### Bug Fixes
+- #143 error when installing pyprojectx on ubuntu if ensurepip is not available
+
 Release v3.2.0 (2025-04-11)
 ----------------------------
 ### Features & Improvements

@@ -31,7 +31,7 @@ def test_add_requirement(tmp_dir, mocker, requirement_1, requirement_2, quiet, c
     requirements.add_requirement(requirement_1, toml, tmp_dir / "venvs", quiet)
 
     assert toml.exists()
-    assert toml.read_text() == f"[tool.pyprojectx]\n{ctx or 'main'} = [\"{packages[0]}\"]\n"
+    assert toml.read_text() == f'[tool.pyprojectx]\n{ctx or "main"} = ["{packages[0]}"]\n'
     install_mock.assert_called_with(quiet=quiet)
     run_args = ["pip", "install", packages[0], "--dry-run"]
     if quiet:
@@ -42,7 +42,7 @@ def test_add_requirement(tmp_dir, mocker, requirement_1, requirement_2, quiet, c
     requirements.add_requirement(requirement_2, toml, tmp_dir / "venvs", quiet)
 
     toml_packages = '", "'.join(packages)
-    assert toml.read_text() == f"[tool.pyprojectx]\n{ctx or 'main'} = [\"{toml_packages}\"]\n"
+    assert toml.read_text() == f'[tool.pyprojectx]\n{ctx or "main"} = ["{toml_packages}"]\n'
     install_mock.assert_called_with(quiet=quiet)
     run_args = ["pip", "install", *packages[1:], "--dry-run"]
     if quiet:
