@@ -3,6 +3,7 @@ import re
 import shutil
 import subprocess
 import sys
+import sysconfig
 from pathlib import Path
 
 import pytest
@@ -11,7 +12,7 @@ import tomlkit
 from pyprojectx.wrapper import pw
 
 SCRIPT_PREFIX = ".\\" if sys.platform.startswith("win") else "./"
-SCRIPT_SUFFIX = ".exe" if sys.platform.startswith("win") else ""
+SCRIPT_SUFFIX = sysconfig.get_config_var("EXE")
 
 data_dir = Path(__file__).parent.parent / "data"
 
@@ -217,9 +218,9 @@ def test_default_ctx(tmp_project):
 
     cmd = f"{SCRIPT_PREFIX}pw -q ls-projectdir"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
-    assert "post-install-dir" in proc_result.stdout.decode(
-        "utf-8"
-    ), "the cmd did not run in the main ctx or the main post-install did not run"
+    assert "post-install-dir" in proc_result.stdout.decode("utf-8"), (
+        "the cmd did not run in the main ctx or the main post-install did not run"
+    )
     assert (project_dir / "post-install-dir").exists()
 
     cmd = f"{SCRIPT_PREFIX}pw -vvv pxrm post-install-dir"
@@ -382,6 +383,20 @@ def test_default_tools(tmp_project):
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
     assert proc_result.returncode == 0
     assert re.search(r"\d+.\d+.\d+", proc_result.stdout.decode("utf-8"))
+
+
+def test_install_pyprojecx_with_uv(sessionless_tmp_project):
+    project_dir, env = sessionless_tmp_project
+    env["PYPROJECTX_USE_UV"] = "1"
+    cmd = f"{SCRIPT_PREFIX}pw --install-context install-context"
+    assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
+    if proc_result.returncode:
+        print(proc_result.stderr.decode("utf-8"))
+    assert "install-context-post-install" in proc_result.stdout.decode("utf-8")
+
+    # check that uv is installed
+    assert Path(project_dir, ".pyprojectx", "uv-__uv_version__", f"uv{SCRIPT_SUFFIX}").is_file()
 
 
 def load_toml(path):
