@@ -396,7 +396,7 @@ def test_install_pyprojecx_with_uv(sessionless_tmp_project):
     assert "install-context-post-install" in proc_result.stdout.decode("utf-8")
 
     # check that uv is installed
-    assert Path(project_dir, ".pyprojectx", "uv-__uv_version__", f"uv{SCRIPT_SUFFIX}").is_file()
+    assert Path(project_dir, ".pyprojectx", f"uv-{pw.UV_VERSION}", f"uv{SCRIPT_SUFFIX}").is_file()
 
 
 def load_toml(path):
