@@ -21,7 +21,7 @@ except ImportError:
     EnvBuilder = None
 
 
-VERSION = "3.2.1"
+VERSION = "3.2.2"
 UV_VERSION = "0.6.14"
 
 PYPROJECTX_INSTALL_DIR_ENV_VAR = "PYPROJECTX_INSTALL_DIR"
@@ -158,7 +158,7 @@ def arg_parser():
     return parser
 
 
-def ensure_pyprojectx(options):
+def ensure_pyprojectx(options):  # noqa: C901
     venv_dir = (
         options.install_path / "pyprojectx" / f"{options.version}-py{sys.version_info.major}.{sys.version_info.minor}"
     )
@@ -171,17 +171,23 @@ def ensure_pyprojectx(options):
             out = sys.stderr
             print(f"{CYAN}creating pyprojectx venv in {BLUE}{venv_dir}{RESET}", file=sys.stderr)
 
-        if EnvBuilder and not os.environ.get(PYPROJECTX_USE_UV_ENV_VAR):
+        use_uv_install_script = not EnvBuilder or os.environ.get(PYPROJECTX_USE_UV_ENV_VAR)
+        if not use_uv_install_script:
             env_builder = EnvBuilder(with_pip=True)
             env_context = env_builder.ensure_directories(venv_dir)
-            env_builder.create(venv_dir)
-            pip_cmd = [env_context.env_exe, "-m", "pip", "install", "--pre"]
-            subprocess.run(
-                [*pip_cmd, "--upgrade", "pip"],
-                stdout=out,
-                check=True,
-            )
-        else:  # download and use uv to create the pyprojectx venv
+            try:
+                env_builder.create(venv_dir)
+            except SystemExit:
+                print("failed to create virtualenv, falling back to uv install script")
+                use_uv_install_script = True
+            else:
+                pip_cmd = [env_context.env_exe, "-m", "pip", "install", "--pre"]
+                subprocess.run(
+                    [*pip_cmd, "--upgrade", "pip"],
+                    stdout=out,
+                    check=True,
+                )
+        if use_uv_install_script:  # download and use uv to create the pyprojectx venv
             uv_dir = Path(options.install_path) / f"uv-{UV_VERSION}"
             release_base_url = (
                 "https://github.com/astral-sh/uv/releases/latest/download"
