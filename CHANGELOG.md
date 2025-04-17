@@ -1,3 +1,5 @@
+Release v3.2.2 (2025-04-17)
+----------------------------
 ### Bug Fixes
 - #146 uv install script fallback method is not triggered when ensurepip is unavailable
 
