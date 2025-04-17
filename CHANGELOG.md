@@ -1,6 +1,9 @@
 ### Bug Fixes
 - #146 uv install script fallback method is not triggered when ensurepip is unavailable
 
+### Documentation
+- #148 improve uv and px-demo documentation
+
 Release v3.2.1 (2025-04-16)
 ----------------------------
 ### Bug Fixes
