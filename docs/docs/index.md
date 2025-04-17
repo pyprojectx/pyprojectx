@@ -16,20 +16,20 @@ not even Pyprojectx itself!
 
 Projects can be build/tested/used immediately without explicit installation nor initialization:
 === "Linux/Mac"
-```bash
-git clone https://github.com/pyprojectx/px-demo.git
-# the demo project uses uv as build tool, but has branches for pdm and poetry
-cd px-demo
-./pw build
-```
+    ```bash
+    git clone https://github.com/pyprojectx/px-demo.git
+    # the demo project uses uv as build tool, but has branches for pdm and poetry
+    cd px-demo
+    ./pw build
+    ```
 
 === "Windows"
-```powershell
-git clone https://github.com/pyprojectx/px-demo.git
-# the demo project uses uv as build tool, but has branches for pdm and poetry
-cd px-demo
-pw build
-```
+    ```powershell
+    git clone https://github.com/pyprojectx/px-demo.git
+    # the demo project uses uv as build tool, but has branches for pdm and poetry
+    cd px-demo
+    pw build
+    ```
 
 ![Clone and Build](assets/build.png)
 
@@ -40,44 +40,44 @@ One of the key features is that there is no need to install anything explicitly 
 [wrapper scripts](https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip):
 
 === "Linux/Mac"
-```bash
-curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip -o wrappers.zip && rm -f wrappers.zip
-```
+    ```bash
+    curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip -o wrappers.zip && rm -f wrappers.zip
+    ```
 
 === "Windows"
-```powershell
-Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Force -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
-```
+    ```powershell
+    Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Force -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
+    ```
 
 With the wrapper scripts in place, you can start adding tools:
 
 === "Linux/Mac"
-```bash
-# initialize a uv project in a (empty) directory without pyproject.toml
-./pw uv init
-# add common tools to the project, including uv
-./pw --add uv,ruff,pre-commit,px-utils
-# have uv create the virtual environment and install the dependencies
-./pw uv sync
-# call the main script to show that the project is set up correctly
-./pw uv run main.py
-# lock the tool versions for reproducible builds
-./pw --lock
-```
+    ```bash
+    # initialize a uv project in a (empty) directory without pyproject.toml
+    ./pw uv init
+    # add common tools to the project, including uv
+    ./pw --add uv,ruff,pre-commit,px-utils
+    # have uv create the virtual environment and install the dependencies
+    ./pw uv sync
+    # call the main script to show that the project is set up correctly
+    ./pw uv run main.py
+    # lock the tool versions for reproducible builds
+    ./pw --lock
+    ```
 
 === "Windows"
-```powershell
-# initialize a uv project in a (empty) directory without pyproject.toml
-pw uv init
-# add common tools to the project, including uv
-pw --add uv,ruff,pre-commit,px-utils
-# have uv create the virtual environment and install the dependencies
-pw uv sync
-# call the main script to show that the project is set up correctly
-pw uv run main.py
-# lock the tool versions for reproducible builds
-pw --lock
-```
+    ```powershell
+    # initialize a uv project in a (empty) directory without pyproject.toml
+    pw uv init
+    # add common tools to the project, including uv
+    pw --add uv,ruff,pre-commit,px-utils
+    # have uv create the virtual environment and install the dependencies
+    pw uv sync
+    # call the main script to show that the project is set up correctly
+    pw uv run main.py
+    # lock the tool versions for reproducible builds
+    pw --lock
+    ```
 
 !!! tip "Tip: Add the wrapper scripts to version control"
     When using Git:

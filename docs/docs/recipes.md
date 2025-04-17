@@ -12,36 +12,36 @@ Install common tools:
 Fortunately, uv is available by default in the main tool context, so we can use it to initialize the project.
 
 === "Linux/Mac"
-```bash
-# download the wrapper scripts
-curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip -o wrappers.zip && rm -f wrappers.zip
-# initialize a uv project in a (empty) directory without pyproject.toml
-./pw uv init
-# add common tools to the project, including uv
-./pw --add uv,ruff,pre-commit,px-utils
-# have uv create the virtual environment and install the dependencies
-./pw uv sync
-# call the main script to show that the project is set up correctly
-./pw uv run main.py
-# lock the tool versions for reproducible builds
-./pw --lock
-```
+    ```bash
+    # download the wrapper scripts
+    curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip -o wrappers.zip && rm -f wrappers.zip
+    # initialize a uv project in a (empty) directory without pyproject.toml
+    ./pw uv init
+    # add common tools to the project, including uv
+    ./pw --add uv,ruff,pre-commit,px-utils
+    # have uv create the virtual environment and install the dependencies
+    ./pw uv sync
+    # call the main script to show that the project is set up correctly
+    ./pw uv run main.py
+    # lock the tool versions for reproducible builds
+    ./pw --lock
+    ```
 
 === "Windows"
-```powershell
-# download the wrapper scripts
-Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Force -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
-# initialize a uv project in a (empty) directory without pyproject.toml
-pw uv init
-# add common tools to the project, including uv
-pw --add uv,ruff,pre-commit,px-utils
-# have uv create the virtual environment and install the dependencies
-pw uv sync
-# call the main script to show that the project is set up correctly
-pw uv run main.py
-# lock the tool versions for reproducible builds
-pw --lock
-```
+    ```powershell
+    # download the wrapper scripts
+    Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Force -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
+    # initialize a uv project in a (empty) directory without pyproject.toml
+    pw uv init
+    # add common tools to the project, including uv
+    pw --add uv,ruff,pre-commit,px-utils
+    # have uv create the virtual environment and install the dependencies
+    pw uv sync
+    # call the main script to show that the project is set up correctly
+    pw uv run main.py
+    # lock the tool versions for reproducible builds
+    pw --lock
+    ```
 
 You can run `./pw uv init --help` to see the available options or consult the [uv documentation](https://docs.astral.sh/uv/reference/cli/#uv-init).
 See also [px-demo](https://github.com/pyprojectx/px-demo) for a full example.
@@ -49,32 +49,32 @@ See also [px-demo](https://github.com/pyprojectx/px-demo) for a full example.
 ### PDM or Poetry based projects
 
 === "Linux/Mac"
-```bash
-# download the wrapper scripts
-curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip -o wrappers.zip && rm -f wrappers.zip
-# initialize a PDM project
-./pw --add pdm,ruff,pre-commit,px-utils
-./pw pdm init
-# initialize a poetry project
-./pw --add poetry,ruff,pre-commit,px-utils
-./pw poetry init
-# lock the tool versions for reproducible builds
-./pw --lock
-```
+    ```bash
+    # download the wrapper scripts
+    curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip -o wrappers.zip && rm -f wrappers.zip
+    # initialize a PDM project
+    ./pw --add pdm,ruff,pre-commit,px-utils
+    ./pw pdm init
+    # initialize a poetry project
+    ./pw --add poetry,ruff,pre-commit,px-utils
+    ./pw poetry init
+    # lock the tool versions for reproducible builds
+    ./pw --lock
+    ```
 
 === "Windows"
-```powershell
-# download the wrapper scripts
-Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Force -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
-# initialize a PDM project
-pw --add pdm,ruff,pre-commit,px-utils
-pw pdm init
-# initialize a poetry project
-pw --add poetry,ruff,pre-commit,px-utils
-pw poetry init
-# lock the tool versions for reproducible builds
-./pw --lock
-```
+    ```powershell
+    # download the wrapper scripts
+    Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Force -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
+    # initialize a PDM project
+    pw --add pdm,ruff,pre-commit,px-utils
+    pw pdm init
+    # initialize a poetry project
+    pw --add poetry,ruff,pre-commit,px-utils
+    pw poetry init
+    # lock the tool versions for reproducible builds
+    ./pw --lock
+    ```
 
 ## Simple projects
 If you don't need dependency management (f.e. when you don't have any dependencies),
@@ -116,15 +116,44 @@ Script your development and build flow with aliases:
 * package and publish to pypi
 * ...
 
-Use [Poetry](https://python-poetry.org/) or [PDM](https://pdm.fming.dev/) to further streamline your development flow with:
+Use [uv](https://docs.astral.sh/uv/) (or alternatively [Poetry](https://python-poetry.org/) or [PDM](https://pdm.fming.dev/)) to further streamline your development flow with:
 
 * better dependency management and version locking compared with pip requirement files
-* virtual environment management (or skip a virtual environment all together when using PDM)
+* virtual environment management
 * packaging and publishing
 
 With this combination, you can most likely skip makefiles altogether.
 
 Example:
+
+=== "uv"
+    ```toml
+    [tool.pyprojectx]
+    [tool.pyprojectx.main]
+    requirements = [ "uv", "ruff", "pre-commit", "px-utils", "mkdocs" ]
+    # the first time that a uv command is invoked, we make sure that pre-commit hooks are installed, so we can't forget it
+    post-install = "pre-commit install"
+    [tool.pyprojectx.aliases]
+    # create the virtual environment and install all dependencies
+    install = "uv sync"
+    # run a command in the project's virtual environment
+    run = "uv run"
+    # show outdated dependencies
+    outdated = "uv pip list --outdated"
+    clean = "pxrm .venv .pytest_cache dist .ruff_cache"
+    full-clean = ["@clean", "pxrm .pyprojectx"]
+    # format code and sort imports
+    format = ["ruff format", "ruff check --select I --fix"]
+    lint = ["ruff check"]
+    test = "@run pytest"
+    # run check before pushing to git and your build will never break
+    check = ["@lint", "@test"]
+    # run the same build command on your laptop or CI/CD server
+    build = [ "@install", "@check", "uv build" ]
+    # extract complexity from your CI/CD flows to test/run them locally
+    # use comprehensible python scripts (bin/prep-release) instead of complex shell scripts
+    release = ["prep-release", "uv publish --username __token__"]
+    ```
 
 === "PDM"
     ```toml
