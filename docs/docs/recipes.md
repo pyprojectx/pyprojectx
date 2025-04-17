@@ -21,8 +21,8 @@ curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrapp
 ./pw --add uv,ruff,pre-commit,px-utils
 # have uv create the virtual environment and install the dependencies
 ./pw uv sync
-# call the hello script to show that the project is set up correctly
-./pw uv run hello.py
+# call the main script to show that the project is set up correctly
+./pw uv run main.py
 # lock the tool versions for reproducible builds
 ./pw --lock
 ```
@@ -37,10 +37,10 @@ pw uv init
 pw --add uv,ruff,pre-commit,px-utils
 # have uv create the virtual environment and install the dependencies
 pw uv sync
-# call the hello script to show that the project is set up correctly
-pw uv run hello.py
+# call the main script to show that the project is set up correctly
+pw uv run main.py
 # lock the tool versions for reproducible builds
-./pw --lock
+pw --lock
 ```
 
 You can run `./pw uv init --help` to see the available options or consult the [uv documentation](https://docs.astral.sh/uv/reference/cli/#uv-init).
