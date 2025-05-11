@@ -177,8 +177,8 @@ def ensure_pyprojectx(options):  # noqa: C901
             env_context = env_builder.ensure_directories(venv_dir)
             try:
                 env_builder.create(venv_dir)
-            except SystemExit:
-                print("failed to create virtualenv, falling back to uv install script")
+            except (SystemExit, subprocess.CalledProcessError) as e:
+                print(f"failed to create virtualenv, falling back to uv install script ({e})")
                 use_uv_install_script = True
             else:
                 pip_cmd = [env_context.env_exe, "-m", "pip", "install", "--pre"]
