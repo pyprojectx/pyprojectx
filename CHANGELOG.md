@@ -1,3 +1,6 @@
+### Bug Fixes
+- #149 uv install script fallback is broken on macOS
+
 Release v3.2.2 (2025-04-17)
 ----------------------------
 ### Bug Fixes
