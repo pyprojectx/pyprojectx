@@ -77,7 +77,7 @@ check = ["@lint", "@test"]
 build = ["@install", "@check", "uv build"]
 
 # used in GitHub actions:
-export-locked-requirements = "px uv export -q --frozen --no-dev --no-editable --no-emit-project --no-hashes --no-annotate --no-header -o dist/requirements.txt"
+export-locked-requirements = "uv export -q --frozen --no-dev --no-editable --no-emit-project --no-hashes --no-annotate --no-header -o dist/requirements.txt"
 publish = "uv publish --username __token__"
 
 generate-usage = "uv run python -m pyprojectx.wrapper.pw --help > docs/docs/usage.txt"
