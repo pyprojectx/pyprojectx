@@ -51,6 +51,7 @@ lock-python-version = "3.8"
 [tool.pyprojectx.main]
 requirements = [
     "uv",
+    "tomlkit",
     "ruff",
     "pre-commit<3.6",
     "px-utils",
