@@ -5,13 +5,13 @@ from datetime import UTC, datetime
 from pathlib import Path
 from zipfile import ZipFile
 
-import tomlkit
+from tomlkit.toml_file import TOMLFile
 
 
 def main(release_version):
     cleanup_old_files()
     final_release = re.match(r"^\d+.\d+.\d+$", release_version)
-    replace_version_in_files(release_version)
+    replace_version_and_dependencies(release_version)
     if final_release:
         generate_release_changelog()
         zip_wrappers()
@@ -24,17 +24,24 @@ def cleanup_old_files():
     Path(".release-changelog.md").unlink(missing_ok=True)
 
 
-def replace_version_in_files(release_version):
-    pyproject = Path("pyproject.toml")
-    with pyproject.open("rb") as f:
-        pyproject_dict = tomlkit.load(f)
-        uv_version = next(i for i in pyproject_dict["project"]["dependencies"] if i.startswith("uv")).split("==")[1]
+def replace_version_and_dependencies(release_version):
+    with Path("dist/requirements.txt").open() as f:
+        locked_requirements = f.read().splitlines()
+    uv_version = next(i for i in locked_requirements if i.startswith("uv")).split("==")[1]
+
+    toml_file = TOMLFile("pyproject.toml")
+    toml_dict = toml_file.read()
 
     # replace __version__ in wrapper and pyproject.toml
     pw = Path("src/pyprojectx/wrapper/pw.py")
     pw.write_text(pw.read_text().replace("__version__", release_version).replace("__uv_version__", uv_version, 1))
-    pyproject_content = re.sub(r'version\s*=\s*"\d.\d.\d.dev"', f'version = "{release_version}"', pyproject.read_text())
-    pyproject.write_text(pyproject_content)
+    toml_dict["project"]["version"] = release_version
+
+    # replace floating dependencies with locked versions
+    toml_dict["project"]["dependencies"].clear()
+    toml_dict["project"]["dependencies"].add_line(*locked_requirements)
+
+    toml_file.write(toml_dict)
 
 
 def zip_wrappers():

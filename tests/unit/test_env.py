@@ -1,4 +1,3 @@
-# ruff: noqa: PLR2004
 import os
 import subprocess
 import sys

@@ -1,4 +1,3 @@
-# ruff: noqa: S324
 """Creates and manages isolated build environments."""
 
 import os
