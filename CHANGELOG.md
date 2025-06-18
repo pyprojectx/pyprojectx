@@ -1,3 +1,5 @@
+Release v3.2.4 (2025-06-18)
+----------------------------
 ### Features & Improvements
 - Use uv to build pyprojectx itself instead of PDM
 
