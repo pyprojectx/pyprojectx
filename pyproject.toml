@@ -65,7 +65,7 @@ post-install = "pre-commit install"
 [tool.pyprojectx.aliases]
 install = "uv sync"
 run = "uv run pyprojectx -t pyproject.toml "
-update = "uv lock --upgrade"
+update = ["uv lock --upgrade", "@install"]
 outdated = "uv pip list --outdated"
 clean = "pxrm .venv .pytest_cache dist .uv-build .ruff_cache"
 full-clean = ["@clean", "pxrm .pyprojectx .uv-python"]
