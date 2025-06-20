@@ -43,4 +43,4 @@ jobs:
 
       - name: Test and build
         run: |
-          python pw build
+          python pw --clean build
