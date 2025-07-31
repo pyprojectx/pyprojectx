@@ -31,21 +31,23 @@ def install_px(options):
     global_dir.mkdir(parents=True, exist_ok=True)
 
     target_pw = global_dir / "pw"
-    if target_pw.exists() and not options.force_install:
-        raise Warning(f"{target_pw} {BLUE} already exists, use '--install-px --force-install' to overwrite{RESET}")
-
     shutil.copy2(wrapper_dir / "pw.py", target_pw)
     for file in wrapper_dir.glob("px*"):
         shutil.copy2(file, install_dir)
-    with (global_dir / "pyproject.toml").open("w", encoding="utf-8") as f:
-        f.write(DEFAULT_GLOBAL_CONFIG)
+
+    if not (global_dir / "pyproject.toml").exists():
+        with (global_dir / "pyproject.toml").open("w", encoding="utf-8") as f:
+            f.write(DEFAULT_GLOBAL_CONFIG)
+        print(
+            f"{BLUE}Created a global pyproject.toml file in {RESET}{global_dir / 'pyproject.toml'}",
+            file=sys.stderr,
+        )
 
     print(
         f"{BLUE}Global Pyprojectx scripts are installed in your home directory. "
         f"You can now start all your commands with {RESET}px{BLUE} in any subdirectory of your project "
         f"instead of using {RESET}./pw{BLUE}. You can also use {RESET}pxg{BLUE} to run commands from "
-        f"the global pyprojectx directory, f.e. {RESET}pxg download-pw{BLUE} to download the latest version "
-        "of the pw script in the current directory.",
+        f"the global pyprojectx directory, f.e. {RESET}pxg uv init{BLUE} initialize a new Python project.",
         file=sys.stderr,
     )
     if options.cmd and "skip-path" in options.cmd:
