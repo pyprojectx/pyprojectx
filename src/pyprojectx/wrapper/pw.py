@@ -156,7 +156,7 @@ def arg_parser():
     parser.add_argument(
         "--upgrade",
         action="store_true",
-        help="Print instructions to download the latest pyprojectx wrapper scripts.",
+        help="Download the latest pyprojectx wrapper scripts.",
     )
     parser.add_argument(
         "command", nargs=argparse.REMAINDER, help="The command/alias with optional arguments to execute."
