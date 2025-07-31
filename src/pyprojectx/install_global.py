@@ -15,28 +15,10 @@ from pyprojectx.wrapper.pw import (
 
 HOME_DIR = Path(os.environ.get("PYPROJECTX_HOME_DIR", Path.home()))
 
-UPGRADE_INSTRUCTIONS = (
-    "curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip"
-    " && unzip -o wrappers.zip && rm -f wrappers.zip"
-)
-UPGRADE_INSTRUCTIONS_WIN = (
-    "Invoke-WebRequest"
-    " https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip"
-    " -OutFile wrappers.zip; Expand-Archive -Force -Path wrappers.zip -DestinationPath .;"
-    " Remove-Item -Path wrappers.zip"
-)
-
-DOWNLOAD_ALIAS = (
-    f'{{ cmd = "{UPGRADE_INSTRUCTIONS_WIN}", shell = "powershell" }}'
-    if sys.platform.startswith("win")
-    else f'"{UPGRADE_INSTRUCTIONS}"'
-)
-
-DEFAULT_GLOBAL_CONFIG = f"""[tool.pyprojectx]
+DEFAULT_GLOBAL_CONFIG = """[tool.pyprojectx]
 cwd = "."
 
 [tool.pyprojectx.aliases]
-download-pw = {DOWNLOAD_ALIAS}
 """
 
 

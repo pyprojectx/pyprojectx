@@ -13,7 +13,9 @@ import os
 import subprocess
 import sys
 import sysconfig
+import zipfile
 from pathlib import Path
+from urllib import request
 
 try:
     from venv import EnvBuilder
@@ -43,6 +45,10 @@ if sys.platform.startswith("win"):
 def run(args):
     try:
         options = get_options(args)
+        if options.upgrade:
+            download_wrappers()
+            return
+
         pyprojectx_script = ensure_pyprojectx(options)
         explicit_options = []
         if not options.toml:
@@ -232,6 +238,13 @@ def ensure_pyprojectx(options):  # noqa: C901
         subprocess.run([*pip_cmd, options.pyprojectx_package], stdout=out, check=True)
 
     return pyprojectx_script
+
+
+def download_wrappers():
+    latest = "https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip"
+    zip_file, _ = request.urlretrieve(latest)  # noqa: S310
+    with zipfile.ZipFile(zip_file, "r") as zip_ref:
+        zip_ref.extractall(Path(__file__).parent)
 
 
 if __name__ == "__main__":

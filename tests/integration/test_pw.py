@@ -399,6 +399,22 @@ def test_install_pyprojecx_with_uv(sessionless_tmp_project):
     assert Path(project_dir, ".pyprojectx", f"uv-{pw.UV_VERSION}", f"uv{SCRIPT_SUFFIX}").is_file()
 
 
+def test_upgrade(sessionless_tmp_project):
+    project_dir, env = sessionless_tmp_project
+    assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
+
+    cmd = f"{SCRIPT_PREFIX}pw --version"
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
+    assert proc_result.stdout.decode("utf-8").strip() == "__version__"
+
+    cmd = f"{SCRIPT_PREFIX}pw --upgrade"
+    subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
+
+    cmd = f"{SCRIPT_PREFIX}pw --version"
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
+    assert re.search(r"\d+\.\d+\.\d+", proc_result.stdout.decode("utf-8").strip())
+
+
 def load_toml(path):
     with path.open() as f:
         return tomlkit.load(f)

@@ -34,7 +34,7 @@ def test_install_px(tmp_project):
     with px_dir.joinpath("global", "pyproject.toml").open("r") as f:
         toml_content = str(f.read())
         assert toml_content.startswith('[tool.pyprojectx]\ncwd = "."\n')
-        assert "[tool.pyprojectx.aliases]\ndownload-pw = " in toml_content
+        assert "[tool.pyprojectx.aliases]" in toml_content
 
     # installing again should fail
     process = subprocess.run(cmd, shell=True, cwd=cwd, env=env, check=False, capture_output=True, text=True)
