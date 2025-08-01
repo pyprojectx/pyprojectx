@@ -69,6 +69,7 @@ class IsolatedVirtualEnv:
             f"px-{self.name}",
             "--python",
             f"{sys.version_info.major}.{sys.version_info.minor}",
+            "--clear",
         ]
         if quiet:
             cmd.append("--quiet")
