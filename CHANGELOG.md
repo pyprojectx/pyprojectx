@@ -1,3 +1,6 @@
+### Features & Improvements
+- #154 omit uv warning and prompt in first run
+
 Release v3.2.5 (2025-08-01)
 ----------------------------
 ### Features & Improvements
