@@ -399,7 +399,7 @@ def test_install_pyprojecx_with_uv(sessionless_tmp_project):
     assert Path(project_dir, ".pyprojectx", f"uv-{pw.UV_VERSION}", f"uv{SCRIPT_SUFFIX}").is_file()
 
 
-@pytest.mark.skipif(os.getenv("GITHUB_WORKFLOW") == "Release")
+@pytest.mark.skipif(os.getenv("GITHUB_WORKFLOW") == "Release", reason="__version__ is replaced in release builds")
 def test_upgrade(sessionless_tmp_project):
     project_dir, env = sessionless_tmp_project
     assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
