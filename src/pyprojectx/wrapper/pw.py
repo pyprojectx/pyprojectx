@@ -217,7 +217,7 @@ def ensure_pyprojectx(options):  # noqa: C901
             )
             uv = uv_dir / f"uv{EXE}"
             subprocess.run(
-                [uv, "venv", str(venv_dir), "--python", sys.executable],
+                [uv, "venv", str(venv_dir), "--python", sys.executable, "--clear"],
                 stdout=out,
                 check=True,
             )
