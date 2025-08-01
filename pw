@@ -23,7 +23,7 @@ except ImportError:
     EnvBuilder = None
 
 
-VERSION = "3.2.6"
+VERSION = "3.2.7"
 UV_VERSION = "0.8.4"
 
 PYPROJECTX_INSTALL_DIR_ENV_VAR = "PYPROJECTX_INSTALL_DIR"
