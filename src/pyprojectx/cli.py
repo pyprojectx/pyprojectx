@@ -9,7 +9,7 @@ from typing import List, Union
 
 from pyprojectx.config import AliasCommand, Config
 from pyprojectx.env import IsolatedVirtualEnv
-from pyprojectx.install_global import UPGRADE_INSTRUCTIONS, UPGRADE_INSTRUCTIONS_WIN, install_px
+from pyprojectx.install_global import install_px
 from pyprojectx.lock import can_lock, get_or_update_locked_requirements
 from pyprojectx.log import logger, set_verbosity
 from pyprojectx.requirements import add_requirement
@@ -26,15 +26,11 @@ def main() -> None:
         raise
 
 
-# ruff: noqa: PLR0911 PLR0912 C901
+# ruff: noqa: PLR0911 C901
 def _run(argv: List[str]) -> None:
     options = _get_options(argv[1:])
     if options.install_px:
         install_px(options)
-        return
-
-    if options.upgrade:
-        _show_upgrade_instructions()
         return
 
     config = Config(options.toml_path)
@@ -257,20 +253,6 @@ def _get_options(args):
     set_verbosity(options.verbosity)
     logger.debug("Parsed cli arguments: %s", options)
     return options
-
-
-def _show_upgrade_instructions():
-    print(
-        f"{pw.BLUE}Upgrade to the latest version of Pyprojectx by executing following command in a terminal:{pw.RESET}",
-    )
-    if sys.platform.startswith("win"):
-        print(UPGRADE_INSTRUCTIONS_WIN)
-    else:
-        print(UPGRADE_INSTRUCTIONS)
-    print(
-        f"{pw.BLUE}If you installed {pw.CYAN}px{pw.BLUE}, you can download the latest pw scripts "
-        f"to the current directory by executing:{pw.RESET}\npxg download-pw",
-    )
 
 
 def _install_ctx(options, config, pw_args):

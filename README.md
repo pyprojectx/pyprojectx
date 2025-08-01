@@ -12,12 +12,11 @@ not even Pyprojectx itself!
 
 Tools that are specified within your pyproject.toml file will be installed on demand when invoked from Pyprojectx:
 ```shell
-> ./pw black src
-Collecting black ...
-Successfully installed black-23.9.1 ...
+> ./pw ruff check src
+Installed 1 package in 149ms
+ + ruff==0.12.7
 
-All done! ✨ 🍰 ✨
-18 files left unchanged.
+All checks passed!
 ```
 
 ## Feature highlights
@@ -54,14 +53,14 @@ Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/downl
 ## Getting started
 Initialize a new or existing project by adding tools (on Windows, replace `./pw` with `pw`):
 ```bash
-./pw --add pdm,ruff,pre-commit,px-utils
+./pw --add uv,ruff,pre-commit,px-utils
 ./pw --install-context main
 # invoke a tool via the wrapper script
-./pw pdm --version
+./pw uv --version
 ./pw ruff check src
 # or activate the tool context
 source .pyprojectx/main/activate
-pdm --version
+uv --version
 ruff check src
 ```
 
@@ -76,8 +75,8 @@ The _tool.pyprojectx.aliases_ section in _pyproject.toml_ can contain commandlin
 ```toml
 [tool.pyprojectx.aliases]
 # convenience shortcuts
-run = "poetry run"
-test = "poetry run pytest"
+run = "uv run"
+test = "uv run pytest"
 lint = ["ruff check"]
 check = ["@lint", "@test"]
 ```
@@ -87,14 +86,14 @@ Instead of calling the CLI of a tool directly, prefix it with `./pw` (`pw` on Wi
 
 Examples:
 ```shell
-./pw poetry add -D pytest
+./pw uv add --dev pytest
 cd src
 ../pw lint
 ```
 
 Aliases can be invoked as is or with extra arguments:
 ```shell
-./pw poetry run my-script --foo bar
+./pw uv run my-script --foo bar
 # same as above, but using the run alias
 ./pw run my-script --foo bar
 ```
@@ -102,12 +101,12 @@ Aliases can be invoked as is or with extra arguments:
 ## Why yet another tool?
 * As Python noob I had hard times setting up a project and building existing projects
 * There is always someone in the team having issues with his setup, either with a specific tool, with Homebrew, pipx, ...
-* Using (PDM or Poetry) dev-dependencies to install tools, impacts your production dependencies and can even lead to dependency conflicts
+* Using (uv, PDM or Poetry) dev-dependencies to install tools, impacts your production dependencies and can even lead to dependency conflicts
 * Different projects often require different versions of the same tool
 
 ## Example projects
-* This project (using PDM)
-* [px-demo](https://github.com/pyprojectx/px-demo) (using PDM)
+* This project (using uv)
+* [px-demo](https://github.com/pyprojectx/px-demo) (using uv, PDM or Poetry)
 
 ## Development
 * Build/test:

@@ -1,3 +1,7 @@
+### Features & Improvements
+- #83 ./pw --upgrade should do the upgrade itself instead of printing instructions
+- #119 add a way to update px/pxg
+
 Release v3.2.4 (2025-06-18)
 ----------------------------
 ### Features & Improvements
