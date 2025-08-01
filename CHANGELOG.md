@@ -1,3 +1,5 @@
+Release v3.2.7 (2025-08-01)
+----------------------------
 ### Features & Improvements
 - #156 omit uv warning and prompt when running with --lock
 
