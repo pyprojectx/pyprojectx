@@ -14,7 +14,7 @@ def test_no_config():
 def test_no_ctx_config():
     data_dir = Path(__file__).parent.with_name("data")
     config = Config(data_dir / "test-no-tool-config.toml")
-    assert config.get_alias("run") == [AliasCommand("run command", cwd=str(data_dir.absolute()))]
+    assert config.get_alias("run") == [AliasCommand("run command", cwd=str(data_dir.absolute()), ctx="main")]
     with pytest.raises(
         Warning, match=r"Invalid alias wrong-tool-alias: 'wrong-tool' is not defined in \[tool.pyprojectx\]"
     ):

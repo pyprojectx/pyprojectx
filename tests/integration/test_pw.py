@@ -385,6 +385,16 @@ def test_default_tools(tmp_project):
     assert re.search(r"\d+.\d+.\d+", proc_result.stdout.decode("utf-8"))
 
 
+def test_default_tools_without_tool_context(sessionless_tmp_project):
+    project_dir, env = sessionless_tmp_project
+    toml = data_dir / "test-no-tool-config.toml"
+    shutil.copyfile(toml, project_dir / pw.PYPROJECT_TOML)
+    cmd = f"{SCRIPT_PREFIX}pw uv --version"
+    proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=False)
+    assert proc_result.returncode == 0
+    assert re.search(r"\d+.\d+.\d+", proc_result.stdout.decode("utf-8"))
+
+
 def test_install_pyprojecx_with_uv(sessionless_tmp_project):
     project_dir, env = sessionless_tmp_project
     env["PYPROJECTX_USE_UV"] = "1"

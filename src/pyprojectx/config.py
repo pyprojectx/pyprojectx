@@ -44,15 +44,7 @@ class Config:
             raise Warning(f"Could not parse {toml_path}: {e}") from e
 
         project_path = toml_path.parent.absolute()
-        if not toml_dict.get("tool", {}).get("pyprojectx"):
-            print(
-                f"{BLUE}No configuration found, providing {CYAN}{MAIN}{BLUE} context with default tools:"
-                f" {CYAN}{DEFAULT_TOOLS}{RESET}",
-                file=sys.stderr,
-            )
-            self._contexts = {MAIN: DEFAULT_TOOLS}
-        else:
-            self._contexts = toml_dict.get("tool", {}).get("pyprojectx", {}).copy()
+        self._contexts = toml_dict.get("tool", {}).get("pyprojectx", {}).copy()
         self._aliases = self._contexts.pop("aliases", {})
         self.env = self._contexts.pop("env", {})
         self.prerelease = self._contexts.pop("prerelease", None)
@@ -83,6 +75,13 @@ class Config:
         self._merge_os_config()
         self.scripts_path = project_path / scripts_dir
         self.lock_file = project_path / LOCK_FILE
+        if not self._contexts:
+            print(
+                f"{BLUE}No configuration found, providing {CYAN}{MAIN}{BLUE} context with default tools:"
+                f" {CYAN}{DEFAULT_TOOLS}{RESET}",
+                file=sys.stderr,
+            )
+            self._contexts = {MAIN: DEFAULT_TOOLS}
 
     def show_info(self, cmd, error=False):
         alias_cmds = self.get_alias(cmd)
