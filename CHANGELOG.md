@@ -1,3 +1,5 @@
+Release v3.2.8 (2025-08-11)
+----------------------------
 ### Bug Fixes
 - #157 uv default tool context does not work if any other pyprojectx configuration is present
 
