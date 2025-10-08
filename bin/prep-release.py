@@ -48,6 +48,7 @@ def zip_wrappers():
     with ZipFile("wrappers.zip", "w") as zip_file:
         zip_file.write("src/pyprojectx/wrapper/pw.py", "pw")
         zip_file.write("src/pyprojectx/wrapper/pw.bat", "pw.bat")
+        zip_file.write("src/pyprojectx/wrapper/pw.ps1", "pw.ps1")
 
 
 def generate_release_changelog():
