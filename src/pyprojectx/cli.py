@@ -5,6 +5,7 @@ import subprocess
 import sys
 from logging import INFO
 from pathlib import Path
+from typing import Union
 
 from pyprojectx.config import AliasCommand, Config
 from pyprojectx.env import IsolatedVirtualEnv
@@ -182,7 +183,7 @@ def _run_script(script: str, pw_args: list[str], options, config) -> None:
 
 
 # ruff: noqa: PLR0913
-def _run_in_ctx(ctx: str, full_cmd: str | list[str], options, pw_args, config, env, cwd) -> None:
+def _run_in_ctx(ctx: str, full_cmd: Union[str, list[str]], options, pw_args, config, env, cwd) -> None:
     logger.debug("Running command in virtual environment, ctx: %s, full command: %s", ctx, full_cmd)
     venv = _ensure_ctx(config, ctx, env, options, pw_args)
     try:
