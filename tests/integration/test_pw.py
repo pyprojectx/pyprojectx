@@ -432,7 +432,7 @@ def test_upgrade(sessionless_tmp_project):
 def test_argument_containing_less_then(sessionless_tmp_project):
     project_dir, env = sessionless_tmp_project
 
-    for ext in [".bat", ".ps1"]:
+    for ext in ["bat", "ps1"]:
         cmd = f"{SCRIPT_PREFIX}pw.{ext} --version"
         proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
         assert proc_result.stdout.decode("utf-8").strip() == "__version__"
