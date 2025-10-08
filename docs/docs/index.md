@@ -82,7 +82,7 @@ With the wrapper scripts in place, you can start adding tools:
 !!! tip "Tip: Add the wrapper scripts to version control"
     When using Git:
     ```shell
-    git add pw pw.bat
+    git add pw pw.bat pw.ps1
     git update-index --chmod=+x pw
     echo .pyprojectx/ >> .gitignore
     ```

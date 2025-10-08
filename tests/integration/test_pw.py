@@ -205,7 +205,9 @@ def test_cwd(tmp_project):
     assert Path(project_dir, f"{SCRIPT_PREFIX}pw").is_file()
     cmd = f"{SCRIPT_PREFIX}pw -q ls-projectdir"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
-    assert "pw.bat" in proc_result.stdout.decode("utf-8")
+    stdout = proc_result.stdout.decode("utf-8")
+    assert "pw.bat" in stdout
+    assert "pw.ps1" in stdout
 
     cmd = f"{SCRIPT_PREFIX}pw -q ls-pyprojectx"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
