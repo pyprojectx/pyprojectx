@@ -5,7 +5,6 @@ import subprocess
 import sys
 from logging import INFO
 from pathlib import Path
-from typing import List, Union
 
 from pyprojectx.config import AliasCommand, Config
 from pyprojectx.env import IsolatedVirtualEnv
@@ -27,7 +26,7 @@ def main() -> None:
 
 
 # ruff: noqa: PLR0911 C901
-def _run(argv: List[str]) -> None:
+def _run(argv: list[str]) -> None:
     options = _get_options(argv[1:])
     if options.install_px:
         install_px(options)
@@ -127,7 +126,7 @@ def verify_ambiguity(candidates, cmd):
         raise SystemExit(1)
 
 
-def _run_alias(alias_cmd: AliasCommand, pw_args: List[str], options, config) -> None:
+def _run_alias(alias_cmd: AliasCommand, pw_args: list[str], options, config) -> None:
     logger.debug(
         "Running alias command, ctx: %s, command: %s, arguments: %s", alias_cmd.ctx, alias_cmd, options.cmd_args
     )
@@ -160,7 +159,7 @@ def _run_alias(alias_cmd: AliasCommand, pw_args: List[str], options, config) -> 
             raise SystemExit(e.returncode) from e
 
 
-def _run_script(script: str, pw_args: List[str], options, config) -> None:
+def _run_script(script: str, pw_args: list[str], options, config) -> None:
     file = config.get_script_path(script)
     logger.debug("Running script: %s, arguments: %s", file, options.cmd_args)
     full_cmd = ["python", file, *options.cmd_args]
@@ -183,7 +182,7 @@ def _run_script(script: str, pw_args: List[str], options, config) -> None:
 
 
 # ruff: noqa: PLR0913
-def _run_in_ctx(ctx: str, full_cmd: Union[str, List[str]], options, pw_args, config, env, cwd) -> None:
+def _run_in_ctx(ctx: str, full_cmd: str | list[str], options, pw_args, config, env, cwd) -> None:
     logger.debug("Running command in virtual environment, ctx: %s, full command: %s", ctx, full_cmd)
     venv = _ensure_ctx(config, ctx, env, options, pw_args)
     try:
@@ -210,7 +209,7 @@ def _ensure_ctx(config, ctx, env, options, pw_args):
     return venv
 
 
-def _resolve_references(alias_cmd: str, pw_args: List[str], config) -> str:
+def _resolve_references(alias_cmd: str, pw_args: list[str], config) -> str:
     """Resolve all @alias and pw@ references."""
     alias_refs = alias_regex.findall(alias_cmd)
     for optional_pw, alias in alias_refs:

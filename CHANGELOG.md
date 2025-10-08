@@ -1,3 +1,7 @@
+### Features & Improvements
+- add pw.ps1 for better Windows PowerShell support
+- Permanently dropped support for Python 3.8
+
 Release v3.2.9 (2025-08-11)
 ----------------------------
 ### Features & Improvements

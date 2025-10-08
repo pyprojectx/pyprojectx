@@ -6,7 +6,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import Optional
 
 import uv
 
@@ -15,7 +15,7 @@ from pyprojectx.log import logger
 
 PYTHON_EXE = "python.exe" if sys.platform == "win32" else "python3"
 UV_EXE = uv.find_uv_bin()
-ENV_VAR_RE = re.compile(r"(?P<var>\$\{(?P<name>[A-Z0-9_]+)\})")
+ENV_VAR_RE = re.compile(r"(?P<var>\$\{(?P<name>[A-Z0-9_]+)})")
 
 
 class IsolatedVirtualEnv:
@@ -131,7 +131,7 @@ class IsolatedVirtualEnv:
         shutil.rmtree(self.path, ignore_errors=True)
 
     def run(
-        self, cmd: Union[str, List[str]], env: dict, cwd: Union[str, bytes, os.PathLike], stdout=None
+        self, cmd: str | list[str], env: dict, cwd: str | bytes | os.PathLike, stdout=None
     ) -> subprocess.CompletedProcess:
         """Run a command inside the virtual environment.
 
