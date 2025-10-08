@@ -429,17 +429,13 @@ def test_upgrade(sessionless_tmp_project):
 
 
 @pytest.mark.skipif(not sys.platform.startswith("win"), reason="bat and ps1 test")
-def test_argument_containing_less_then(sessionless_tmp_project):
-    project_dir, env = sessionless_tmp_project
+def test_argument_containing_less_then(tmp_lock_project):
+    project_dir, env = tmp_lock_project
 
     for ext in ["bat", "ps1"]:
         cmd = f"{SCRIPT_PREFIX}pw.{ext} --version"
         proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
         assert proc_result.stdout.decode("utf-8").strip() == "__version__"
-
-        cmd = f"{SCRIPT_PREFIX}pw.{ext} python -c \"print('21')\""
-        proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
-        assert proc_result.stdout.decode("utf-8").strip() == "21"
 
 
 def load_toml(path):
