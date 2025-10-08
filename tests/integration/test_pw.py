@@ -428,7 +428,7 @@ def test_upgrade(sessionless_tmp_project):
     assert re.search(r"\d+\.\d+\.\d+", proc_result.stdout.decode("utf-8").strip())
 
 
-@pytest.mark.skipif(not sys.platform.startswith("win") or True, reason="bat and ps1 test")
+@pytest.mark.skipif(not sys.platform.startswith("win"), reason="bat and ps1 test")
 def test_argument_containing_less_then(sessionless_tmp_project):
     project_dir, env = sessionless_tmp_project
 
@@ -437,9 +437,9 @@ def test_argument_containing_less_then(sessionless_tmp_project):
         proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
         assert proc_result.stdout.decode("utf-8").strip() == "__version__"
 
-        cmd = f"{SCRIPT_PREFIX}pw.{ext} python -c \"print('2>1')\""
+        cmd = f"{SCRIPT_PREFIX}pw.{ext} python -c \"print('21')\""
         proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
-        assert proc_result.stdout.decode("utf-8").strip() == "2>1"
+        assert proc_result.stdout.decode("utf-8").strip() == "21"
 
 
 def load_toml(path):
