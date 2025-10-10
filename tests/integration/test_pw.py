@@ -428,6 +428,20 @@ def test_upgrade(sessionless_tmp_project):
     assert re.search(r"\d+\.\d+\.\d+", proc_result.stdout.decode("utf-8").strip())
 
 
+@pytest.mark.skipif(not sys.platform.startswith("win"), reason="bat and ps1 test")
+def test_argument_containing_less_then(tmp_lock_project):
+    project_dir, env = tmp_lock_project
+
+    for script in [f"{SCRIPT_PREFIX}pw.bat", f'powershell -command "& {SCRIPT_PREFIX}pw.ps1"']:
+        cmd = f"{script} --version"
+        proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
+        assert proc_result.stdout.decode("utf-8").strip() == "__version__"
+
+        cmd = f"{script} python -c \"print('2>1')\""
+        proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
+        assert proc_result.stdout.decode("utf-8").strip() == "2>1"
+
+
 def load_toml(path):
     with path.open() as f:
         return tomlkit.load(f)
