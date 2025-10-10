@@ -437,6 +437,10 @@ def test_argument_containing_less_then(tmp_lock_project):
         proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
         assert proc_result.stdout.decode("utf-8").strip() == "__version__"
 
+        cmd = f"{script} python -c \"print('2>1')\""
+        proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
+        assert proc_result.stdout.decode("utf-8").strip() == "2>1"
+
 
 def load_toml(path):
     with path.open() as f:
