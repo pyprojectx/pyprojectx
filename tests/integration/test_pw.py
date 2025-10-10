@@ -432,8 +432,8 @@ def test_upgrade(sessionless_tmp_project):
 def test_argument_containing_less_then(tmp_lock_project):
     project_dir, env = tmp_lock_project
 
-    for ext in ["bat", "ps1"]:
-        cmd = f"{SCRIPT_PREFIX}pw.{ext} --version"
+    for script in [f"{SCRIPT_PREFIX}pw.bat", f'powershell -command "& {SCRIPT_PREFIX}pw.ps1"']:
+        cmd = f"{script} --version"
         proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
         assert proc_result.stdout.decode("utf-8").strip() == "__version__"
 
