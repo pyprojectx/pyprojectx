@@ -244,11 +244,9 @@ def download_wrappers():
     latest = "https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip"
     zip_file, _ = request.urlretrieve(latest)  # noqa: S310
     with zipfile.ZipFile(zip_file, "r") as zip_ref:
-        zip_ref.extract("pw", Path(__file__).parent)
-        if Path(__file__).with_name("pw.bat").is_file():
-            zip_ref.extract("pw.bat", Path(__file__).parent)
-        if Path(__file__).with_name("pw.ps1").is_file():
-            zip_ref.extract("pw.ps1", Path(__file__).parent)
+        for entry in zip_ref.namelist():
+            if Path(__file__).with_name(entry).is_file():
+                zip_ref.extract(entry, Path(__file__).parent)
 
 
 if __name__ == "__main__":
