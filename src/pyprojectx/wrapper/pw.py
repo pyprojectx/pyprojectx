@@ -80,6 +80,7 @@ def get_options(args):
 
 def arg_parser():
     parser = argparse.ArgumentParser(
+        prog="pw",
         description="Execute commands or aliases defined in the [tool.pyprojectx] section of pyproject.toml. "
         "Use the -i or --info option to see available tools and aliases.",
         allow_abbrev=False,

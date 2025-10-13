@@ -82,11 +82,12 @@ With the wrapper scripts in place, you can start adding tools:
 !!! tip "Tip: Add the wrapper scripts to version control"
     When using Git:
     ```shell
-    git add pw pw.bat pw.ps1
+    git add pw pw.bat
+    git add pw.ps1 # optional
     git update-index --chmod=+x pw
     echo .pyprojectx/ >> .gitignore
     ```
-    For windows users, it is not necessary to add both `pw.bat` and `pw.ps1`. The _bat_ is faster in a cmd terminal, but the _ps1_ better handles commands containing special characters (like `<`).
+    For windows users, having `pw.bat` is typically sufficient. `pw.ps1` can be handy for Powershell users when running commands containing special characters (like `<`), but this only works properly in recent Powershell versions.
 
 
 !!! tip "Tip: Install the `px` utility script"

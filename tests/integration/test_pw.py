@@ -124,7 +124,7 @@ def test_alias_abbreviations(tmp_project):
         (
             f"{SCRIPT_PREFIX}pw",
             "",
-            "usage: pyprojectx",
+            "usage: pw",
         ),
         (f"{SCRIPT_PREFIX}pw -q failing-list", "first-cmd-output-ok", "go-foo-bar"),
     ],
