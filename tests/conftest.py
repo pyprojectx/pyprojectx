@@ -25,7 +25,6 @@ def create_tmp_project(tmp_project_dir):
     shutil.copyfile(pyprojectx_project_dir / "src/pyprojectx/wrapper/pw.py", pw_copy)
     pw_copy.chmod(stat.S_IRWXU | stat.S_IRWXG)
     shutil.copy(pyprojectx_project_dir / "src/pyprojectx/wrapper/pw.bat", tmp_project_dir)
-    shutil.copy(pyprojectx_project_dir / "src/pyprojectx/wrapper/pw.ps1", tmp_project_dir)
     shutil.copytree(data_dir / "bin", tmp_project_dir / "bin")
     env = os.environ.copy()
     env["PYPROJECTX_PACKAGE"] = str(pyprojectx_project_dir.absolute())
