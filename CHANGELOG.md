@@ -1,3 +1,5 @@
+Release v3.3.0 (2025-10-13)
+----------------------------
 ### Features & Improvements
 - Added _pw.ps1_ for better Windows PowerShell support
 - `--upgrade` will only upgrade existing pw* wrapper scripts
