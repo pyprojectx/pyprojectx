@@ -1,3 +1,6 @@
+### Features & Improvements
+- update uv to 0.9.2
+
 Release v3.3.0 (2025-10-13)
 ----------------------------
 ### Features & Improvements
