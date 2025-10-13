@@ -1,3 +1,8 @@
+### Features & Improvements
+- Added _pw.ps1_ for better Windows PowerShell support
+- `--upgrade` will only upgrade existing pw* wrapper scripts
+- Permanently dropped support for Python 3.8
+
 Release v3.2.9 (2025-08-11)
 ----------------------------
 ### Features & Improvements

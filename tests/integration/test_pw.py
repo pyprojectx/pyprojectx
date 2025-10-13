@@ -124,7 +124,7 @@ def test_alias_abbreviations(tmp_project):
         (
             f"{SCRIPT_PREFIX}pw",
             "",
-            "usage: pyprojectx",
+            "usage: pw",
         ),
         (f"{SCRIPT_PREFIX}pw -q failing-list", "first-cmd-output-ok", "go-foo-bar"),
     ],
@@ -426,6 +426,20 @@ def test_upgrade(sessionless_tmp_project):
     cmd = f"{SCRIPT_PREFIX}pw --version"
     proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
     assert re.search(r"\d+\.\d+\.\d+", proc_result.stdout.decode("utf-8").strip())
+
+
+@pytest.mark.skipif(not sys.platform.startswith("win"), reason="bat and ps1 test")
+def test_argument_containing_less_then(tmp_lock_project):
+    project_dir, env = tmp_lock_project
+
+    for script in [f"{SCRIPT_PREFIX}pw.bat", f'powershell -command "& {SCRIPT_PREFIX}pw.ps1"']:
+        cmd = f"{script} --version"
+        proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
+        assert proc_result.stdout.decode("utf-8").strip() == "__version__"
+
+        cmd = f"{script} -q pycowsay mooooodows"
+        proc_result = subprocess.run(cmd, shell=True, capture_output=True, cwd=project_dir, env=env, check=True)
+        assert "mooooodows" in proc_result.stdout.decode("utf-8")
 
 
 def load_toml(path):

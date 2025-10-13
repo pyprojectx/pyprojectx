@@ -12,7 +12,7 @@ classifiers = [
     "Topic :: Software Development :: Build Tools",
     "Topic :: Software Development :: Libraries :: Python Modules"
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 
 dependencies = [
     "userpath>=1.9",
@@ -22,15 +22,15 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "pytest>=7.4.3",
-    "pytest-mock>=3.12.0",
+    "pytest>=8.4",
+    "pytest-mock>=3.15",
 ]
 
 [project.scripts]
 pyprojectx = "pyprojectx.cli:main"
 
 [build-system]
-requires = ["uv_build>=0.7.13,<0.8.0"]
+requires = ["uv_build>=0.9"]
 build-backend = "uv_build"
 
 [tool.pytest.ini_options]
@@ -47,13 +47,13 @@ ignore = ["ISC001", "ANN", "FA", "FBT", "D100", "D102", "D103", "D104", "D105", 
 "bin/*" = ["INP001"]
 
 [tool.pyprojectx]
-lock-python-version = "3.8"
+lock-python-version = "3.9"
 [tool.pyprojectx.main]
 requirements = [
     "uv",
     "tomlkit",
     "ruff",
-    "pre-commit<3.6",
+    "pre-commit",
     "px-utils",
     "mkdocs",
     "mkdocs-material",

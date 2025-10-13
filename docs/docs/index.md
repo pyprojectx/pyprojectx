@@ -34,7 +34,7 @@ Projects can be build/tested/used immediately without explicit installation nor 
 ![Clone and Build](assets/build.png)
 
 ## Installation
-One of the key features is that there is no need to install anything explicitly (except a Python 3.8+ interpreter).
+One of the key features is that there is no need to install anything explicitly (except a Python 3.9+ interpreter).
 
 `cd` into your project directory and download the
 [wrapper scripts](https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip):
@@ -82,10 +82,13 @@ With the wrapper scripts in place, you can start adding tools:
 !!! tip "Tip: Add the wrapper scripts to version control"
     When using Git:
     ```shell
-    git add pw pw.bat pw.ps1
+    git add pw pw.bat
+    git add pw.ps1 # optional
     git update-index --chmod=+x pw
     echo .pyprojectx/ >> .gitignore
     ```
+    For windows users, having `pw.bat` is typically sufficient. `pw.ps1` can be handy for Powershell users when running commands containing special characters (like `<`), but this only works properly in recent Powershell versions.
+
 
 !!! tip "Tip: Install the `px` utility script"
     You can copy a small script to `.pyprojectx` in your home directory.
