@@ -5,6 +5,8 @@ You can change the default working directory for all commands by setting the `cw
 
 Sensible values are `.` (the current directory) or `@PROJECT_DIR` (the directory containing _pyproject.toml_).
 
+Defaults to `@PROJECT_DIR`
+
 ```toml
 [tool.pyprojectx]
 cwd = "."
