@@ -165,7 +165,7 @@ def arg_parser():
     return parser
 
 
-def ensure_pyprojectx(options):  # noqa: C901
+def ensure_pyprojectx(options):  # noqa: C901, PLR0912
     venv_dir = (
         options.install_path / "pyprojectx" / f"{options.version}-py{sys.version_info.major}.{sys.version_info.minor}"
     )
@@ -237,6 +237,10 @@ def ensure_pyprojectx(options):  # noqa: C901
                 )
             pip_cmd.append("-e")
         subprocess.run([*pip_cmd, options.pyprojectx_package], stdout=out, check=True)
+        # create .gitignore file
+        gitignore_file = options.install_path / ".gitignore"
+        if not gitignore_file.is_file():
+            gitignore_file.write_text("*\n")
 
     return pyprojectx_script
 
