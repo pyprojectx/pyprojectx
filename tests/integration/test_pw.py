@@ -42,6 +42,11 @@ def test_install_ctx(tmp_project):
         assert activate_ps.read_text().startswith(". '")
         assert activate_ps.read_text().strip().endswith("Scripts\\activate.ps1'")
 
+    # check that .gitignore file is created in .the pyprojectx dir
+    gitignore = Path(project_dir, ".pyprojectx/.gitignore")
+    assert gitignore.exists()
+    assert gitignore.read_text().strip() == "*"
+
 
 def test_logs_and_stdout_with_quiet(tmp_project):
     project_dir, env = tmp_project
