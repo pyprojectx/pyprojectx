@@ -1,3 +1,7 @@
+### Features & Improvements
+- #163: automatically add a .gitignore in the .pyprojectx directory
+- update uv to 0.9.16
+
 Release v3.3.1 (2025-10-13)
 ----------------------------
 ### Features & Improvements
