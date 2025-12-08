@@ -134,7 +134,6 @@ dmypy.json
 /wrappers.zip
 /.vs
 /dist-zip
-.pyprojectx/
 /docs/docs/usage.txt
 /docs/site/
 /.pdm-python
