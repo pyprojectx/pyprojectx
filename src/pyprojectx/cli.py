@@ -223,7 +223,7 @@ def _resolve_references(alias_cmd: str, pw_args: list[str], config) -> str:
         if arg in ["-t", "--toml", "-i", "--install-dir"]:
             is_path = True
             absolute_pw_args.append(arg)
-        elif arg in ["--install-context"]:
+        elif arg == "--install-context":
             skip = True
         elif is_path:
             absolute_pw_args.append(str(Path(arg).absolute()))

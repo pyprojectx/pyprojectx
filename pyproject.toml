@@ -1,6 +1,6 @@
 [project]
 name = "pyprojectx"
-version = "3.2.0.dev"
+version = "3.3.3.dev"
 description = "Execute scripts from pyproject.toml, installing tools on-the-fly"
 license = { text = "MIT" }
 authors = [{ name = "Houbie", email = "ivo@houbrechts-it.be" }]
@@ -17,7 +17,7 @@ requires-python = ">=3.9"
 dependencies = [
     "userpath>=1.9",
     "tomlkit>=0.13",
-    "uv>=0.7",
+    "uv>=0.11",
 ]
 
 [dependency-groups]
