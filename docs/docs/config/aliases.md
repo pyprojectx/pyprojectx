@@ -93,14 +93,14 @@ notebook = { cmd = 'jupyter lab', ctx = 'jupyter', env = { JUPYTERLAB_DIR = "doc
 - `cmd`: the command to run
 - `ctx`: the tool context in which the command is run; defaults to `main`
 - `env`: additional environment variables to set
-  - `cwd`: the working directory in which the command is run; defaults to _@PROJECT_DIR_, the directory containing
-    _pyproject.toml_. This default ensures that commands can be run from any subdirectory of the project.
-    Use _@PROJECT_DIR/subdir_ to run the command in a subdirectory of the project.
+- `cwd`: the working directory in which the command is run; defaults to _@PROJECT_DIR_, the directory containing
+  _pyproject.toml_. This default ensures that commands can be run from any subdirectory of the project.
+  Use _@PROJECT_DIR/subdir_ to run the command in a subdirectory of the project.
 - `shell`: the shell used to run the command, overrides the default shell of the tool context
 
 !!! note "Default CWD changed in 2.0.0"
 
-    Prior to Pyprojectx 2.0.0, aliases where always executed in the current working directory.
+    Prior to Pyprojectx 2.0.0, aliases were always executed in the current working directory.
     As of 2.0.0, aliases run by default in the root directory of the project (where _pyproject.toml_ is located),
     unless explicitly overridden with the `cwd` option.
 

@@ -27,7 +27,7 @@ main = ["poetry==1.1.11", "black"]
 
 Above configuration makes the `black` and `poetry` commands available inside your project.
 
-You only need to prefix them with the`px` or `pw` wrapper script:
+You only need to prefix them with the `px` or `pw` wrapper script:
 
 === "Any OS with `px`"
 
@@ -67,7 +67,7 @@ Alternatively, you can add _.pyprojectx/main_ to your _PATH_.
 
 !!! note "Upgrading from Pyprojectx < 2.1.0"
 
-    If the virtual environment of a tool cotext is already present, you will need to re-create it
+    If the virtual environment of a tool context is already present, you will need to re-create it
     to use the new activation mechanism, either by removing the _.pyprojectx_ directory or by running
     any command with the `--force-install` option, f.e. `./pw -f --install-context main`.
 
@@ -96,7 +96,7 @@ px http www.google.com
 
 !!! tip "Tip: [Lock](#locking-requirements) your tool requirements"
 
-    This makes sure that your build won't break when new versions of a tool are released,or when a
+    This makes sure that your build won't break when new versions of a tool are released, or when a
     <a href="https://upcycled-code.com/blog/the-broken-version-breakdown">tool is broken by a new release of one of its dependencies</a>.
 
 You can also include requirements from a text file or _pyproject.toml_ file with `-r`:

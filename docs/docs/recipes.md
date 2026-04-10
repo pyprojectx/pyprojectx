@@ -73,7 +73,7 @@ See also [px-demo](https://github.com/pyprojectx/px-demo) for a full example.
     pw --add poetry,ruff,pre-commit,px-utils
     pw poetry init
     # lock the tool versions for reproducible builds
-    ./pw --lock
+    pw --lock
     ```
 
 ## Simple projects
@@ -213,9 +213,9 @@ Example:
     release = ["prep-release", "poetry publish --username __token__"]
     ```
 
-See Pyprojectx own [pyproject.toml](https://github.com/pyprojectx/pyprojectx/blob/main/pyproject.toml) for a full example
-with PDM, or [px-demo](https://github.com/pyprojectx/px-demo) for another example project with PDM or
-the poetry [variant](https://github.com/pyprojectx/px-demo/tree/poetry).
+See Pyprojectx's own [pyproject.toml](https://github.com/pyprojectx/pyprojectx/blob/main/pyproject.toml) for a full example
+with uv, or [px-demo](https://github.com/pyprojectx/px-demo) for another example project with uv,
+PDM, or the poetry [variant](https://github.com/pyprojectx/px-demo/tree/poetry).
 
 !!! tip "Tip: Keep the poetry virtual environment inside your project directory"
     Add `poetry.toml` to your project:
@@ -229,7 +229,7 @@ the poetry [variant](https://github.com/pyprojectx/px-demo/tree/poetry).
 ## GitHub actions
 By using the `pw` wrapper script, you can simplify your GitHub actions:
 
-* no explicitly tool installations or docker images (for Python tools)
+* no explicit tool installations or docker images (for Python tools)
 * use the same commands and scripts in GitHub actions as on your laptop
 
 Some tips:
@@ -243,7 +243,7 @@ jobs:
   build:
     steps:
       - name: Cache .pyprojectx
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         env:
           cache-name: .pyprojectx
         with:
@@ -251,14 +251,14 @@ jobs:
           key: ${{ runner.os }}-pyprojectx
 
       - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Test and build
         run: python pw build
 ```
-See Pyprojectx own [build](https://github.com/pyprojectx/pyprojectx/blob/main/.github/workflows/build.yml)
+See Pyprojectx's own [build](https://github.com/pyprojectx/pyprojectx/blob/main/.github/workflows/build.yml)
 and [release](https://github.com/pyprojectx/pyprojectx/blob/main/.github/workflows/release.yml) workflows for a full example.
 
 ## Run scripts that use the project's packages

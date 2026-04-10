@@ -14,7 +14,7 @@ not even Pyprojectx itself!
 * Configure shortcuts for routine tasks
 * Simple configuration in _pyproject.toml_
 
-Projects can be build/tested/used immediately without explicit installation nor initialization:
+Projects can be built/tested/used immediately without explicit installation nor initialization:
 === "Linux/Mac"
     ```bash
     git clone https://github.com/pyprojectx/px-demo.git

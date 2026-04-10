@@ -17,7 +17,7 @@ will likely be downgraded to older versions. Or worse: your project fails to ins
 
 # The unreliable pip install
 One would expect that `pip install tool-x==1.2.3` always installs exactly the same version of _tool-x_.
-Unfortunately, this is not the case because a most python packages do not pin the versions of their dependencies.
+Unfortunately, this is not the case because most Python packages do not pin the versions of their dependencies.
 
 This means that released versions of tools **can be [broken at any time](https://upcycled-code.com/blog/the-broken-version-breakdown)**
 by a new release of one of their dependencies.

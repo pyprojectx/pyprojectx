@@ -25,7 +25,7 @@ To install:
     ```
 
 ## Global tools
-Besides the `px` script, `pw --install-px` also copies adds the `pxg`.
+Besides the `px` script, `pw --install-px` also installs the `pxg` script.
 
 `pxg` can be used as a lightweight [pipx](https://pypa.github.io/pipx/) to install/run tools globally. It provides a default `uv`, f.e. `pxg uv --help` will show the help.
 
