@@ -14,15 +14,15 @@ You can avoid a lot of typing by aliasing commands that you use a lot. Example:
 
 ```toml
 [tool.pyprojectx.aliases]
-install = "poetry install"
-run = "poetry run"
+install = "uv sync"
+run = "uv run"
 ```
 
-With above aliases, you can type `px install` instead of the usual `poetry install`. Depending on your other aliases,
+With above aliases, you can type `px install` instead of the usual `uv sync`. Depending on your other aliases,
 this can be even shortened to `px i` (see [alias abbreviations](/config/aliases#abbreviations)).
 
 All arguments are passed to the underlying command or script,
-making `px run my-script --foo` equivalent to `poetry run my-script --foo`.
+making `px run my-script --foo` equivalent to `uv run my-script --foo`.
 
 ## Shell scripts
 
@@ -63,14 +63,14 @@ Use the `@` prefix to call an alias or [script](/config/scripts) from another al
 
 ```toml
 [tool.pyprojectx.aliases]
-unit-test = "pdm run pytest tests/unit"
-integration-test = "pdm run pytest tests/integration"
+unit-test = "uv run pytest tests/unit"
+integration-test = "uv run pytest tests/integration"
 test = ["@unit-test && @integration-test"]
 # a list of commands behaves the same as when combined with '&&'
 build = [
     "@install",
     "@test",
-    "@pdm build",
+    "uv build",
 ]
 ```
 
@@ -79,7 +79,7 @@ build = [
 So running `px -v test` will expand to
 
 ```
-px -v poetry run pytest tests/unit && px -v  poetry run pytest tests/integration
+px -v uv run pytest tests/unit && px -v uv run pytest tests/integration
 ```
 
 ## Alias configuration

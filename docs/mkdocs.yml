@@ -50,17 +50,23 @@ plugins:
 
 nav:
   - Home: index.md
+  - Getting Started: getting-started.md
+  - Usage: usage.md
   - Configuration:
     - config/tools.md
     - config/aliases.md
     - config/scripts.md
     - config/defaults.md
-  - Usage: usage.md
-  - Dev Dependencies: dev-dependencies.md
   - Recipes: recipes.md
+  - Concepts: dev-dependencies.md
 
 markdown_extensions:
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - attr_list
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.details

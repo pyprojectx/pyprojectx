@@ -21,33 +21,32 @@ Inside the `[tool.pyprojectx]` section of `pyproject.toml` you specify what need
 
 ```toml title="pyproject.toml"
 [tool.pyprojectx]
-# require a specific poetry version, use the latest version of black
-main = ["poetry==1.1.11", "black"]
+main = ["uv", "ruff"]
 ```
 
-Above configuration makes the `black` and `poetry` commands available inside your project.
+Above configuration makes the `uv` and `ruff` commands available inside your project.
 
 You only need to prefix them with the `px` or `pw` wrapper script:
 
 === "Any OS with `px`"
 
     ```bash
-    px poetry --help
-    px black my_package --diff
+    px uv sync
+    px ruff check
     ```
 
 === "Linux/Mac"
 
     ```bash
-    ./pw poetry --help
-    ./pw black my_package --diff
+    ./pw uv sync
+    ./pw ruff check
     ```
 
 === "Windows"
 
     ```powershell
-    pw poetry --help
-    pw black my_package --diff
+    pw uv sync
+    pw ruff check
     ```
 
 !!! note "Naming your tool context"
@@ -81,15 +80,15 @@ Example:
 
 ```toml title="pyproject.toml"
 [tool.pyprojectx]
-main = ["pdm","ruff","pre-commit","px-utils"]
+main = ["uv","ruff","pre-commit","px-utils"]
 http = "httpie ~= 3.0"
 ```
 
 With above configuration, you can run following commands:
 
 ```bash
-px pdm --version
-# PDM, version 2.11.2
+px uv sync
+# Resolved 42 packages in 1.2s
 px http www.google.com
 # HTTP/1.1 200 OK ...
 ```
@@ -119,18 +118,18 @@ This is achieved by configuring both requirements and post-install scripts for a
 ```toml
 [tool.pyprojectx]
 [tool.pyprojectx.main]
-requirements = ["pdm", "ruff", "pre-commit", "px-utils"]
+requirements = ["uv", "ruff", "pre-commit", "px-utils"]
 post-install = "pre-commit install"
 ```
 
-When creating your project's virtual environment with `px pdm install` for the first time in the example above,
+When running `px uv sync` for the first time in the example above,
 pre-commit is also initialised. This makes sure that pre-commit hooks are always run when committing code.
 
 !!! tip "Tip: Use toml subsections for better readability"
 
     The example above uses a toml subsection instead of an inline table:
     ```toml
-    main = { requirements = [...], post-install="..."}`
+    main = { requirements = [...], post-install="..."}
     ```
 
 ## Using an alternative package index
@@ -183,6 +182,6 @@ You can also pin tool versions in _pyproject.toml_:
 
 ```toml
 [tool.pyprojectx]
-main = ["pdm==2.11.2", "ruff==0.1.11", "pre-commit==3.6.0", "px-utils==1.0.1"]
+main = ["uv==0.5.1", "ruff==0.8.2", "pre-commit==4.0.1", "px-utils==1.0.1"]
 ```
 Be aware that even with a fixed version, [tools can break at future installs](/dev-dependencies#the-unreliable-pip-install)!

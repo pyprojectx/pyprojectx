@@ -1,4 +1,4 @@
-# A Note about Dev-Dependencies
+# Concepts
 
 [Poetry](https://python-poetry.org/) and [PDM](https://pdm.fming.dev/) let you define dev-dependencies similar to
 npm's _devDependencies_. There is however a major difference between Python and npm dependencies:
@@ -15,7 +15,7 @@ will likely be downgraded to older versions. Or worse: your project fails to ins
     as Poetry or PDM dev-dependencies. Other tools and utilities can be managed by Pyprojectx in order to get
     reproducible builds.
 
-# The unreliable pip install
+## The unreliable pip install
 One would expect that `pip install tool-x==1.2.3` always installs exactly the same version of _tool-x_.
 Unfortunately, this is not the case because most Python packages do not pin the versions of their dependencies.
 

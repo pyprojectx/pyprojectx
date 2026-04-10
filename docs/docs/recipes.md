@@ -1,50 +1,11 @@
 # Recipes
 
 ## Create a new project
-Install common tools:
-- uv, pdm or poetry: dependency management
-- ruff: linter/formatter
-- pre-commit: git hooks for formatting and linting
-- px-utils: cross-platform file operations
 
-### uv based projects
-`uv` only allows to initialize a project when there is no `pyproject.toml` present in the project dir.
-Fortunately, uv is available by default in the main tool context, so we can use it to initialize the project.
+For a uv-based project, follow the [Getting Started](/getting-started) guide.
 
-=== "Linux/Mac"
-    ```bash
-    # download the wrapper scripts
-    curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip -o wrappers.zip && rm -f wrappers.zip
-    # initialize a uv project in a (empty) directory without pyproject.toml
-    ./pw uv init
-    # add common tools to the project, including uv
-    ./pw --add uv,ruff,pre-commit,px-utils
-    # have uv create the virtual environment and install the dependencies
-    ./pw uv sync
-    # call the main script to show that the project is set up correctly
-    ./pw uv run main.py
-    # lock the tool versions for reproducible builds
-    ./pw --lock
-    ```
-
-=== "Windows"
-    ```powershell
-    # download the wrapper scripts
-    Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Force -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
-    # initialize a uv project in a (empty) directory without pyproject.toml
-    pw uv init
-    # add common tools to the project, including uv
-    pw --add uv,ruff,pre-commit,px-utils
-    # have uv create the virtual environment and install the dependencies
-    pw uv sync
-    # call the main script to show that the project is set up correctly
-    pw uv run main.py
-    # lock the tool versions for reproducible builds
-    pw --lock
-    ```
-
-You can run `./pw uv init --help` to see the available options or consult the [uv documentation](https://docs.astral.sh/uv/reference/cli/#uv-init).
-See also [px-demo](https://github.com/pyprojectx/px-demo) for a full example.
+See also [px-demo](https://github.com/pyprojectx/px-demo) for a full example, and
+`./pw uv init --help` or the [uv documentation](https://docs.astral.sh/uv/reference/cli/#uv-init) for available options.
 
 ### PDM or Poetry based projects
 
@@ -242,6 +203,8 @@ Example:
 jobs:
   build:
     steps:
+      - uses: actions/checkout@v4
+
       - name: Cache .pyprojectx
         uses: actions/cache@v4
         env:
