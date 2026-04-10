@@ -8,11 +8,20 @@ Pyprojectx makes it easy to create all-inclusive Python projects; no need to ins
 not even Pyprojectx itself!
 
 ## Feature highlights
-* Reproducible builds by treating tools and utilities as (versioned) dev-dependencies
-* No global installs, everything is stored inside your project directory (like npm's _node_modules_)
-* Bootstrap your entire build process with a small wrapper script (like Gradle's _gradlew_ wrapper)
-* Configure shortcuts for routine tasks
+* **Pin tool versions per project** -- different projects (or branches) can use different versions of uv, ruff, or any tool
+* **Full transitive dependency locking** with `pw.lock` -- not just the tool version, but every indirect dependency is pinned
+* **Built-in task runner** with [aliases](/config/aliases) -- replace Makefiles and shell scripts with composable, cross-platform shortcuts
+* **No global installs** -- everything is stored inside your project directory (like npm's _node_modules_)
+* **Zero-setup bootstrap** with a small wrapper script (like Gradle's _gradlew_ wrapper) -- no pre-install required, not even Pyprojectx itself
 * Simple configuration in _pyproject.toml_
+
+## Why Pyprojectx?
+
+If you already use **uv**, you might wonder what Pyprojectx adds. Here's the short version:
+
+- **`uv tool run` / `uvx`**: Great for one-off commands, but environments are ephemeral -- there's no version pinning and no lock file, so you have no guarantee the same versions run tomorrow or on CI.
+- **`uv tool install`**: Pins a tool version, but globally. Two projects can't use different ruff versions, and transitive dependencies aren't locked.
+- **Pyprojectx**: Each project (and branch) carries its own tool versions in `pyproject.toml` + `pw.lock`. Full transitive locking means builds are reproducible down to every indirect dependency. On top of that, [aliases](/config/aliases) give you a built-in task runner -- no Makefile or shell scripts needed.
 
 Projects can be built/tested/used immediately without explicit installation nor initialization:
 === "Linux/Mac"

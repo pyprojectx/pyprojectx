@@ -63,6 +63,21 @@ Lock the tool versions for reproducible builds:
 
 This creates a `pw.lock` file that pins every dependency to an exact version. Commit this file to version control.
 
+## Define aliases
+
+Aliases turn Pyprojectx into a lightweight task runner. Add them to your `pyproject.toml`:
+
+```toml title="pyproject.toml"
+[tool.pyprojectx.aliases]
+test = "uv run pytest"
+lint = "ruff check"
+check = ["@lint", "@test"]
+```
+
+Now `./pw check` (or `px check`) runs lint followed by test. You can even use abbreviations -- `px c` is enough if no other alias starts with _c_.
+
+See the full [alias documentation](/config/aliases) for composition, parameters, and more.
+
 ## Add to version control
 
 When using Git:

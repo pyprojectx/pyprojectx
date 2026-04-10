@@ -145,6 +145,10 @@ private-tool = [
 ```
 
 ## Locking requirements
+
+!!! info "How does this compare to uv?"
+    Unlike `uvx` (which always resolves the latest compatible versions) or `uv tool install` (which pins globally but not per-project), `pw.lock` pins every tool **and** its transitive dependencies per-project. This guarantees that every developer and CI runner uses the exact same tool stack.
+
 To achieve reproducible builds, you can lock the versions of all tools that you use in your project by:
 
 * creating a _pw.lock_ file
