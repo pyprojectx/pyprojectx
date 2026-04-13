@@ -1,3 +1,5 @@
+Release v3.3.4 (2026-04-13)
+----------------------------
 ### Features & Improvements
 - update uv to 0.11.6
 - use prek instead of pre-commit for pre-commit hooks
