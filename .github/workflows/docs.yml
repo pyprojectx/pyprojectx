@@ -10,9 +10,6 @@ jobs:
   build:
     name: Deploy documentation
     runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
 
     steps:
       - uses: actions/checkout@v6
@@ -21,8 +18,11 @@ jobs:
           python-version: '3.14'
       - name: Build docs
         run: ./pw --clean generate-docs
-      - uses: actions/upload-pages-artifact@v4
+
+      - name: Deploy docs
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          path: docs/site
-      - uses: actions/deploy-pages@v4
-        id: deployment
+          repository-name: pyprojectx/pyprojectx.github.io
+          branch: main
+          folder: docs/site
+          ssh-key: ${{ secrets.GH_PAGES_DEPLOY_KEY }}
