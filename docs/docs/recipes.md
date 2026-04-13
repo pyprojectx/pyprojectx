@@ -1,50 +1,11 @@
 # Recipes
 
 ## Create a new project
-Install common tools:
-- uv, pdm or poetry: dependency management
-- ruff: linter/formatter
-- pre-commit: git hooks for formatting and linting
-- px-utils: cross-platform file operations
 
-### uv based projects
-`uv` only allows to initialize a project when there is no `pyproject.toml` present in the project dir.
-Fortunately, uv is available by default in the main tool context, so we can use it to initialize the project.
+For a uv-based project, follow the [Getting Started](/getting-started) guide.
 
-=== "Linux/Mac"
-    ```bash
-    # download the wrapper scripts
-    curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip -o wrappers.zip && rm -f wrappers.zip
-    # initialize a uv project in a (empty) directory without pyproject.toml
-    ./pw uv init
-    # add common tools to the project, including uv
-    ./pw --add uv,ruff,pre-commit,px-utils
-    # have uv create the virtual environment and install the dependencies
-    ./pw uv sync
-    # call the main script to show that the project is set up correctly
-    ./pw uv run main.py
-    # lock the tool versions for reproducible builds
-    ./pw --lock
-    ```
-
-=== "Windows"
-    ```powershell
-    # download the wrapper scripts
-    Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Force -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
-    # initialize a uv project in a (empty) directory without pyproject.toml
-    pw uv init
-    # add common tools to the project, including uv
-    pw --add uv,ruff,pre-commit,px-utils
-    # have uv create the virtual environment and install the dependencies
-    pw uv sync
-    # call the main script to show that the project is set up correctly
-    pw uv run main.py
-    # lock the tool versions for reproducible builds
-    pw --lock
-    ```
-
-You can run `./pw uv init --help` to see the available options or consult the [uv documentation](https://docs.astral.sh/uv/reference/cli/#uv-init).
-See also [px-demo](https://github.com/pyprojectx/px-demo) for a full example.
+See also [px-demo](https://github.com/pyprojectx/px-demo) for a full example, and
+`./pw uv init --help` or the [uv documentation](https://docs.astral.sh/uv/reference/cli/#uv-init) for available options.
 
 ### PDM or Poetry based projects
 
@@ -73,7 +34,7 @@ See also [px-demo](https://github.com/pyprojectx/px-demo) for a full example.
     pw --add poetry,ruff,pre-commit,px-utils
     pw poetry init
     # lock the tool versions for reproducible builds
-    ./pw --lock
+    pw --lock
     ```
 
 ## Simple projects
@@ -213,9 +174,9 @@ Example:
     release = ["prep-release", "poetry publish --username __token__"]
     ```
 
-See Pyprojectx own [pyproject.toml](https://github.com/pyprojectx/pyprojectx/blob/main/pyproject.toml) for a full example
-with PDM, or [px-demo](https://github.com/pyprojectx/px-demo) for another example project with PDM or
-the poetry [variant](https://github.com/pyprojectx/px-demo/tree/poetry).
+See Pyprojectx's own [pyproject.toml](https://github.com/pyprojectx/pyprojectx/blob/main/pyproject.toml) for a full example
+with uv, or [px-demo](https://github.com/pyprojectx/px-demo) for another example project with uv,
+PDM, or the poetry [variant](https://github.com/pyprojectx/px-demo/tree/poetry).
 
 !!! tip "Tip: Keep the poetry virtual environment inside your project directory"
     Add `poetry.toml` to your project:
@@ -229,7 +190,7 @@ the poetry [variant](https://github.com/pyprojectx/px-demo/tree/poetry).
 ## GitHub actions
 By using the `pw` wrapper script, you can simplify your GitHub actions:
 
-* no explicitly tool installations or docker images (for Python tools)
+* no explicit tool installations or docker images (for Python tools)
 * use the same commands and scripts in GitHub actions as on your laptop
 
 Some tips:
@@ -242,8 +203,10 @@ Example:
 jobs:
   build:
     steps:
+      - uses: actions/checkout@v4
+
       - name: Cache .pyprojectx
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         env:
           cache-name: .pyprojectx
         with:
@@ -251,14 +214,14 @@ jobs:
           key: ${{ runner.os }}-pyprojectx
 
       - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Test and build
         run: python pw build
 ```
-See Pyprojectx own [build](https://github.com/pyprojectx/pyprojectx/blob/main/.github/workflows/build.yml)
+See Pyprojectx's own [build](https://github.com/pyprojectx/pyprojectx/blob/main/.github/workflows/build.yml)
 and [release](https://github.com/pyprojectx/pyprojectx/blob/main/.github/workflows/release.yml) workflows for a full example.
 
 ## Run scripts that use the project's packages

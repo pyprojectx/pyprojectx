@@ -30,7 +30,7 @@ You can change the os shell used to run commands. The shell can be defined globa
 
 ```toml
 [tool.pyprojectx]
-shell = "bash
+shell = "bash"
 [tool.pyprojectx.os.win]
 shell = "pwsh.exe"
 ```
@@ -42,7 +42,7 @@ shell = "pwsh.exe"
 
 When you set a shell for os specific file operations, consider using [px-utils](https://github.com/pyprojectx/px-utils) instead.
 ```toml
-[tool.pyprojectx.alias]
+[tool.pyprojectx.aliases]
 prepare = "pxmkdirs build generated"
 copy = "pxcp src/**/*.py build/python"
 move = "pxmv data/**/*.json build/data"

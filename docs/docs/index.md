@@ -8,13 +8,22 @@ Pyprojectx makes it easy to create all-inclusive Python projects; no need to ins
 not even Pyprojectx itself!
 
 ## Feature highlights
-* Reproducible builds by treating tools and utilities as (versioned) dev-dependencies
-* No global installs, everything is stored inside your project directory (like npm's _node_modules_)
-* Bootstrap your entire build process with a small wrapper script (like Gradle's _gradlew_ wrapper)
-* Configure shortcuts for routine tasks
+* **Pin tool versions per project** -- different projects (or branches) can use different versions of uv, ruff, or any tool
+* **Full transitive dependency locking** with `pw.lock` -- not just the tool version, but every indirect dependency is pinned
+* **Built-in task runner** with [aliases](/config/aliases) -- replace Makefiles and shell scripts with composable, cross-platform shortcuts
+* **No global installs** -- everything is stored inside your project directory (like npm's _node_modules_)
+* **Zero-setup bootstrap** with a small wrapper script (like Gradle's _gradlew_ wrapper) -- no pre-install required, not even Pyprojectx itself
 * Simple configuration in _pyproject.toml_
 
-Projects can be build/tested/used immediately without explicit installation nor initialization:
+## Why Pyprojectx?
+
+If you already use **uv**, you might wonder what Pyprojectx adds. Here's the short version:
+
+- **`uv tool run` / `uvx`**: Great for one-off commands, but environments are ephemeral -- there's no version pinning and no lock file, so you have no guarantee the same versions run tomorrow or on CI.
+- **`uv tool install`**: Pins a tool version, but globally. Two projects can't use different ruff versions, and transitive dependencies aren't locked.
+- **Pyprojectx**: Each project (and branch) carries its own tool versions in `pyproject.toml` + `pw.lock`. Full transitive locking means builds are reproducible down to every indirect dependency. On top of that, [aliases](/config/aliases) give you a built-in task runner -- no Makefile or shell scripts needed.
+
+Projects can be built/tested/used immediately without explicit installation nor initialization:
 === "Linux/Mac"
     ```bash
     git clone https://github.com/pyprojectx/px-demo.git
@@ -33,76 +42,27 @@ Projects can be build/tested/used immediately without explicit installation nor 
 
 ![Clone and Build](assets/build.png)
 
-## Installation
-One of the key features is that there is no need to install anything explicitly (except a Python 3.9+ interpreter).
+## How it works
 
-`cd` into your project directory and download the
-[wrapper scripts](https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip):
+When you run `./pw <command>`, the wrapper script:
 
-=== "Linux/Mac"
-    ```bash
-    curl -LO https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip && unzip -o wrappers.zip && rm -f wrappers.zip
-    ```
+1. **Bootstraps** Pyprojectx itself if needed (first run only)
+2. **Reads** tool contexts from the `[tool.pyprojectx]` section in `pyproject.toml`
+3. **Creates or reuses** an isolated virtual environment under `.pyprojectx/`
+4. **Runs** the command inside that virtual environment
 
-=== "Windows"
-    ```powershell
-    Invoke-WebRequest https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip -OutFile wrappers.zip; Expand-Archive -Force -Path wrappers.zip -DestinationPath .; Remove-Item -Path wrappers.zip
-    ```
+```mermaid
+flowchart LR
+    A["./pw ruff check"] --> B["pw wrapper"]
+    B --> C["pyprojectx bootstrap"]
+    C --> D[".pyprojectx/main venv"]
+    D --> E["ruff check"]
+```
 
-With the wrapper scripts in place, you can start adding tools:
+Everything is stored inside your project directory -- nothing is installed globally, and no tool leaks into another project.
 
-=== "Linux/Mac"
-    ```bash
-    # initialize a uv project in a (empty) directory without pyproject.toml
-    ./pw uv init
-    # add common tools to the project, including uv
-    ./pw --add uv,ruff,pre-commit,px-utils
-    # have uv create the virtual environment and install the dependencies
-    ./pw uv sync
-    # call the main script to show that the project is set up correctly
-    ./pw uv run main.py
-    # lock the tool versions for reproducible builds
-    ./pw --lock
-    ```
+## Get started
 
-=== "Windows"
-    ```powershell
-    # initialize a uv project in a (empty) directory without pyproject.toml
-    pw uv init
-    # add common tools to the project, including uv
-    pw --add uv,ruff,pre-commit,px-utils
-    # have uv create the virtual environment and install the dependencies
-    pw uv sync
-    # call the main script to show that the project is set up correctly
-    pw uv run main.py
-    # lock the tool versions for reproducible builds
-    pw --lock
-    ```
+No need to install anything except a Python 3.9+ interpreter.
 
-!!! tip "Tip: Add the wrapper scripts to version control"
-    When using Git:
-    ```shell
-    git add pw pw.bat
-    git add pw.ps1 # optional
-    git update-index --chmod=+x pw
-    echo .pyprojectx/ >> .gitignore
-    ```
-    For windows users, having `pw.bat` is typically sufficient. `pw.ps1` can be handy for Powershell users when running commands containing special characters (like `<`), but this only works properly in recent Powershell versions.
-
-
-!!! tip "Tip: Install the `px` utility script"
-    You can copy a small script to `.pyprojectx` in your home directory.
-    When added to your _PATH_, you can replace `./pw` with the shorter `px`.
-    This also works from subdirectories: `../../pw` can also be replaced with `px`
-
-    === "Linux/Mac"
-        ```bash
-        ./pw --install-px
-        ```
-
-    === "Windows"
-        ```powershell
-        pw --install-px
-        ```
-
-If you don't want to prefix every command with `px` or `./pw`, you [can activate a tool context](/config/tools#tool-context-activation).
+**[Get Started &rarr;](getting-started.md)**

@@ -21,33 +21,32 @@ Inside the `[tool.pyprojectx]` section of `pyproject.toml` you specify what need
 
 ```toml title="pyproject.toml"
 [tool.pyprojectx]
-# require a specific poetry version, use the latest version of black
-main = ["poetry==1.1.11", "black"]
+main = ["uv", "ruff"]
 ```
 
-Above configuration makes the `black` and `poetry` commands available inside your project.
+Above configuration makes the `uv` and `ruff` commands available inside your project.
 
-You only need to prefix them with the`px` or `pw` wrapper script:
+You only need to prefix them with the `px` or `pw` wrapper script:
 
 === "Any OS with `px`"
 
     ```bash
-    px poetry --help
-    px black my_package --diff
+    px uv sync
+    px ruff check
     ```
 
 === "Linux/Mac"
 
     ```bash
-    ./pw poetry --help
-    ./pw black my_package --diff
+    ./pw uv sync
+    ./pw ruff check
     ```
 
 === "Windows"
 
     ```powershell
-    pw poetry --help
-    pw black my_package --diff
+    pw uv sync
+    pw ruff check
     ```
 
 !!! note "Naming your tool context"
@@ -67,7 +66,7 @@ Alternatively, you can add _.pyprojectx/main_ to your _PATH_.
 
 !!! note "Upgrading from Pyprojectx < 2.1.0"
 
-    If the virtual environment of a tool cotext is already present, you will need to re-create it
+    If the virtual environment of a tool context is already present, you will need to re-create it
     to use the new activation mechanism, either by removing the _.pyprojectx_ directory or by running
     any command with the `--force-install` option, f.e. `./pw -f --install-context main`.
 
@@ -81,22 +80,22 @@ Example:
 
 ```toml title="pyproject.toml"
 [tool.pyprojectx]
-main = ["pdm","ruff","pre-commit","px-utils"]
+main = ["uv","ruff","pre-commit","px-utils"]
 http = "httpie ~= 3.0"
 ```
 
 With above configuration, you can run following commands:
 
 ```bash
-px pdm --version
-# PDM, version 2.11.2
+px uv sync
+# Resolved 42 packages in 1.2s
 px http www.google.com
 # HTTP/1.1 200 OK ...
 ```
 
 !!! tip "Tip: [Lock](#locking-requirements) your tool requirements"
 
-    This makes sure that your build won't break when new versions of a tool are released,or when a
+    This makes sure that your build won't break when new versions of a tool are released, or when a
     <a href="https://upcycled-code.com/blog/the-broken-version-breakdown">tool is broken by a new release of one of its dependencies</a>.
 
 You can also include requirements from a text file or _pyproject.toml_ file with `-r`:
@@ -119,18 +118,18 @@ This is achieved by configuring both requirements and post-install scripts for a
 ```toml
 [tool.pyprojectx]
 [tool.pyprojectx.main]
-requirements = ["pdm", "ruff", "pre-commit", "px-utils"]
+requirements = ["uv", "ruff", "pre-commit", "px-utils"]
 post-install = "pre-commit install"
 ```
 
-When creating your project's virtual environment with `px pdm install` for the first time in the example above,
+When running `px uv sync` for the first time in the example above,
 pre-commit is also initialised. This makes sure that pre-commit hooks are always run when committing code.
 
 !!! tip "Tip: Use toml subsections for better readability"
 
     The example above uses a toml subsection instead of an inline table:
     ```toml
-    main = { requirements = [...], post-install="..."}`
+    main = { requirements = [...], post-install="..."}
     ```
 
 ## Using an alternative package index
@@ -146,6 +145,10 @@ private-tool = [
 ```
 
 ## Locking requirements
+
+!!! info "How does this compare to uv?"
+    Unlike `uvx` (which always resolves the latest compatible versions) or `uv tool install` (which pins globally but not per-project), `pw.lock` pins every tool **and** its transitive dependencies per-project. This guarantees that every developer and CI runner uses the exact same tool stack.
+
 To achieve reproducible builds, you can lock the versions of all tools that you use in your project by:
 
 * creating a _pw.lock_ file
@@ -183,6 +186,6 @@ You can also pin tool versions in _pyproject.toml_:
 
 ```toml
 [tool.pyprojectx]
-main = ["pdm==2.11.2", "ruff==0.1.11", "pre-commit==3.6.0", "px-utils==1.0.1"]
+main = ["uv==0.5.1", "ruff==0.8.2", "pre-commit==4.0.1", "px-utils==1.0.1"]
 ```
 Be aware that even with a fixed version, [tools can break at future installs](/dev-dependencies#the-unreliable-pip-install)!

@@ -1,0 +1,69 @@
+[project]
+site_name = "Pyprojectx"
+repo_url = "https://github.com/pyprojectx/pyprojectx"
+edit_uri = "edit/main/docs/docs"
+copyright = "Copyright &copy; 2020 <a href=\"https://upcycled-code.com/\">Ivo Houbrechts</a>"
+extra_css = ["assets/extra.css"]
+
+nav = [
+    { "Home" = "index.md" },
+    { "Getting Started" = "getting-started.md" },
+    { "Usage" = "usage.md" },
+    { "Configuration" = [
+        "config/tools.md",
+        "config/aliases.md",
+        "config/scripts.md",
+        "config/defaults.md",
+    ] },
+    { "Recipes" = "recipes.md" },
+    { "Concepts" = "dev-dependencies.md" },
+]
+
+[project.theme]
+features = [
+    "navigation.indexes",
+    "content.code.copy",
+    "navigation.top",
+    "navigation.instant",
+]
+logo = "assets/px.svg"
+favicon = "assets/px.svg"
+custom_dir = "overrides"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme)"
+primary = "white"
+toggle = { icon = "material/brightness-auto", name = "Switch to light mode" }
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+primary = "white"
+scheme = "default"
+toggle = { icon = "material/brightness-7", name = "Switch to dark mode" }
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+primary = "white"
+scheme = "slate"
+toggle = { icon = "material/brightness-4", name = "Switch to system preference" }
+
+[project.markdown_extensions.pymdownx.superfences]
+custom_fences = [
+    { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
+]
+
+[project.markdown_extensions.attr_list]
+[project.markdown_extensions.pymdownx.tabbed]
+alternate_style = true
+
+[project.markdown_extensions.pymdownx.details]
+[project.markdown_extensions.pymdownx.snippets]
+[project.markdown_extensions.admonition]
+[project.markdown_extensions.tables]
+
+[project.markdown_extensions.toc]
+permalink = "#"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/pyprojectx/pyprojectx"

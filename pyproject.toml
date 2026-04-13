@@ -29,15 +29,20 @@ dev = [
 [project.scripts]
 pyprojectx = "pyprojectx.cli:main"
 
+[tool.uv]
+cache-dir = ".cache/uv"
+
 [build-system]
 requires = ["uv_build>=0.9"]
 build-backend = "uv_build"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+cache_dir = ".cache/pytest"
 
 [tool.ruff]
 line-length = 120
+cache-dir = ".cache/ruff"
 [tool.ruff.lint]
 select = ["ALL"]
 fixable = ["ALL"]
@@ -53,21 +58,18 @@ requirements = [
     "uv",
     "tomlkit",
     "ruff",
-    "pre-commit",
+    "prek",
     "px-utils",
-    "mkdocs",
-    "mkdocs-material",
-    "mkdocstrings[python]<0.28",
-    "markdown-include"
+    "zensical ; python_full_version >= '3.10'",
 ]
-post-install = "pre-commit install"
+post-install = "prek install"
 
 [tool.pyprojectx.aliases]
 install = "uv sync"
 run = "uv run pyprojectx -t pyproject.toml "
 update = ["uv lock --upgrade", "@install"]
 outdated = "uv pip list --outdated"
-clean = "pxrm .venv .pytest_cache dist .uv-build .ruff_cache"
+clean = "pxrm .venv  dist .uv-build .cache"
 full-clean = ["@clean", "pxrm .pyprojectx .uv-python"]
 format = ["ruff format", "ruff check --select I --fix"]
 lint = ["ruff check"]
@@ -82,6 +84,5 @@ export-locked-requirements = "uv export -q --frozen --no-dev --no-editable --no-
 publish = "uv publish --username __token__"
 
 generate-usage = "uv run python -m pyprojectx.wrapper.pw --help > docs/docs/usage.txt"
-serve-docs = { cmd = "mkdocs serve", cwd = "docs" }
-generate-docs = { cmd = ["@install", "@generate-usage && mkdocs build"], cwd = "docs" }
-deploy-docs = { cmd = "mkdocs gh-deploy", cwd = "docs" }
+serve-docs = { cmd = "zensical serve", cwd = "docs" }
+generate-docs = { cmd = ["@install", "@generate-usage && zensical build --clean"], cwd = "docs" }

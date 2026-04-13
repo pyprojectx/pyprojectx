@@ -15,15 +15,13 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
-          python-version: '3.12'
+          python-version: '3.14'
 
       - name: Build docs
         run: ./pw --clean generate-docs
 
-      - name: Deploy docs
-        uses: JamesIves/github-pages-deploy-action@v4
+      - uses: actions/upload-pages-artifact@v4
         with:
-          repository-name: pyprojectx/pyprojectx.github.io
-          branch: main
-          folder: docs/site
-          ssh-key: ${{ secrets.GH_PAGES_DEPLOY_KEY }}
+          path: docs/site
+      - uses: actions/deploy-pages@v4
+        id: deployment

@@ -14,15 +14,15 @@ You can avoid a lot of typing by aliasing commands that you use a lot. Example:
 
 ```toml
 [tool.pyprojectx.aliases]
-install = "poetry install"
-run = "poetry run"
+install = "uv sync"
+run = "uv run"
 ```
 
-With above aliases, you can type `px install` instead of the usual `poetry install`. Depending on your other aliases,
+With above aliases, you can type `px install` instead of the usual `uv sync`. Depending on your other aliases,
 this can be even shortened to `px i` (see [alias abbreviations](/config/aliases#abbreviations)).
 
 All arguments are passed to the underlying command or script,
-making `px run my-script --foo` equivalent to `poetry run my-script --foo`.
+making `px run my-script --foo` equivalent to `uv run my-script --foo`.
 
 ## Shell scripts
 
@@ -63,14 +63,14 @@ Use the `@` prefix to call an alias or [script](/config/scripts) from another al
 
 ```toml
 [tool.pyprojectx.aliases]
-unit-test = "pdm run pytest tests/unit"
-integration-test = "pdm run pytest tests/integration"
+unit-test = "uv run pytest tests/unit"
+integration-test = "uv run pytest tests/integration"
 test = ["@unit-test && @integration-test"]
 # a list of commands behaves the same as when combined with '&&'
 build = [
     "@install",
     "@test",
-    "@pdm build",
+    "uv build",
 ]
 ```
 
@@ -79,7 +79,7 @@ build = [
 So running `px -v test` will expand to
 
 ```
-px -v poetry run pytest tests/unit && px -v  poetry run pytest tests/integration
+px -v uv run pytest tests/unit && px -v uv run pytest tests/integration
 ```
 
 ## Alias configuration
@@ -93,14 +93,14 @@ notebook = { cmd = 'jupyter lab', ctx = 'jupyter', env = { JUPYTERLAB_DIR = "doc
 - `cmd`: the command to run
 - `ctx`: the tool context in which the command is run; defaults to `main`
 - `env`: additional environment variables to set
-  - `cwd`: the working directory in which the command is run; defaults to _@PROJECT_DIR_, the directory containing
-    _pyproject.toml_. This default ensures that commands can be run from any subdirectory of the project.
-    Use _@PROJECT_DIR/subdir_ to run the command in a subdirectory of the project.
+- `cwd`: the working directory in which the command is run; defaults to _@PROJECT_DIR_, the directory containing
+  _pyproject.toml_. This default ensures that commands can be run from any subdirectory of the project.
+  Use _@PROJECT_DIR/subdir_ to run the command in a subdirectory of the project.
 - `shell`: the shell used to run the command, overrides the default shell of the tool context
 
 !!! note "Default CWD changed in 2.0.0"
 
-    Prior to Pyprojectx 2.0.0, aliases where always executed in the current working directory.
+    Prior to Pyprojectx 2.0.0, aliases were always executed in the current working directory.
     As of 2.0.0, aliases run by default in the root directory of the project (where _pyproject.toml_ is located),
     unless explicitly overridden with the `cwd` option.
 

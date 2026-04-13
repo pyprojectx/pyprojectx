@@ -1,4 +1,8 @@
-# A Note about Dev-Dependencies
+# Why isolate your dev tools?
+
+There are several reasons to manage your dev tools separately from your project dependencies.
+
+## Dev-dependency conflicts in Poetry and PDM
 
 [Poetry](https://python-poetry.org/) and [PDM](https://pdm.fming.dev/) let you define dev-dependencies similar to
 npm's _devDependencies_. There is however a major difference between Python and npm dependencies:
@@ -15,9 +19,17 @@ will likely be downgraded to older versions. Or worse: your project fails to ins
     as Poetry or PDM dev-dependencies. Other tools and utilities can be managed by Pyprojectx in order to get
     reproducible builds.
 
-# The unreliable pip install
+## uv already isolates tools -- why add Pyprojectx?
+
+uv is excellent at managing Python projects and running tools. But its tool-isolation mechanisms leave gaps that Pyprojectx fills:
+
+- **`uvx` / `uv tool run`** creates ephemeral environments that are not version-locked. Each invocation may resolve different transitive dependencies, making builds unreproducible.
+- **`uv tool install`** pins a tool version, but _globally_. Two projects on the same machine cannot use different versions of ruff or mypy, and transitive dependencies are still not locked.
+- **Pyprojectx** gives you **per-project (even per-branch) version pinning** combined with **full transitive dependency locking** via `pw.lock`. And because the `pw` wrapper script bootstraps everything -- including Pyprojectx itself -- contributors and CI don't need to pre-install _anything_, not even uv.
+
+## The unreliable pip install
 One would expect that `pip install tool-x==1.2.3` always installs exactly the same version of _tool-x_.
-Unfortunately, this is not the case because a most python packages do not pin the versions of their dependencies.
+Unfortunately, this is not the case because most Python packages do not pin the versions of their dependencies.
 
 This means that released versions of tools **can be [broken at any time](https://upcycled-code.com/blog/the-broken-version-breakdown)**
 by a new release of one of their dependencies.
