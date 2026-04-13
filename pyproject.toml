@@ -60,10 +60,7 @@ requirements = [
     "ruff",
     "prek",
     "px-utils",
-    "mkdocs",
-    "mkdocs-material",
-    "mkdocstrings[python]<0.28",
-    "markdown-include"
+    "zensical ; python_full_version >= '3.10'",
 ]
 post-install = "prek install"
 
@@ -87,6 +84,5 @@ export-locked-requirements = "uv export -q --frozen --no-dev --no-editable --no-
 publish = "uv publish --username __token__"
 
 generate-usage = "uv run python -m pyprojectx.wrapper.pw --help > docs/docs/usage.txt"
-serve-docs = { cmd = "mkdocs serve", cwd = "docs" }
-generate-docs = { cmd = ["@install", "@generate-usage && mkdocs build"], cwd = "docs" }
-deploy-docs = { cmd = "mkdocs gh-deploy", cwd = "docs" }
+serve-docs = { cmd = "zensical serve", cwd = "docs" }
+generate-docs = { cmd = ["@install", "@generate-usage && zensical build --clean"], cwd = "docs" }
