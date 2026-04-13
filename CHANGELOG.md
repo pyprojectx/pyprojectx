@@ -1,6 +1,7 @@
 ### Features & Improvements
 - update uv to 0.11.6
 - use prek instead of pre-commit for pre-commit hooks
+- use zensical for documentation
 
 Release v3.3.3 (2026-03-31)
 ----------------------------

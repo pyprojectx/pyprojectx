@@ -10,16 +10,17 @@ jobs:
   build:
     name: Deploy documentation
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
 
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
           python-version: '3.14'
-
       - name: Build docs
         run: ./pw --clean generate-docs
-
       - uses: actions/upload-pages-artifact@v4
         with:
           path: docs/site
