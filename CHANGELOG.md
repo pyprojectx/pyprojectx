@@ -1,4 +1,14 @@
 ### Features & Improvements
+- fix `scripts_ctx` validation: an unknown tool context name was silently accepted
+- aliases can start with a Windows path (`C:\...`) or a URL without being parsed as `ctx:command`
+- scripts running outside a tool context keep their arguments, and run with the interpreter
+  pyprojectx itself runs on instead of whatever `python` resolves to on PATH
+- `--add` accepts VCS and URL requirements (`git+https://...`, `file://...`) without treating the
+  scheme as a tool context, and no longer reports a duplicate for packages that merely share a
+  name prefix (adding `uv` while `uvloop` is listed)
+- arguments appended to an alias are shell-quoted with `shlex.quote` on POSIX instead of being
+  wrapped in double quotes, so `$VAR`, backticks and backslashes in arguments stay literal
+- scripts whose name contains a dot (`my.pytool.py`) resolve correctly
 - fix hash collisions between different tool contexts: requirements are now separated from each other
   and from `post-install` in the digest, and requirement order no longer affects it.
   Because the digest changes, tool context venvs are recreated and `pw.lock` hashes are rewritten on
