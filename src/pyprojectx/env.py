@@ -16,7 +16,8 @@ from pyprojectx.log import logger
 PYTHON_EXE = "python.exe" if sys.platform == "win32" else "python3"
 UV_EXE = uv.find_uv_bin()
 ENV_VAR_RE = re.compile(r"(?P<var>\$\{(?P<name>[A-Z0-9_]+)})")
-INSTALL_HASH_MARKER = ".pyprojectx-hash"
+INSTALL_MARKERS_DIR = ".install-markers"
+INSTALL_IN_PROGRESS = "installing"
 
 
 class IsolatedVirtualEnv:
@@ -31,8 +32,15 @@ class IsolatedVirtualEnv:
         """
         self._name = name
         self._base_path = base_path
+        # Locates the venv. Derived from the *configured* requirements, so locking them to concrete
+        # versions doesn't move the venv to a different directory.
         self._hash = requirements_config.get("hash", calculate_hash(requirements_config))
         self._requirements = requirements_config.get("requirements", [])
+        # Records what is actually installed. Locked requirements differ from the configured ones, so
+        # a pw.lock change has to trigger a reinstall even though the venv path is unchanged.
+        self._install_hash = calculate_hash(
+            {"requirements": self._requirements, "post-install": requirements_config.get("post-install")}
+        )
         self._custom_dir = bool(requirements_config.get("dir"))
         self._path = Path(requirements_config["dir"]) if self._custom_dir else self._compose_path()
         self.prerelease = prerelease
@@ -54,27 +62,41 @@ class IsolatedVirtualEnv:
 
     @property
     def uses_custom_dir(self) -> bool:
+        """Whether the venv lives in a directory configured with 'dir' instead of a hash-based one."""
         return self._custom_dir
+
+    @property
+    def install_marker_path(self) -> Path:
+        """The file recording which requirements were successfully installed in this venv.
+
+        Kept next to the venvs rather than inside them, because a custom 'dir' can be the project's
+        own virtualenv, which pyprojectx must not write into.
+        """
+        return (self._base_path / INSTALL_MARKERS_DIR / self._env_id()).absolute()
 
     @property
     def is_installed(self) -> bool:
         if not self.scripts_path.is_dir():
             return False
-        marker_hash = self._read_install_hash()
-        if self._custom_dir:
-            return marker_hash == self._hash
-        if marker_hash is None:
-            # Hash-based venvs created before the marker file existed.
+        marker_hash = self._read_install_marker()
+        if marker_hash is None and not self._custom_dir:
+            # Hash-based venv created before install markers existed: assume it is complete rather
+            # than reinstalling everything on the first run after an upgrade.
             return True
-        return marker_hash == self._hash
+        return marker_hash == self._install_hash
 
-    def install(self, quiet=False, install_path=None) -> None:
+    def install(self, quiet=False, install_path=None, post_install=None) -> None:
         """Create the virtual environment and install requirements.
 
         :param quiet: suppress output
         :param install_path: the path to .pyprojectx
+        :param post_install: optional callable to run once the requirements are installed; the venv is
+            only marked as installed if it returns without raising
         """
         logger.debug("Installing IsolatedVirtualEnv in %s", self.path)
+        # Flag the venv as incomplete up front, so an install that fails or is interrupted is retried
+        # next run. A *missing* marker can't mean that: it is what venvs from older versions look like.
+        self._mark_installing()
         recreate_venv = not (self._custom_dir and self.scripts_path.is_dir())
         if recreate_venv:
             cmd = [
@@ -96,6 +118,9 @@ class IsolatedVirtualEnv:
         self._install_requirements(quiet)
         if install_path and self.scripts_path.exists():
             self._copy_scripts(install_path, self.scripts_path)
+        if post_install:
+            post_install()
+        self.mark_installed()
 
     def _copy_scripts(self, install_path, scripts_dir):
         # make the scripts dir available in .pyprojectx/<tool context name>
@@ -121,6 +146,9 @@ class IsolatedVirtualEnv:
                     f.write(f". '{(scripts_dir / 'activate.ps1').absolute()}'")
 
     def _install_requirements(self, quiet=False):
+        if not self._requirements:
+            logger.debug("No requirements to install in %s", self.path)
+            return
         logger.info("Installing packages in isolated environment... (%s)", ", ".join(sorted(self._requirements)))
         requirements_file_regex = re.compile(r"^-r\s+(.+)$")
         file_requirements = [r for r in self._requirements if requirements_file_regex.match(r)]
@@ -147,18 +175,26 @@ class IsolatedVirtualEnv:
         """Remove the entire virtual environment."""
         logger.info("Removing isolated environment in %s", self.path)
         shutil.rmtree(self.path, ignore_errors=True)
+        self.unmark_installed()
 
     def mark_installed(self) -> None:
         """Record that install (and post-install, if any) completed successfully."""
-        self.path.mkdir(parents=True, exist_ok=True)
-        (self.path / INSTALL_HASH_MARKER).write_text(self._hash, encoding="utf-8")
+        self._write_install_marker(self._install_hash)
+
+    def _mark_installing(self) -> None:
+        self._write_install_marker(INSTALL_IN_PROGRESS)
+
+    def _write_install_marker(self, content: str) -> None:
+        marker = self.install_marker_path
+        marker.parent.mkdir(parents=True, exist_ok=True)
+        marker.write_text(content, encoding="utf-8")
 
     def unmark_installed(self) -> None:
         """Clear the install marker so the next run retries installation."""
-        (self.path / INSTALL_HASH_MARKER).unlink(missing_ok=True)
+        self.install_marker_path.unlink(missing_ok=True)
 
-    def _read_install_hash(self) -> Optional[str]:
-        marker = self.path / INSTALL_HASH_MARKER
+    def _read_install_marker(self) -> Optional[str]:
+        marker = self.install_marker_path
         if not marker.is_file():
             return None
         return marker.read_text(encoding="utf-8").strip()
@@ -191,10 +227,11 @@ class IsolatedVirtualEnv:
         logger.debug("Cwd for running command: %s", cwd)
         return subprocess.run(cmd, env=env, shell=shell, check=True, cwd=cwd, stdout=stdout)
 
+    def _env_id(self):
+        return f"{self._name.lower()}-{self._hash}-py{sys.version_info.major}.{sys.version_info.minor}"
+
     def _compose_path(self):
-        return (
-            self._base_path / f"{self._name.lower()}-{self._hash}-py{sys.version_info.major}.{sys.version_info.minor}"
-        ).absolute()
+        return (self._base_path / self._env_id()).absolute()
 
 
 def expand_env_variables(line):

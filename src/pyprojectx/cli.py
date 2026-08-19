@@ -3,12 +3,13 @@ import re
 import shutil
 import subprocess
 import sys
+from functools import partial
 from logging import INFO
 from pathlib import Path
 from typing import Union
 
 from pyprojectx.config import AliasCommand, Config
-from pyprojectx.env import IsolatedVirtualEnv
+from pyprojectx.env import INSTALL_MARKERS_DIR, IsolatedVirtualEnv
 from pyprojectx.install_global import install_px
 from pyprojectx.lock import can_lock, get_or_update_locked_requirements
 from pyprojectx.log import logger, set_verbosity
@@ -197,13 +198,14 @@ def _ensure_ctx(config, ctx, env, options, pw_args):
     venv = IsolatedVirtualEnv(options.venvs_dir, ctx, requirements, prerelease=config.prerelease)
     if not venv.is_installed or options.force_install or modified:
         try:
-            venv.install(quiet=options.quiet, install_path=options.install_path)
-            if requirements.get("post-install"):
-                post_install_cmd = _resolve_references(requirements["post-install"], pw_args, config=config)
-                venv.run(post_install_cmd, env, config.get_cwd())
-            venv.mark_installed()
+            venv.install(
+                quiet=options.quiet,
+                install_path=options.install_path,
+                post_install=_post_install_action(venv, requirements, pw_args, config, env),
+            )
         except subprocess.CalledProcessError as e:
-            venv.unmark_installed()
+            # install() left the venv flagged as incomplete, so it is retried next run. A half-built
+            # hash-based venv is ours to throw away; a custom dir may be the project's own virtualenv.
             if not venv.uses_custom_dir:
                 venv.remove()
             print(
@@ -212,6 +214,14 @@ def _ensure_ctx(config, ctx, env, options, pw_args):
             )
             raise SystemExit(e.returncode) from e
     return venv
+
+
+def _post_install_action(venv, requirements, pw_args, config, env):
+    """Wrap the post-install command in a callable, so install() only marks the venv when it succeeds."""
+    post_install_cmd = requirements.get("post-install")
+    if not post_install_cmd:
+        return None
+    return partial(venv.run, _resolve_references(post_install_cmd, pw_args, config=config), env, config.get_cwd())
 
 
 def _resolve_references(alias_cmd: str, pw_args: list[str], config) -> str:
@@ -294,12 +304,19 @@ def _clean_venvs(config, options):
             shutil.rmtree(f, ignore_errors=True)
 
     ctxt_venvs = []
+    ctxt_markers = []
     for ctx in config.get_context_names():
         requirements, _ = get_or_update_locked_requirements(ctx, config, options.quiet)
         venv = IsolatedVirtualEnv(options.venvs_dir, ctx, requirements)
         ctxt_venvs.append(venv.path.resolve())
+        ctxt_markers.append(venv.install_marker_path.resolve())
+    markers_dir = (options.venvs_dir / INSTALL_MARKERS_DIR).resolve()
     for f in options.venvs_dir.glob("*"):
-        if f.is_dir() and f.resolve() not in ctxt_venvs:
+        if f.is_dir() and f.resolve() != markers_dir and f.resolve() not in ctxt_venvs:
             if not options.quiet:
                 print(f"{pw.CYAN}Removing {pw.BLUE}{f.resolve()}{pw.RESET}", file=sys.stderr)
             shutil.rmtree(f, ignore_errors=True)
+    # drop install markers of the venvs that are gone, but keep the ones still in use
+    for f in markers_dir.glob("*") if markers_dir.is_dir() else []:
+        if f.resolve() not in ctxt_markers:
+            f.unlink(missing_ok=True)

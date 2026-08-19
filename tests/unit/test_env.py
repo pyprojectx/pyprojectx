@@ -145,3 +145,66 @@ def test_custom_dir_install_does_not_clear_existing_venv(tmp_dir, mocker):
 
     venv_creates = [call for call in run_mock.call_args_list if call.args and call.args[0][1:2] == ["venv"]]
     assert venv_creates == []
+
+
+def test_install_marker_stays_outside_the_venv(tmp_dir):
+    custom = tmp_dir / "project-venv"
+    _scripts_dir(custom).mkdir(parents=True)
+    env = IsolatedVirtualEnv(tmp_dir, "venv", {"requirements": ["pycowsay"], "dir": str(custom)})
+    env.mark_installed()
+
+    assert env.install_marker_path.is_file()
+    assert list(custom.iterdir()) == [_scripts_dir(custom)]
+
+
+def test_locked_requirements_change_triggers_reinstall(tmp_dir):
+    """The venv path is keyed on the configured requirements, the marker on the installed ones."""
+    config = {"requirements": ["pycowsay"], "hash": "the-configured-hash"}
+    env = IsolatedVirtualEnv(tmp_dir, "main", {**config, "requirements": ["pycowsay==0.0.0.1"]})
+    _scripts_dir(env.path).mkdir(parents=True)
+    env.mark_installed()
+    assert env.is_installed
+
+    relocked = IsolatedVirtualEnv(tmp_dir, "main", {**config, "requirements": ["pycowsay==0.0.0.2"]})
+    assert relocked.path == env.path
+    assert not relocked.is_installed
+
+
+def test_post_install_change_triggers_reinstall(tmp_dir):
+    env = IsolatedVirtualEnv(tmp_dir, "main", {"requirements": ["pycowsay"], "post-install": "echo one"})
+    _scripts_dir(env.path).mkdir(parents=True)
+    env.mark_installed()
+    assert env.is_installed
+
+    changed = IsolatedVirtualEnv(tmp_dir, "main", {"requirements": ["pycowsay"], "post-install": "echo two"})
+    assert not changed.is_installed
+
+
+def test_venv_without_marker_is_considered_installed(tmp_dir):
+    """Venvs created before install markers existed must not all be reinstalled after an upgrade."""
+    env = IsolatedVirtualEnv(tmp_dir, "main", {"requirements": ["pycowsay"]})
+    _scripts_dir(env.path).mkdir(parents=True)
+    assert env.is_installed
+
+
+def test_failed_install_leaves_venv_uninstalled(tmp_dir, mocker):
+    env = IsolatedVirtualEnv(tmp_dir, "main", {"requirements": ["pycowsay"]})
+    _scripts_dir(env.path).mkdir(parents=True)
+    env.mark_installed()
+    mocker.patch("subprocess.run")
+    mocker.patch.object(IsolatedVirtualEnv, "_install_requirements", side_effect=OSError("boom"))
+
+    with pytest.raises(OSError, match="boom"):
+        env.install()
+
+    assert not env.is_installed
+
+
+def test_remove_clears_the_install_marker(tmp_dir):
+    env = IsolatedVirtualEnv(tmp_dir, "main", {"requirements": ["pycowsay"]})
+    _scripts_dir(env.path).mkdir(parents=True)
+    env.mark_installed()
+
+    env.remove()
+
+    assert not env.install_marker_path.exists()

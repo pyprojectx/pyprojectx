@@ -1,3 +1,12 @@
+### Features & Improvements
+- a tool context venv keeps the same path once its requirements are locked; previously the first
+  `--lock` and the next command installed into two different directories
+- an install is only considered complete when its requirements *and* `post-install` succeeded, so a
+  failed or interrupted install is retried instead of leaving a half-built venv in place
+- a change in `pw.lock` reinstalls the tool context, even though the venv path stays the same
+- a tool context with a custom `dir` installs its requirements into that directory and re-installs
+  them when they change. Such a directory is never cleared, so it can be the project's own virtualenv
+
 Release v3.3.4 (2026-04-13)
 ----------------------------
 ### Features & Improvements
