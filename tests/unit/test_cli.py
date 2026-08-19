@@ -6,7 +6,10 @@ from unittest.mock import ANY, call
 import pytest
 from pyprojectx.cli import _get_options, _quote, _run
 from pyprojectx.env import PYTHON_EXE
+from pyprojectx.hash import calculate_hash
 from pyprojectx.wrapper import pw
+
+TOOL_1_HASH = calculate_hash({"requirements": ["req1", "req2"]})
 
 PY_VER = f"py{sys.version_info.major}.{sys.version_info.minor}"
 SCRIPTS_DIR = "Scripts" if sys.platform.startswith("win") else "bin"
@@ -49,7 +52,7 @@ def test_run_tool(tmp_dir, mocker):
     venv_args = run_mock.mock_calls[0].args[0]
     assert venv_args[0].endswith(UV_EXE)
     assert venv_args[1] == "venv"
-    assert venv_args[2].endswith(f"{tmp_dir.name}{os.sep}venvs{os.sep}tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}")
+    assert venv_args[2].endswith(f"{tmp_dir.name}{os.sep}venvs{os.sep}tool-1-{TOOL_1_HASH}-{PY_VER}")
     assert venv_args[3:] == [
         "--prompt",
         "px-tool-1",
@@ -63,8 +66,7 @@ def test_run_tool(tmp_dir, mocker):
     assert pip_install_args[1:5] == ["pip", "install", "-r", "-"]
     assert pip_install_args[5] == "--python"
     assert pip_install_args[6].endswith(
-        f"{tmp_dir.name}{os.sep}venvs{os.sep}tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}"
-        f"{os.sep}{SCRIPTS_DIR}{os.sep}{PYTHON_EXE}"
+        f"{tmp_dir.name}{os.sep}venvs{os.sep}tool-1-{TOOL_1_HASH}-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.sep}{PYTHON_EXE}"
     )
 
     run_args = run_mock.mock_calls[2].args[0]
@@ -72,10 +74,7 @@ def test_run_tool(tmp_dir, mocker):
     assert len(run_args) == 1
     assert run_args[0] == "tool-1"
     path_env = run_kwargs["env"]["PATH"]
-    assert (
-        f"{tmp_dir.name}{os.sep}venvs{os.sep}tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}"
-        in path_env
-    )
+    assert f"{tmp_dir.name}{os.sep}venvs{os.sep}tool-1-{TOOL_1_HASH}-{PY_VER}{os.sep}{SCRIPTS_DIR}" in path_env
     assert run_kwargs["check"] is True
 
 
@@ -107,7 +106,7 @@ def test_run_alias_with_ctx(tmp_dir, mocker):
     path_env = run_mock.mock_calls[2].kwargs["env"]["PATH"]
     assert (
         f"{tmp_dir.name}{os.sep}venvs{os.sep}"
-        f"tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.path.pathsep}" in path_env
+        f"tool-1-{TOOL_1_HASH}-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.path.pathsep}" in path_env
     )
 
 
@@ -138,7 +137,7 @@ def test_run_explicit_alias_with_ctx_with_arg(tmp_dir, mocker):
     )
     assert (
         f"{tmp_dir.name}{os.sep}venvs{os.sep}"
-        f"tool-1-db298015454af73633c6be4b86b3f2e8-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.path.pathsep}"
+        f"tool-1-{TOOL_1_HASH}-{PY_VER}{os.sep}{SCRIPTS_DIR}{os.path.pathsep}"
         in run_mock.mock_calls[2].kwargs["env"]["PATH"]
     )
 

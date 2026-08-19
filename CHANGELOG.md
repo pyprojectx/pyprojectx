@@ -9,6 +9,10 @@
 - arguments appended to an alias are shell-quoted with `shlex.quote` on POSIX instead of being
   wrapped in double quotes, so `$VAR`, backticks and backslashes in arguments stay literal
 - scripts whose name contains a dot (`my.pytool.py`) resolve correctly
+- fix hash collisions between different tool contexts: requirements are now separated from each other
+  and from `post-install` in the digest, and requirement order no longer affects it.
+  Because the digest changes, tool context venvs are recreated and `pw.lock` hashes are rewritten on
+  the first run after upgrading. Remove the obsolete venvs with `./pw --clean`.
 
 Release v3.3.4 (2026-04-13)
 ----------------------------
