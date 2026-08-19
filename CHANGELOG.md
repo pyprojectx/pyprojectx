@@ -1,3 +1,5 @@
+Release v4.0.0 (2026-08-19)
+----------------------------
 ### Breaking Changes
 - removed support for the legacy `pw@` prefix in aliases and post-install actions. Use `@alias-or-script`
   instead: `combined = "pw@build && pw@test"` becomes `combined = "@build && @test"`. A command that still
