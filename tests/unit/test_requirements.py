@@ -48,3 +48,48 @@ def test_add_requirement(tmp_dir, mocker, requirement_1, requirement_2, quiet, c
     if quiet:
         run_args.append("--quiet")
     check_installable_mock.assert_called_with(packages[1:], quiet)
+
+
+def test_add_vcs_url_uses_main_context(tmp_dir, mocker):
+    mocker.patch("pyprojectx.env.IsolatedVirtualEnv.install")
+    mocker.patch("pyprojectx.env.IsolatedVirtualEnv.check_is_installable")
+    toml = tmp_dir / "pyproject.toml"
+    url = "git+https://github.com/foo/bar.git"
+    requirements.add_requirement(url, toml, tmp_dir / "venvs", True)
+    assert toml.read_text() == f'[tool.pyprojectx]\nmain = ["{url}"]\n'
+
+
+def test_add_file_url_uses_main_context(tmp_dir, mocker):
+    mocker.patch("pyprojectx.env.IsolatedVirtualEnv.install")
+    mocker.patch("pyprojectx.env.IsolatedVirtualEnv.check_is_installable")
+    toml = tmp_dir / "pyproject.toml"
+    url = "file:///tmp/mypkg"
+    requirements.add_requirement(url, toml, tmp_dir / "venvs", True)
+    assert toml.read_text() == f'[tool.pyprojectx]\nmain = ["{url}"]\n'
+
+
+def test_add_vcs_url_with_explicit_context(tmp_dir, mocker):
+    mocker.patch("pyprojectx.env.IsolatedVirtualEnv.install")
+    mocker.patch("pyprojectx.env.IsolatedVirtualEnv.check_is_installable")
+    toml = tmp_dir / "pyproject.toml"
+    url = "git+https://github.com/foo/bar.git"
+    requirements.add_requirement(f"tools:{url}", toml, tmp_dir / "venvs", True)
+    assert toml.read_text() == f'[tool.pyprojectx]\ntools = ["{url}"]\n'
+
+
+def test_add_does_not_treat_package_prefix_as_duplicate(tmp_dir, mocker):
+    mocker.patch("pyprojectx.env.IsolatedVirtualEnv.install")
+    mocker.patch("pyprojectx.env.IsolatedVirtualEnv.check_is_installable")
+    toml = tmp_dir / "pyproject.toml"
+    requirements.add_requirement("uvloop", toml, tmp_dir / "venvs", True)
+    requirements.add_requirement("uv", toml, tmp_dir / "venvs", True)
+    assert toml.read_text() == '[tool.pyprojectx]\nmain = ["uvloop", "uv"]\n'
+
+
+def test_add_detects_same_package_name(tmp_dir, mocker):
+    mocker.patch("pyprojectx.env.IsolatedVirtualEnv.install")
+    mocker.patch("pyprojectx.env.IsolatedVirtualEnv.check_is_installable")
+    toml = tmp_dir / "pyproject.toml"
+    requirements.add_requirement("My-Package", toml, tmp_dir / "venvs", True)
+    with pytest.raises(Warning, match="my-package is already a requirement"):
+        requirements.add_requirement("my_package==1.0", toml, tmp_dir / "venvs", True)
