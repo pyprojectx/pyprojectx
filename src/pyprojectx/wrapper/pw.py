@@ -17,7 +17,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 from urllib import request
-from urllib.error import URLError
+from urllib.error import HTTPError, URLError
 
 try:
     from venv import EnvBuilder
@@ -263,12 +263,18 @@ def download(url, target):
     try:
         request.urlretrieve(url, target)  # noqa: S310
     except URLError as e:
+        if isinstance(e, HTTPError):
+            # the server answered, so the connection itself is fine; curl would only repeat the same status
+            raise
         print(f"{RED}download with urllib failed ({e}), retrying with curl or powershell{RESET}", file=sys.stderr)
         if sys.platform == "win32":
-            download_cmd = f"powershell -ExecutionPolicy Bypass -c \"iwr '{url}' -OutFile '{target}'\""
+            quoted_url = str(url).replace("'", "''")
+            quoted_target = str(target).replace("'", "''")
+            script = f"iwr '{quoted_url}' -OutFile '{quoted_target}'"
+            download_cmd = ["powershell", "-ExecutionPolicy", "Bypass", "-c", script]
         else:
-            download_cmd = f"curl --proto '=https' --tlsv1.2 -LsSf '{url}' -o '{target}'"
-        subprocess.run(download_cmd, check=True, shell=True)
+            download_cmd = ["curl", "--proto", "=https", "--tlsv1.2", "-LsSf", str(url), "-o", str(target)]
+        subprocess.run(download_cmd, check=True)
 
 
 if __name__ == "__main__":

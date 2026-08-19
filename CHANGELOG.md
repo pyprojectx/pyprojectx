@@ -23,7 +23,9 @@
 - update uv to 0.12.5
 - `--upgrade` falls back to curl (or PowerShell on Windows) when the Python interpreter running the
   wrapper can't verify https itself, f.i. a python.org macOS install where
-  `Install Certificates.command` was never run
+  `Install Certificates.command` was never run. An HTTP error (404, 403, ...) is reported as-is
+  instead of triggering the fallback, and a download path containing a single quote is quoted
+  correctly
 
 Release v3.3.4 (2026-04-13)
 ----------------------------
