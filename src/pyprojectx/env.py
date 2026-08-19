@@ -118,9 +118,23 @@ class IsolatedVirtualEnv:
         self._install_requirements(quiet)
         if install_path and self.scripts_path.exists():
             self._copy_scripts(install_path, self.scripts_path)
-        if post_install:
-            post_install()
+        # Mark before post-install, not after: a post-install command may run in its own tool context
+        # and re-enter installation for it. It has to find the venv installed, or it recurses forever.
         self.mark_installed()
+        if post_install:
+            self._run_post_install(post_install)
+
+    def _run_post_install(self, post_install) -> None:
+        completed = False
+        try:
+            post_install()
+            completed = True
+        finally:
+            if not completed:
+                # A failed post-install leaves an incomplete venv: flag it so the next run retries.
+                # Deleting the marker would not do -- that is what a venv from an older version
+                # looks like, and those are taken at face value.
+                self._mark_installing()
 
     def _copy_scripts(self, install_path, scripts_dir):
         # make the scripts dir available in .pyprojectx/<tool context name>

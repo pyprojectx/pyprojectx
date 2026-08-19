@@ -208,3 +208,32 @@ def test_remove_clears_the_install_marker(tmp_dir):
     env.remove()
 
     assert not env.install_marker_path.exists()
+
+
+def test_post_install_running_in_the_same_ctx_does_not_recurse(tmp_dir, mocker):
+    """A post-install command may re-enter installation of its own context; it must find it installed."""
+    env = IsolatedVirtualEnv(tmp_dir, "main", {"requirements": ["pycowsay"], "post-install": "@self-referencing"})
+    mocker.patch("subprocess.run")
+    mocker.patch.object(IsolatedVirtualEnv, "_install_requirements")
+    _scripts_dir(env.path).mkdir(parents=True)
+    seen = []
+
+    env.install(post_install=lambda: seen.append(env.is_installed))
+
+    assert seen == [True]
+    assert env.is_installed
+
+
+def test_failed_post_install_leaves_venv_uninstalled(tmp_dir, mocker):
+    env = IsolatedVirtualEnv(tmp_dir, "main", {"requirements": ["pycowsay"], "post-install": "boom"})
+    mocker.patch("subprocess.run")
+    mocker.patch.object(IsolatedVirtualEnv, "_install_requirements")
+    _scripts_dir(env.path).mkdir(parents=True)
+
+    def failing_post_install():
+        raise subprocess.CalledProcessError(1, "boom")
+
+    with pytest.raises(subprocess.CalledProcessError):
+        env.install(post_install=failing_post_install)
+
+    assert not env.is_installed
