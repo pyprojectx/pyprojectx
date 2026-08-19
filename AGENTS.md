@@ -61,6 +61,10 @@ shows what a specific command resolves to.
   into temp projects and sets `PYPROJECTX_PACKAGE` to point back at this checkout (editable
   install) for integration tests.
 
+**Never edit the root `pw`, `pw.bat` or `pw.ps1`.** They are generated copies: wrapper changes go
+into `src/pyprojectx/wrapper/pw.py` only, and the root copies are refreshed after a new version is
+released (by `bin/prep-release.py`, or with `./pw --upgrade` once the release is out).
+
 When editing the wrapper, keep it stdlib-only — it must run before anything is installed.
 
 ## Architecture
