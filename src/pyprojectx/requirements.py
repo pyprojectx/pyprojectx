@@ -101,7 +101,7 @@ def _check_already_met(requirements, req_spec, ctx):
             raise Warning(f"{pw.RED}{req_name} is already a requirement in {ctx}")
 
 
-def _check_is_installable(req_specs, ctx, requirements, venvs_dir, quiet, prerelease):  # noqa: PLR0913
+def _check_is_installable(req_specs, ctx, requirements, venvs_dir, quiet, prerelease):  # noqa: PLR0913, PLR0917
     env = IsolatedVirtualEnv(venvs_dir, ctx, requirements, prerelease)
     if not env.is_installed:
         env.install(quiet=quiet)

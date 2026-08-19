@@ -29,6 +29,9 @@ def create_tmp_project(tmp_project_dir):
     shutil.copytree(data_dir / "bin", tmp_project_dir / "bin")
     env = os.environ.copy()
     env["PYPROJECTX_PACKAGE"] = str(pyprojectx_project_dir.absolute())
+    # python 3.14+ argparse colorizes its usage output when color is forced, breaking plain text assertions
+    env.pop("FORCE_COLOR", None)
+    env["PYTHON_COLORS"] = "0"
     return tmp_project_dir, env
 
 

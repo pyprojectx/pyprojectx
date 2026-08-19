@@ -192,7 +192,7 @@ def _run_script(script: str, pw_args: list[str], options, config) -> None:
             raise SystemExit(e.returncode) from e
 
 
-# ruff: noqa: PLR0913
+# ruff: noqa: PLR0913, PLR0917
 def _run_in_ctx(ctx: str, full_cmd: Union[str, list[str]], options, pw_args, config, env, cwd) -> None:
     logger.debug("Running command in virtual environment, ctx: %s, full command: %s", ctx, full_cmd)
     venv = _ensure_ctx(config, ctx, env, options, pw_args)
