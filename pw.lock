@@ -1,4 +1,4 @@
 [main]
 requirements = ["click==8.4.2 ; python_full_version >= '3.10'", "colorama==0.4.6 ; python_full_version >= '3.10' and sys_platform == 'win32'", "deepmerge==3.0 ; python_full_version >= '3.10'", "jinja2==3.1.6 ; python_full_version >= '3.10'", "markdown==3.10.3 ; python_full_version >= '3.10'", "markupsafe==3.0.3 ; python_full_version >= '3.10'", "prek==0.4.14", "px-utils==1.1.2", "pygments==2.21.0 ; python_full_version >= '3.10'", "pymdown-extensions==11.0.1 ; python_full_version >= '3.10'", "pyyaml==6.0.3 ; python_full_version >= '3.10'", "ruff==0.16.3", "tomli==2.4.1 ; python_full_version >= '3.10'", "tomlkit==0.15.1", "uv==0.12.5", "zensical==0.0.56 ; python_full_version >= '3.10'"]
-hash = "6c8115c0a94724dc6a20ef483db4d4a1"
+hash = "2ac935b9db2058ba02e0ed6fc06f7c0a"
 post-install = "prek install"
