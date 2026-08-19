@@ -22,7 +22,7 @@ PY_VER = f"py{sys.version_info.major}.{sys.version_info.minor}"
         ),
     ],
 )
-def test_add_requirement(tmp_dir, mocker, requirement_1, requirement_2, quiet, ctx, packages):  # noqa: PLR0913
+def test_add_requirement(tmp_dir, mocker, requirement_1, requirement_2, quiet, ctx, packages):  # noqa: PLR0913, PLR0917
     toml = tmp_dir / "pyproject.toml"
     assert not toml.exists()
     install_mock = mocker.patch("pyprojectx.env.IsolatedVirtualEnv.install")

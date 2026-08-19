@@ -20,6 +20,10 @@
 - a change in `pw.lock` reinstalls the tool context, even though the venv path stays the same
 - a tool context with a custom `dir` installs its requirements into that directory and re-installs
   them when they change. Such a directory is never cleared, so it can be the project's own virtualenv
+- update uv to 0.12.5
+- `--upgrade` falls back to curl (or PowerShell on Windows) when the Python interpreter running the
+  wrapper can't verify https itself, f.i. a python.org macOS install where
+  `Install Certificates.command` was never run
 
 Release v3.3.4 (2026-04-13)
 ----------------------------

@@ -13,9 +13,11 @@ import os
 import subprocess
 import sys
 import sysconfig
+import tempfile
 import zipfile
 from pathlib import Path
 from urllib import request
+from urllib.error import URLError
 
 try:
     from venv import EnvBuilder
@@ -247,11 +249,26 @@ def ensure_pyprojectx(options):  # noqa: C901, PLR0912
 
 def download_wrappers():
     latest = "https://github.com/pyprojectx/pyprojectx/releases/latest/download/wrappers.zip"
-    zip_file, _ = request.urlretrieve(latest)  # noqa: S310
-    with zipfile.ZipFile(zip_file, "r") as zip_ref:
-        for entry in zip_ref.namelist():
-            if Path(__file__).with_name(entry).is_file():
-                zip_ref.extract(entry, Path(__file__).parent)
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        zip_file = Path(tmp_dir, "wrappers.zip")
+        download(latest, zip_file)
+        with zipfile.ZipFile(zip_file, "r") as zip_ref:
+            for entry in zip_ref.namelist():
+                if Path(__file__).with_name(entry).is_file():
+                    zip_ref.extract(entry, Path(__file__).parent)
+
+
+def download(url, target):
+    """Download url to target, falling back to curl/powershell if this interpreter has no usable CA bundle."""
+    try:
+        request.urlretrieve(url, target)  # noqa: S310
+    except URLError as e:
+        print(f"{RED}download with urllib failed ({e}), retrying with curl or powershell{RESET}", file=sys.stderr)
+        if sys.platform == "win32":
+            download_cmd = f"powershell -ExecutionPolicy Bypass -c \"iwr '{url}' -OutFile '{target}'\""
+        else:
+            download_cmd = f"curl --proto '=https' --tlsv1.2 -LsSf '{url}' -o '{target}'"
+        subprocess.run(download_cmd, check=True, shell=True)
 
 
 if __name__ == "__main__":

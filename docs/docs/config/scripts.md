@@ -11,6 +11,7 @@ Create a file `bin/check-version.py`:
 
 ```python
 """Print the current project version from pyproject.toml."""
+
 import tomllib
 from pathlib import Path
 
