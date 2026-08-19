@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 import tomlkit
 
+from pyprojectx.hash import calculate_hash
 from pyprojectx.wrapper import pw
 
 SCRIPT_PREFIX = ".\\" if sys.platform.startswith("win") else "./"
@@ -245,7 +246,10 @@ def test_run_script_with_args(tmp_project):
 
 
 locked_requirements = {
-    "main": {"hash": "9a26a0b87d70275d42f57b40bc8ddfc3", "requirements": ["pycowsay==0.0.0.2"]},
+    "main": {
+        "hash": calculate_hash({"requirements": ["pycowsay==0.0.0.2"]}),
+        "requirements": ["pycowsay==0.0.0.2"],
+    },
     "tool-with-known-requirements": {
         "requirements": [
             "click==8.1.7",
@@ -258,7 +262,7 @@ locked_requirements = {
             "userpath==1.9.1",
             "virtualenv==20.24.6",
         ],
-        "hash": "d38ebcc846fc99fe583218af16f35eb5",
+        "hash": calculate_hash({"requirements": ["pyprojectx==2.0.0"], "post-install": "@post-install-action"}),
         "post-install": "@post-install-action",
     },
 }

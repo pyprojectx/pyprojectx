@@ -5,6 +5,7 @@ from unittest.mock import ANY
 
 import pytest
 from pyprojectx.env import IsolatedVirtualEnv, PYTHON_EXE
+from pyprojectx.hash import calculate_hash
 from pyprojectx.log import set_verbosity
 
 
@@ -21,8 +22,8 @@ def test_isolated_env_path(tmp_dir):
     )
     assert (
         f"{tmp_dir.name}{os.sep}"
-        f"env-name-57b6e92d262b77ef47fda82ab9b9c617-py{sys.version_info.major}.{sys.version_info.minor}"
-        in str(env.path)
+        f"env-name-{calculate_hash({'requirements': ['requirement1', 'requirement2']})}"
+        f"-py{sys.version_info.major}.{sys.version_info.minor}" in str(env.path)
     )
 
 

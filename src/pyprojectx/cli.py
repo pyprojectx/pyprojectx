@@ -1,5 +1,6 @@
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -73,6 +74,7 @@ def _run(argv: list[str]) -> None:
     except FileNotFoundError:
         if logger.getEffectiveLevel() < INFO:
             logger.exception(f"Error running command {cmd}")
+        print(f"{pw.RED}'{cmd}' failed: executable not found{pw.RESET}", file=sys.stderr)
 
     config.show_info(cmd, error=True)
     raise SystemExit(1)
@@ -132,7 +134,7 @@ def _run_alias(alias_cmd: AliasCommand, pw_args: list[str], options, config) -> 
     logger.debug(
         "Running alias command, ctx: %s, command: %s, arguments: %s", alias_cmd.ctx, alias_cmd, options.cmd_args
     )
-    quoted_args = [f'"{a}"' for a in options.cmd_args]
+    quoted_args = [_quote(a) for a in options.cmd_args]
     full_cmd = " ".join([_resolve_references(alias_cmd.cmd, pw_args, config), *quoted_args])
     if alias_cmd.shell:
         full_cmd = [alias_cmd.shell, "-c", full_cmd]
@@ -156,7 +158,13 @@ def _run_alias(alias_cmd: AliasCommand, pw_args: list[str], options, config) -> 
                 alias_cmd.cwd,
                 alias_cmd.shell,
             )
-            subprocess.run(full_cmd, shell=True, check=True, env={**os.environ, **alias_env}, cwd=alias_cmd.cwd)
+            subprocess.run(
+                full_cmd,
+                shell=isinstance(full_cmd, str),
+                check=True,
+                env={**os.environ, **alias_env},
+                cwd=alias_cmd.cwd,
+            )
         except subprocess.CalledProcessError as e:
             raise SystemExit(e.returncode) from e
 
@@ -164,7 +172,8 @@ def _run_alias(alias_cmd: AliasCommand, pw_args: list[str], options, config) -> 
 def _run_script(script: str, pw_args: list[str], options, config) -> None:
     file = config.get_script_path(script)
     logger.debug("Running script: %s, arguments: %s", file, options.cmd_args)
-    full_cmd = ["python", file, *options.cmd_args]
+    python = "python" if config.scripts_context else sys.executable
+    full_cmd = [python, file, *options.cmd_args]
     if config.scripts_context:
         _run_in_ctx(
             config.scripts_context,
@@ -178,7 +187,7 @@ def _run_script(script: str, pw_args: list[str], options, config) -> None:
     else:
         try:
             logger.debug("Running script without venv, full command: %s, in %s", full_cmd, config.cwd)
-            subprocess.run(full_cmd, shell=True, check=True, env={**os.environ, **config.env}, cwd=config.cwd)
+            subprocess.run(full_cmd, check=True, env={**os.environ, **config.env}, cwd=config.cwd)
         except subprocess.CalledProcessError as e:
             raise SystemExit(e.returncode) from e
 
@@ -234,7 +243,7 @@ def _resolve_references(alias_cmd: str, pw_args: list[str], config) -> str:
     skip = False
     absolute_pw_args = []
     for arg in pw_args:
-        if arg in ["-t", "--toml", "-i", "--install-dir"]:
+        if arg in ["-t", "--toml", "--install-dir"]:
             is_path = True
             absolute_pw_args.append(arg)
         elif arg == "--install-context":
@@ -251,9 +260,11 @@ def _resolve_references(alias_cmd: str, pw_args: list[str], config) -> str:
 
 
 def _quote(arg):
-    if " " in arg:
-        return f'"{arg}"'
-    return arg
+    if sys.platform.startswith("win"):
+        if " " in arg or '"' in arg:
+            return '"' + arg.replace('"', '\\"') + '"'
+        return arg
+    return shlex.quote(arg)
 
 
 def _get_options(args):

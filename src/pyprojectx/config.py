@@ -15,6 +15,9 @@ DEFAULT_TOOLS = ["uv"]
 PROJECT_DIR = "@PROJECT_DIR"
 DEFAULT_SCRIPTS_DIR = "bin"
 LOCK_FILE = "pw.lock"
+CTX_PREFIX_REGEX = re.compile(r"^@?(?P<ctx>[\w-]+)\s*:\s*")
+WIN_PATH_REGEX = re.compile(r"^[A-Za-z]:[\\/]")
+URL_SCHEME_REGEX = re.compile(r"^[A-Za-z][\w+.-]*://")
 
 
 @dataclass
@@ -70,7 +73,7 @@ class Config:
         if self.scripts_context is None:
             if self._contexts.get(MAIN):
                 self.scripts_context = MAIN
-        elif not isinstance(self.scripts_context, str) and not self.is_ctx(self.scripts_context):
+        elif not isinstance(self.scripts_context, str) or not self.is_ctx(self.scripts_context):
             msg = "Invalid config: 'scripts_ctx' must be the name of a tool context"
             raise Warning(msg)
         self._merge_os_config()
@@ -205,13 +208,15 @@ class Config:
     def _build_alias_command(self, cmd, alias_config, key) -> AliasCommand:
         ctx = self.get_ctx_or_main()
         alias_cmd = cmd
-        if re.match(r"^@?[\w|-]+\s*:\s*", cmd):
-            ctx, alias_cmd = re.split(r"\s*:\s*", cmd, maxsplit=1)
-            ctx = ctx.removeprefix("@")
+        ctx_prefix = _match_ctx_prefix(cmd)
+        if ctx_prefix:
+            ctx = ctx_prefix.group("ctx")
+            alias_cmd = cmd[ctx_prefix.end() :]
         elif alias_config.get("ctx"):
             ctx = alias_config["ctx"]
         else:
-            candidate = cmd.split()[0]
+            parts = cmd.split()
+            candidate = parts[0] if parts else ""
             if self.is_ctx(candidate):
                 ctx = candidate
         if ctx and not self.is_ctx(ctx):
@@ -267,7 +272,7 @@ class Config:
                 self._aliases.update(os_dict[os_key].get("aliases", {}))
 
     def _get_scripts(self):
-        return sorted([f.name.replace(".py", "") for f in self.scripts_path.glob("*.py") if f.is_file()])
+        return sorted(f.stem for f in self.scripts_path.glob("*.py") if f.is_file())
 
 
 def camel_match(abbrev, key):
@@ -283,3 +288,10 @@ def to_camel_parts(key):
         return [key]
     camel = re.sub(r"(-\w)", lambda m: m.group(0)[1].upper(), key)
     return filter(len, re.split("([A-Z][^A-Z]*)", camel[0].lower() + camel[1:]))
+
+
+def _match_ctx_prefix(cmd: str) -> Optional[re.Match]:
+    r"""Match a leading '@ctx:' or 'ctx:', but not a Windows path (C:\...) or a URL (https://...)."""
+    if WIN_PATH_REGEX.match(cmd) or URL_SCHEME_REGEX.match(cmd):
+        return None
+    return CTX_PREFIX_REGEX.match(cmd)

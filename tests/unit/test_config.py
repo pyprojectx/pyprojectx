@@ -140,3 +140,56 @@ def test_invalid_toml():
 def test_find_aliases_or_scripts(shortcut, candidates):
     config = Config(Path(__file__).parent.with_name("data").joinpath("alias-abbreviations.toml"))
     assert config.find_aliases_or_scripts(shortcut) == candidates
+
+
+def test_invalid_scripts_ctx(tmp_dir):
+    toml = tmp_dir / "pyproject.toml"
+    toml.write_text('[tool.pyprojectx]\nscripts_ctx = "missing"\nmain = ["uv"]\n', encoding="utf-8")
+    with pytest.raises(Warning, match="scripts_ctx"):
+        Config(toml)
+
+
+def test_windows_path_alias_is_not_a_context(tmp_dir):
+    toml = tmp_dir / "pyproject.toml"
+    toml.write_text(
+        "[tool.pyprojectx]\n"
+        'main = ["uv"]\n'
+        "[tool.pyprojectx.aliases]\n"
+        'runpy = "C:\\\\Users\\\\foo\\\\python.exe -m http.server"\n',
+        encoding="utf-8",
+    )
+    alias = Config(toml).get_alias("runpy")
+    assert alias[0].ctx == "main"
+    assert alias[0].cmd.startswith("C:")
+
+
+def test_url_alias_is_not_a_context(tmp_dir):
+    toml = tmp_dir / "pyproject.toml"
+    toml.write_text(
+        '[tool.pyprojectx]\nmain = ["uv"]\n[tool.pyprojectx.aliases]\ndocs = "https://example.com/index.html"\n',
+        encoding="utf-8",
+    )
+    alias = Config(toml).get_alias("docs")
+    assert alias[0].ctx == "main"
+    assert alias[0].cmd == "https://example.com/index.html"
+
+
+def test_whitespace_only_alias_cmd(tmp_dir):
+    toml = tmp_dir / "pyproject.toml"
+    toml.write_text(
+        '[tool.pyprojectx]\nmain = ["uv"]\n[tool.pyprojectx.aliases]\nempty = " "\n',
+        encoding="utf-8",
+    )
+    alias = Config(toml).get_alias("empty")
+    assert alias[0].cmd == " "
+    assert alias[0].ctx == "main"
+
+
+def test_script_stem_keeps_dot_in_name(tmp_dir):
+    toml = tmp_dir / "pyproject.toml"
+    scripts = tmp_dir / "bin"
+    scripts.mkdir()
+    (scripts / "my.pytool.py").write_text("", encoding="utf-8")
+    toml.write_text('[tool.pyprojectx]\nmain = ["uv"]\n', encoding="utf-8")
+    config = Config(toml)
+    assert config.find_aliases_or_scripts("my.pytool") == ["my.pytool"]

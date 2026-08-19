@@ -208,7 +208,7 @@ def ensure_pyprojectx(options):  # noqa: C901, PLR0912
                     f'powershell -ExecutionPolicy Bypass -c "irm {release_base_url}/uv-installer.ps1 | iex"'
                 )
             else:
-                install_uv_cmd = f"curl --proto '=https' --tlsv1.2 -LsSf irm {release_base_url}/uv-installer.sh | sh"
+                install_uv_cmd = f"curl --proto '=https' --tlsv1.2 -LsSf {release_base_url}/uv-installer.sh | sh"
             subprocess.run(
                 install_uv_cmd,
                 stdout=out,
