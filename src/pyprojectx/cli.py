@@ -201,7 +201,11 @@ def _ensure_ctx(config, ctx, env, options, pw_args):
             if requirements.get("post-install"):
                 post_install_cmd = _resolve_references(requirements["post-install"], pw_args, config=config)
                 venv.run(post_install_cmd, env, config.get_cwd())
+            venv.mark_installed()
         except subprocess.CalledProcessError as e:
+            venv.unmark_installed()
+            if not venv.uses_custom_dir:
+                venv.remove()
             print(
                 f"{pw.RED}PYPROJECTX ERROR: installation of '{ctx}' failed with exit code {e.returncode}{pw.RESET}",
                 file=sys.stderr,

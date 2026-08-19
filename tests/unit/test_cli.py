@@ -1,4 +1,5 @@
 import os.path
+import subprocess
 import sys
 from pathlib import Path
 from unittest.mock import ANY, call
@@ -249,6 +250,34 @@ def test_install_context(tmp_dir, mocker):
         call("main-post-install", shell=True, check=True, env=ANY, cwd=ANY, stdout=ANY),
     ]
     run_mock.assert_has_calls(calls)
+
+
+def test_failed_install_removes_hash_based_venv(tmp_dir, mocker):
+    toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
+    mocker.patch(
+        "pyprojectx.env.IsolatedVirtualEnv.install",
+        side_effect=subprocess.CalledProcessError(1, "uv"),
+    )
+    remove_mock = mocker.patch("pyprojectx.env.IsolatedVirtualEnv.remove")
+
+    with pytest.raises(SystemExit, match="1"):
+        _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "--install-context", "tool-1"])
+
+    remove_mock.assert_called_once()
+
+
+def test_failed_install_does_not_remove_custom_dir(tmp_dir, mocker):
+    toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
+    mocker.patch(
+        "pyprojectx.env.IsolatedVirtualEnv.install",
+        side_effect=subprocess.CalledProcessError(1, "uv"),
+    )
+    remove_mock = mocker.patch("pyprojectx.env.IsolatedVirtualEnv.remove")
+
+    with pytest.raises(SystemExit, match="1"):
+        _run(["path/to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "--install-context", "venv"])
+
+    remove_mock.assert_not_called()
 
 
 def test_install_non_existing_context(tmp_dir):

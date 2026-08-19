@@ -16,6 +16,7 @@ from pyprojectx.log import logger
 PYTHON_EXE = "python.exe" if sys.platform == "win32" else "python3"
 UV_EXE = uv.find_uv_bin()
 ENV_VAR_RE = re.compile(r"(?P<var>\$\{(?P<name>[A-Z0-9_]+)})")
+INSTALL_HASH_MARKER = ".pyprojectx-hash"
 
 
 class IsolatedVirtualEnv:
@@ -32,7 +33,8 @@ class IsolatedVirtualEnv:
         self._base_path = base_path
         self._hash = requirements_config.get("hash", calculate_hash(requirements_config))
         self._requirements = requirements_config.get("requirements", [])
-        self._path = Path(requirements_config["dir"]) if requirements_config.get("dir") else self._compose_path()
+        self._custom_dir = bool(requirements_config.get("dir"))
+        self._path = Path(requirements_config["dir"]) if self._custom_dir else self._compose_path()
         self.prerelease = prerelease
 
     @property
@@ -51,8 +53,20 @@ class IsolatedVirtualEnv:
         return self._path / "Scripts" if sys.platform == "win32" else self._path / "bin"
 
     @property
+    def uses_custom_dir(self) -> bool:
+        return self._custom_dir
+
+    @property
     def is_installed(self) -> bool:
-        return self.scripts_path.is_dir()
+        if not self.scripts_path.is_dir():
+            return False
+        marker_hash = self._read_install_hash()
+        if self._custom_dir:
+            return marker_hash == self._hash
+        if marker_hash is None:
+            # Hash-based venvs created before the marker file existed.
+            return True
+        return marker_hash == self._hash
 
     def install(self, quiet=False, install_path=None) -> None:
         """Create the virtual environment and install requirements.
@@ -61,20 +75,24 @@ class IsolatedVirtualEnv:
         :param install_path: the path to .pyprojectx
         """
         logger.debug("Installing IsolatedVirtualEnv in %s", self.path)
-        cmd = [
-            UV_EXE,
-            "venv",
-            str(self.path),
-            "--prompt",
-            f"px-{self.name}",
-            "--python",
-            f"{sys.version_info.major}.{sys.version_info.minor}",
-            "--clear",
-        ]
-        if quiet:
-            cmd.append("--quiet")
-        logger.debug("Calling uv: %s", " ".join(cmd))
-        subprocess.run(cmd, check=True, stdout=sys.stderr)
+        recreate_venv = not (self._custom_dir and self.scripts_path.is_dir())
+        if recreate_venv:
+            cmd = [
+                UV_EXE,
+                "venv",
+                str(self.path),
+                "--prompt",
+                f"px-{self.name}",
+                "--python",
+                f"{sys.version_info.major}.{sys.version_info.minor}",
+            ]
+            # Never --clear a custom dir: it may be the project's own virtualenv.
+            if not self._custom_dir:
+                cmd.append("--clear")
+            if quiet:
+                cmd.append("--quiet")
+            logger.debug("Calling uv: %s", " ".join(cmd))
+            subprocess.run(cmd, check=True, stdout=sys.stderr)
         self._install_requirements(quiet)
         if install_path and self.scripts_path.exists():
             self._copy_scripts(install_path, self.scripts_path)
@@ -129,6 +147,21 @@ class IsolatedVirtualEnv:
         """Remove the entire virtual environment."""
         logger.info("Removing isolated environment in %s", self.path)
         shutil.rmtree(self.path, ignore_errors=True)
+
+    def mark_installed(self) -> None:
+        """Record that install (and post-install, if any) completed successfully."""
+        self.path.mkdir(parents=True, exist_ok=True)
+        (self.path / INSTALL_HASH_MARKER).write_text(self._hash, encoding="utf-8")
+
+    def unmark_installed(self) -> None:
+        """Clear the install marker so the next run retries installation."""
+        (self.path / INSTALL_HASH_MARKER).unlink(missing_ok=True)
+
+    def _read_install_hash(self) -> Optional[str]:
+        marker = self.path / INSTALL_HASH_MARKER
+        if not marker.is_file():
+            return None
+        return marker.read_text(encoding="utf-8").strip()
 
     def run(
         self, cmd: Union[str, list[str]], env: dict, cwd: Union[str, bytes, os.PathLike], stdout=None

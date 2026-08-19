@@ -113,3 +113,35 @@ def test_run(tmp_dir, capfd):
     env.run(f"echo {path}", env={}, cwd=".")
     captured = capfd.readouterr()
     assert str(env.scripts_path.name) in captured.out
+
+
+def _scripts_dir(venv_path):
+    return venv_path / ("Scripts" if sys.platform == "win32" else "bin")
+
+
+def test_custom_dir_requires_matching_install_marker(tmp_dir):
+    custom = tmp_dir / "project-venv"
+    _scripts_dir(custom).mkdir(parents=True)
+    env = IsolatedVirtualEnv(tmp_dir, "venv", {"requirements": ["pycowsay"], "dir": str(custom)})
+    assert env.uses_custom_dir
+    assert not env.is_installed
+
+    env.mark_installed()
+    assert env.is_installed
+
+    changed = IsolatedVirtualEnv(tmp_dir, "venv", {"requirements": ["other"], "dir": str(custom)})
+    assert not changed.is_installed
+
+    env.unmark_installed()
+    assert not env.is_installed
+
+
+def test_custom_dir_install_does_not_clear_existing_venv(tmp_dir, mocker):
+    custom = tmp_dir / "project-venv"
+    _scripts_dir(custom).mkdir(parents=True)
+    run_mock = mocker.patch("subprocess.run")
+    env = IsolatedVirtualEnv(tmp_dir, "venv", {"requirements": ["pycowsay"], "dir": str(custom)})
+    env.install()
+
+    venv_creates = [call for call in run_mock.call_args_list if call.args and call.args[0][1:2] == ["venv"]]
+    assert venv_creates == []
