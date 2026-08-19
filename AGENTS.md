@@ -15,7 +15,13 @@ in `pyproject.toml`).
 
 ## Common commands
 
-Everything runs through the wrapper. Aliases are defined in `[tool.pyprojectx.aliases]`.
+**Everything goes through `./pw`.** Never invoke `uv`, `pytest`, `ruff`, or `ty` from the system
+PATH — a system copy is a different version than the one this project pins, and it runs outside the
+tool context. Prefix every `uv` call with the wrapper (`./pw uv sync`, `./pw uv pip list`): `uv` is
+a requirement of the `main` tool context, so `./pw uv …` runs the project's own uv. `pytest`, `ruff`
+and `ty` are reached through their aliases below, or via `./pw uv run <tool>`.
+
+Aliases are defined in `[tool.pyprojectx.aliases]`.
 
 ```bash
 ./pw install          # uv sync — create .venv with dev dependencies
@@ -34,7 +40,7 @@ Run a single test — aliases append extra args, so pass a path or `-k` filter t
 ```bash
 ./pw unit-test tests/unit/test_config.py    # narrow to one file
 ./pw unit-test -k camel                      # filter by name
-uv run pytest tests/unit/test_config.py -k camel   # directly, after ./pw install
+./pw uv run pytest tests/unit/test_config.py -k camel   # directly, after ./pw install
 ```
 
 (The `run` alias is `uv run pyprojectx …` — it invokes pyprojectx itself, not arbitrary commands.)
@@ -105,6 +111,8 @@ Flow of a command `./pw <cmd> <args>`:
 - **Python 3.9+** compatibility is required (`requires-python`, and CI tests 3.9–3.14 on Ubuntu
   and Windows). Use `typing.Optional`/`Union` rather than `X | Y`; mind Windows path/exe handling
   (`EXE`, `SCRIPTS_DIR`, `python.exe`).
+- **No `from __future__ import …`** in any Python file. Write code that runs on 3.9 as-is instead of
+  reaching for a future import to get newer syntax.
 - Tests are split into `tests/unit` (fast, mocked) and `tests/integration` (spins up real venvs
   and downloads tools — network-bound and slow). `tests/data/*.toml` are fixture configs.
 
