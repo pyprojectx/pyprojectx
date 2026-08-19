@@ -66,8 +66,9 @@ def _split_ctx_and_requirement(requirement: str) -> tuple:
     if not match:
         return MAIN, requirement
     prefix, rest = match.group(1), match.group(2)
-    # URL schemes (file://, https://) and VCS refs (git+https://) are not contexts.
-    if rest.startswith("//") or "+" in prefix:
+    # URL schemes (file://, https://) are not contexts. VCS refs (git+https://) never match at all,
+    # because '+' is not part of the prefix character class.
+    if rest.startswith("//"):
         return MAIN, requirement
     return prefix, rest
 
@@ -77,11 +78,16 @@ def _normalize_requirement_name(name: str) -> str:
 
 
 def _requirement_name(req_spec: str) -> Optional[str]:
+    """Extract the normalized package name of a requirement, or None if it doesn't start with one.
+
+    URLs and VCS references (https://…, git+https://…, git+git@…) start with a scheme, not a package
+    name, so they have nothing to compare against and are never reported as duplicates.
+    """
     stripped = req_spec.strip()
     if not stripped or stripped.startswith("-"):
         return None
     match = requirement_regexp.match(stripped)
-    if not match:
+    if not match or stripped[match.end() : match.end() + 1] in {"+", ":"}:
         return None
     return _normalize_requirement_name(match.group(1))
 

@@ -93,3 +93,30 @@ def test_add_detects_same_package_name(tmp_dir, mocker):
     requirements.add_requirement("My-Package", toml, tmp_dir / "venvs", True)
     with pytest.raises(Warning, match="my-package is already a requirement"):
         requirements.add_requirement("my_package==1.0", toml, tmp_dir / "venvs", True)
+
+
+@pytest.mark.parametrize(
+    ("url_1", "url_2"),
+    [
+        ("git+https://github.com/foo/bar.git", "git+https://github.com/foo/baz.git"),
+        ("file:///tmp/pkg-a", "file:///tmp/pkg-b"),
+        ("https://example.com/a-1.0.whl", "https://example.com/b-1.0.whl"),
+        ("git+git@github.com:foo/bar.git", "git+git@github.com:foo/baz.git"),
+    ],
+)
+def test_add_two_urls_sharing_a_scheme_is_not_a_duplicate(tmp_dir, mocker, url_1, url_2):
+    mocker.patch("pyprojectx.env.IsolatedVirtualEnv.install")
+    mocker.patch("pyprojectx.env.IsolatedVirtualEnv.check_is_installable")
+    toml = tmp_dir / "pyproject.toml"
+    requirements.add_requirement(url_1, toml, tmp_dir / "venvs", True)
+    requirements.add_requirement(url_2, toml, tmp_dir / "venvs", True)
+    assert toml.read_text() == f'[tool.pyprojectx]\nmain = ["{url_1}", "{url_2}"]\n'
+
+
+def test_add_detects_duplicate_with_extras_and_direct_reference(tmp_dir, mocker):
+    mocker.patch("pyprojectx.env.IsolatedVirtualEnv.install")
+    mocker.patch("pyprojectx.env.IsolatedVirtualEnv.check_is_installable")
+    toml = tmp_dir / "pyproject.toml"
+    requirements.add_requirement("my-package[extra]==1.0", toml, tmp_dir / "venvs", True)
+    with pytest.raises(Warning, match="my-package is already a requirement"):
+        requirements.add_requirement("my_package @ https://example.com/mp.whl", toml, tmp_dir / "venvs", True)

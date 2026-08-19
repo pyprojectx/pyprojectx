@@ -208,9 +208,10 @@ class Config:
     def _build_alias_command(self, cmd, alias_config, key) -> AliasCommand:
         ctx = self.get_ctx_or_main()
         alias_cmd = cmd
-        if _is_ctx_prefix(cmd):
-            ctx, alias_cmd = re.split(r"\s*:\s*", cmd, maxsplit=1)
-            ctx = ctx.removeprefix("@")
+        ctx_prefix = _match_ctx_prefix(cmd)
+        if ctx_prefix:
+            ctx = ctx_prefix.group("ctx")
+            alias_cmd = cmd[ctx_prefix.end() :]
         elif alias_config.get("ctx"):
             ctx = alias_config["ctx"]
         else:
@@ -289,8 +290,8 @@ def to_camel_parts(key):
     return filter(len, re.split("([A-Z][^A-Z]*)", camel[0].lower() + camel[1:]))
 
 
-def _is_ctx_prefix(cmd: str) -> bool:
-    """Return whether cmd starts with '@ctx:' or 'ctx:', not a Windows path or URL."""
+def _match_ctx_prefix(cmd: str) -> Optional[re.Match]:
+    r"""Match a leading '@ctx:' or 'ctx:', but not a Windows path (C:\...) or a URL (https://...)."""
     if WIN_PATH_REGEX.match(cmd) or URL_SCHEME_REGEX.match(cmd):
-        return False
-    return bool(CTX_PREFIX_REGEX.match(cmd))
+        return None
+    return CTX_PREFIX_REGEX.match(cmd)
