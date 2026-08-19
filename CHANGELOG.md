@@ -1,3 +1,8 @@
+### Breaking Changes
+- removed support for the legacy `pw@` prefix in aliases and post-install actions. Use `@alias-or-script`
+  instead: `combined = "pw@build && pw@test"` becomes `combined = "@build && @test"`. A command that still
+  contains `pw@` fails with an error explaining the replacement
+
 ### Features & Improvements
 - fix `scripts_ctx` validation: an unknown tool context name was silently accepted
 - aliases can start with a Windows path (`C:\...`) or a URL without being parsed as `ctx:command`

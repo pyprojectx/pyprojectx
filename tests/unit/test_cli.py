@@ -166,6 +166,14 @@ def test_combined_alias_with_arg(tmp_dir, mocker):
     )
 
 
+def test_legacy_pw_reference_is_rejected(tmp_dir, mocker):
+    toml = Path(__file__).parent.with_name("data").joinpath("test.toml")
+    mocker.patch("subprocess.run")
+
+    with pytest.raises(Warning, match=r"Invalid command 'pw@alias-1': the 'pw@' prefix is not supported anymore"):
+        _run(["path to/pyprojectx", "--install-dir", str(tmp_dir), "-t", str(toml), "legacy-pw-alias"])
+
+
 @pytest.mark.parametrize("cmd", ["tool-1", "alias-1", "alias-dict"])
 def test_run_with_env(tmp_dir, mocker, cmd):
     toml = Path(__file__).parent.with_name("data").joinpath("test.toml")

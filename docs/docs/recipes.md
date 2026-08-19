@@ -37,38 +37,6 @@ See also [px-demo](https://github.com/pyprojectx/px-demo) for a full example, an
     pw --lock
     ```
 
-## Simple projects
-If you don't need dependency management (f.e. when you don't have any dependencies),
-Pyprojectx can create your virtual environment and install test dependencies.
-
-```toml
-[tool.pyprojectx.venv]
-# venv and .venv don't have any special meaning, you can choose any name
-requirements = [
-    "-r pyproject.toml", # optional: install project.dependencies from pyproject.toml
-    "pytest" # test dependencies (keep your other dev dependencies in the main requirements)
-]
-dir = ".venv"
-
-[tool.pyprojectx.main]
-requirements = ["ruff", "pre-commit", "px-utils", "httpie", "build"]
-post-install = "pre-commit install"
-
-install = "pw@ --install-context venv"
-test = { cmd = "pytest", ctx = "venv" }
-format = ["ruff format", "ruff check --select I --fix"]
-lint = ["ruff check"]
-check = ["@lint", "@test"]
-build = ["@install", "@check", "python -m build"]
-
-[build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
-```
-
-After running any alias (f.e. `./pw test`), you can activate the virtual environment with `source .venv/bin/activate`.
-See also [px-demo](https://github.com/pyprojectx/px-demo/tree/simple) for a full example.
-
 ## Build scripts
 Script your development and build flow with aliases:
 

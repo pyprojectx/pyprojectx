@@ -96,8 +96,9 @@ Flow of a command `./pw <cmd> <args>`:
 - **Tool context**: a named list of requirements (e.g. `main`). Aliases run inside a context; a
   bare command runs in its matching context or falls back to `main`.
 - **Alias resolution**: an alias is bound to a context if its command starts with a context name,
-  starts with `@ctx:`, or sets `ctx` explicitly. Aliases reference other aliases with `@name`, and
-  `pw@` expands to the current wrapper invocation (see `_resolve_references`). Multi-command
+  starts with `@ctx:`, or sets `ctx` explicitly. Aliases reference other aliases or scripts with
+  `@name`, which expands to the current wrapper invocation plus `name` (see `_resolve_references`).
+  The legacy `pw@name` prefix is not supported anymore and raises an error. Multi-command
   aliases are lists.
 - **Abbreviation matching** (`config.camel_match`): `./pw fB` can match `fooBar`/`foo-bar`. An
   exact match always wins; multiple partial matches raise an ambiguity error.
