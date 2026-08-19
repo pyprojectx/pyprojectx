@@ -8,7 +8,7 @@ venv = { requirements = "pycowsay==0.0.0.1", dir = "@PROJECT_DIR/.venv" }
 
 [tool.pyprojectx.post-install-pycowsay]
 requirements = "pycowsay==0.0.0.1"
-post-install = "pycowsay post-install-action && pw@create-file"
+post-install = "pycowsay post-install-action && @create-file"
 
 [tool.pyprojectx.install-context]
 requirements = "-r pw-requirements.txt"
@@ -18,10 +18,10 @@ post-install = "@install-context-post-install"
 pycowsay = "pycowsay"
 pycowsay-hi = "pycowsay hi"
 pycowsay-hello = "@pycowsay: pycowsay hello"
-combine-pw-scripts = "pw@pycowsay-hi && @pycowsay-hello && @call-prm"
+combine-pw-scripts = "@pycowsay-hi && @pycowsay-hello && @call-prm"
 combine-pw-scripts-list = [
-    "pw@ pycowsay-hi",
-    "pw@pycowsay-hello",
+    "@pycowsay-hi",
+    "@pycowsay-hello",
     "@call-prm",
 ]
 failing-list = [

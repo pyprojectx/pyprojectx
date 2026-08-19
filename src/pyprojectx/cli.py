@@ -17,7 +17,7 @@ from pyprojectx.log import logger, set_verbosity
 from pyprojectx.requirements import add_requirement
 from pyprojectx.wrapper import pw
 
-alias_regex = re.compile(r"(pw)?@([\w-]+)")
+alias_regex = re.compile(r"@([\w-]+)")
 
 
 def main() -> None:
@@ -234,11 +234,11 @@ def _post_install_action(venv, requirements, pw_args, config, env):
 
 
 def _resolve_references(alias_cmd: str, pw_args: list[str], config) -> str:
-    """Resolve all @alias and pw@ references."""
-    alias_refs = alias_regex.findall(alias_cmd)
-    for optional_pw, alias in alias_refs:
-        if config.is_alias(alias) or config.get_script_path(alias).exists():
-            alias_cmd = alias_cmd.replace(f"{optional_pw}@{alias}", f"pw@{alias}")
+    """Replace every @alias or @script reference with a full invocation of the wrapper script."""
+    if "pw@" in alias_cmd:
+        raise Warning(
+            f"Invalid command '{alias_cmd}': the 'pw@' prefix is not supported anymore, use '@alias-or-script' instead"
+        )
     is_path = True
     skip = False
     absolute_pw_args = []
@@ -256,7 +256,14 @@ def _resolve_references(alias_cmd: str, pw_args: list[str], config) -> str:
         else:
             absolute_pw_args.append(arg)
     replacement = " ".join([_quote(arg) for arg in absolute_pw_args]) + " "
-    return alias_cmd.replace("pw@", replacement)
+
+    def resolve_reference(match):
+        alias = match.group(1)
+        if config.is_alias(alias) or config.get_script_path(alias).exists():
+            return replacement + alias
+        return match.group(0)
+
+    return alias_regex.sub(resolve_reference, alias_cmd)
 
 
 def _quote(arg):

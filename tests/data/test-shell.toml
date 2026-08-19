@@ -19,7 +19,7 @@ tool-4 = { requirements = ["tool-4-req1"] }
 tool-5 = { requirements = """
 tool-5-req1
 tool-5-req2
-""", post-install = "tool-5 && pw@alias-1" }
+""", post-install = "tool-5 && @alias-1" }
 
 [tool.pyprojectx.aliases]
 alias-1 = 'tool-1 arg'
@@ -27,11 +27,11 @@ alias-2 = 'tool-2 arg1 arg2'
 alias-3 = '@tool-1:command arg'
 alias-4 = '@tool-2 : command --default @arg:x'
 
-combined-alias = 'pw@alias-1 && pw@alias-2 pw@shell-command'
+combined-alias = '@alias-1 && @alias-2 @shell-command'
 alias-list = [
-    'pw@alias-1',
-    'pw@alias-2',
-    'pw@shell-command'
+    '@alias-1',
+    '@alias-2',
+    '@shell-command'
 ]
 alias-dict = { ctx = 'tool-1', cmd = 'alias-dict', env = { ENV_VAR2 = "ENV_VAR2" }, cwd = "@PROJECT_DIR", shell = "alias-shell" }
 alias-dict-list = { ctx = 'tool-1', cmd = [

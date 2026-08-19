@@ -47,7 +47,7 @@ def test_ctx_config():
     assert config.is_ctx("tool-5")
     assert config.get_requirements("tool-5") == {
         "requirements": ["tool-5-req1", "tool-5-req2"],
-        "post-install": "tool-5 && pw@alias-1",
+        "post-install": "tool-5 && @alias-1",
         "dir": None,
     }
 
@@ -73,12 +73,12 @@ def test_alias_config():
         AliasCommand("command --default @arg:x", ctx="tool-2", cwd="/cwd", shell="default-shell")
     ]
     assert config.get_alias("combined-alias") == [
-        AliasCommand("pw@alias-1 && pw@alias-2 pw@shell-command", cwd="/cwd", ctx=MAIN, shell="default-shell")
+        AliasCommand("@alias-1 && @alias-2 @shell-command", cwd="/cwd", ctx=MAIN, shell="default-shell")
     ]
     assert config.get_alias("alias-list") == [
-        AliasCommand("pw@alias-1", cwd="/cwd", ctx=MAIN, shell="default-shell"),
-        AliasCommand("pw@alias-2", cwd="/cwd", ctx=MAIN, shell="default-shell"),
-        AliasCommand("pw@shell-command", cwd="/cwd", ctx=MAIN, shell="default-shell"),
+        AliasCommand("@alias-1", cwd="/cwd", ctx=MAIN, shell="default-shell"),
+        AliasCommand("@alias-2", cwd="/cwd", ctx=MAIN, shell="default-shell"),
+        AliasCommand("@shell-command", cwd="/cwd", ctx=MAIN, shell="default-shell"),
     ]
     assert config.get_alias("alias-dict") == [
         AliasCommand(
