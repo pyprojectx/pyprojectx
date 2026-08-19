@@ -46,7 +46,10 @@ def get_or_update_locked_requirements(ctx: str, config: Config, quiet) -> tuple[
     requirements_hash = calculate_hash(requirements)
     if lf_toml_ctx.get("hash") == requirements_hash:
         locked_requirements = lf_toml_ctx.get("requirements")
-        return {**requirements, "requirements": locked_requirements}, False
+        if locked_requirements is not None:
+            # Keep the original-requirements hash so the venv path stays stable
+            # after the first lock write (which returns the lock table including "hash").
+            return {**requirements, "requirements": locked_requirements, "hash": requirements_hash}, False
 
     locked_requirements = _freeze(ctx, requirements, config.lock_python_version, config.prerelease, quiet)
     lf_toml_ctx["requirements"] = locked_requirements
